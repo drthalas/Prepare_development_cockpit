@@ -50,6 +50,13 @@ The initial data model covers projects, specs, spec versions, questionnaire sess
 
 Server-side product workflows should use App Router route handlers or server actions, chosen per feature, with explicit validation at API and form boundaries.
 
+Project workspace routes now use the Prisma data layer:
+
+- `/app/projects`: project list and basic project creation.
+- `/app/projects/[projectId]`: project detail and future artifact placeholders.
+
+If `DATABASE_URL` is missing, these routes show a database setup state instead of using permanent mock storage.
+
 ## AI Architecture
 
 No AI calls are implemented in Phase 0.

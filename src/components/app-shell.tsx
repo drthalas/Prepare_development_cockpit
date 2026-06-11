@@ -32,17 +32,17 @@ export function AppShell() {
 
           <nav className="mt-8 flex gap-2 overflow-x-auto lg:grid lg:overflow-visible">
             {navItems.map((item, index) => (
-              <a
+              <Link
                 className={`shrink-0 rounded-md px-3 py-2 text-sm font-medium ${
                   index === 0
                     ? "bg-[var(--panel)] text-[var(--foreground)] shadow-sm"
                     : "text-[var(--muted)] hover:bg-[var(--panel)] hover:text-[var(--foreground)]"
                 }`}
-                href={`#${item.toLowerCase()}`}
+                href={index === 0 ? "/app/projects" : `#${item.toLowerCase()}`}
                 key={item}
               >
                 {item}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -103,10 +103,18 @@ export function AppShell() {
               </div>
               <div className="mt-5">
                 <EmptyState
-                  actionLabel="Create project placeholder"
-                  description="Project creation and persistence belong to a later task. This area reserves the future workspace entry point."
+                  actionLabel="Open projects"
+                  description="Project creation and persistence now live in the DB-backed projects workspace. Artifact generation remains future work."
                   title="No projects yet"
                 />
+                <div className="mt-5 text-center">
+                  <Link
+                    className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                    href="/app/projects"
+                  >
+                    Manage projects
+                  </Link>
+                </div>
               </div>
             </section>
 

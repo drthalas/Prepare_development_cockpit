@@ -49,6 +49,8 @@ Run `npm run prisma:migrate` only when a valid `DATABASE_URL` is available. Do n
 
 The generated Prisma client is written to `src/generated/prisma` and is intentionally ignored by git. Regenerate it after schema changes.
 
+DB-backed workspace routes should fail clearly when `DATABASE_URL` is missing. Do not add permanent mock persistence in place of the Prisma data layer.
+
 Run additional tests when a task adds testable behavior.
 
 ## Git Workflow
