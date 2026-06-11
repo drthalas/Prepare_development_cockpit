@@ -32,7 +32,21 @@ enum RepositoryVisibility {
   public
   private
   internal
+  unknown
   undecided
+}
+
+enum RepositoryOwner {
+  user
+  hermes
+  codex_authenticated
+  not_decided
+}
+
+enum AgentPushAccess {
+  yes
+  no
+  unknown
 }
 
 enum DeploymentTarget {
@@ -43,10 +57,28 @@ enum DeploymentTarget {
   undecided
 }
 
+enum DeploymentMode {
+  manual_instructions
+  prepare_config_files
+  future_api_integration
+}
+
+enum DeploymentOwner {
+  user
+  hermes
+  codex_authenticated
+  not_decided
+}
+
 enum ExecutionTarget {
   codex
+  claude_code
+  cursor
+  human_developer
+  multiple
   human_team
   hybrid
+  unknown
   undecided
 }
 
@@ -100,13 +132,20 @@ model Project {
   title                String
   shortId              String                @unique
   initialIdea          String                @db.Text
+  targetUser           String?               @db.Text
   projectType          String?
   status               ProjectStatus         @default(draft)
   repositoryMode       RepositoryMode?
   repositoryUrl        String?
   repositoryVisibility RepositoryVisibility?
+  repositoryOwner      RepositoryOwner?
+  agentCanPush         AgentPushAccess?
+  defaultBranch        String?
   deploymentTarget     DeploymentTarget?
+  deploymentMode       DeploymentMode?
+  deploymentOwner      DeploymentOwner?
   executionTarget      ExecutionTarget?
+  qaPreference         QAMode?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
 

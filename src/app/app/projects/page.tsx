@@ -1,15 +1,9 @@
 import Link from "next/link";
 
 import { EmptyState } from "@/components/empty-state";
-import { createProjectAction } from "@/app/app/projects/actions";
+import { ProjectIntakeWizard } from "@/components/project-intake-wizard";
 import {
-  deploymentTargetLabels,
-  deploymentTargets,
-  executionTargetLabels,
-  executionTargets,
   projectStatusLabels,
-  repositoryModeLabels,
-  repositoryModes,
 } from "@/lib/projects/project-options";
 import { listProjects } from "@/lib/projects/project-store";
 
@@ -39,12 +33,12 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
               Projects
             </p>
             <h1 className="mt-2 text-3xl font-semibold">
-              Project workspace model
+              Project intake workspace
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Create and open DB-backed project workspaces. Spec,
-              questionnaire, roadmap, tasks, prompts, and exports remain
-              placeholders for later phases.
+              Create DB-backed project workspaces with product idea,
+              repository, deployment, execution, and QA context ready for the
+              next questionnaire step.
             </p>
           </div>
 
@@ -89,6 +83,11 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                       <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted)]">
                         {project.initialIdea}
                       </p>
+                      {project.targetUser ? (
+                        <p className="mt-2 line-clamp-1 text-xs font-medium text-[var(--muted)]">
+                          Audience: {project.targetUser}
+                        </p>
+                      ) : null}
                     </div>
                     <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
                       {projectStatusLabels[project.status]}
@@ -110,98 +109,16 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         </section>
 
         <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">Create project</h2>
+          <h2 className="text-xl font-semibold">Idea intake wizard</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            This is a basic workspace creation flow. It does not run idea
-            intake, AI generation, questionnaire logic, roadmap generation, or
-            Linear export.
+            Capture the first product context without running AI
+            classification, adaptive questionnaire logic, spec generation,
+            roadmap generation, or Linear export.
           </p>
 
-          <form action={createProjectAction} className="mt-6 grid gap-4">
-            <label className="grid gap-2 text-sm font-medium">
-              Title
-              <input
-                className="min-h-11 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                name="title"
-                placeholder="Customer onboarding cockpit"
-                required
-              />
-            </label>
-
-            <label className="grid gap-2 text-sm font-medium">
-              Initial idea
-              <textarea
-                className="min-h-32 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 py-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                name="initialIdea"
-                placeholder="Describe the product idea, target user, and first outcome."
-                required
-              />
-            </label>
-
-            <label className="grid gap-2 text-sm font-medium">
-              Repository URL
-              <input
-                className="min-h-11 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                name="repositoryUrl"
-                placeholder="https://github.com/org/repo"
-                type="url"
-              />
-            </label>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <label className="grid gap-2 text-sm font-medium">
-                Repository
-                <select
-                  className="min-h-11 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                  name="repositoryMode"
-                >
-                  <option value="">Not set</option>
-                  {repositoryModes.map((mode) => (
-                    <option key={mode} value={mode}>
-                      {repositoryModeLabels[mode]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="grid gap-2 text-sm font-medium">
-                Deployment
-                <select
-                  className="min-h-11 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                  name="deploymentTarget"
-                >
-                  <option value="">Not set</option>
-                  {deploymentTargets.map((target) => (
-                    <option key={target} value={target}>
-                      {deploymentTargetLabels[target]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="grid gap-2 text-sm font-medium">
-                Execution
-                <select
-                  className="min-h-11 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-                  name="executionTarget"
-                >
-                  <option value="">Not set</option>
-                  {executionTargets.map((target) => (
-                    <option key={target} value={target}>
-                      {executionTargetLabels[target]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <button
-              className="mt-2 inline-flex min-h-11 w-fit items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-              type="submit"
-            >
-              Create project
-            </button>
-          </form>
+          <div className="mt-6">
+            <ProjectIntakeWizard />
+          </div>
         </section>
       </div>
     </main>

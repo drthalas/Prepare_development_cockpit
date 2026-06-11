@@ -31,6 +31,22 @@ QA is an explicit option, not a hidden default. Supported planning levels:
 
 The questionnaire must ask about GitHub and repository readiness before generating implementation tasks. It should capture whether a repository exists, whether Codex can access it, what stack is already chosen, and whether deployment targets are known.
 
+## Idea Intake Baseline
+
+Phase 2 starts with a guided idea intake flow before adaptive questions are generated. The intake flow captures:
+
+- Project title and initial idea.
+- Target user or audience.
+- Optional project type provided by the user.
+- Existing, new, none, or undecided repository mode.
+- Repository URL, visibility, owner, default branch, and whether the execution agent can push.
+- Preferred deployment target and deployment mode.
+- Who configures deployment.
+- Preferred execution target.
+- Initial QA preference.
+
+Completing intake moves the project into questionnaire readiness. It does not classify the project, generate questionnaire sessions, generate specs, generate roadmaps, create tasks, create prompts, or export to Linear.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

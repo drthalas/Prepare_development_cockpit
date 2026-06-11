@@ -19,6 +19,12 @@ Phase 1 covers the data model and core workspace foundation:
 - PDC-004 Database & ORM Setup.
 - PDC-005 Project Workspace Model.
 
+Phase 2 covers idea intake and questionnaire preparation:
+
+- PDC-006 Idea Intake Flow captures project context only.
+- PDC-007 AI Project Type Classifier owns project classification.
+- PDC-008 Adaptive Questionnaire Engine owns question sessions and answers.
+
 ## Task Workflow
 
 1. Read the current Linear task and its Codex Prompt.

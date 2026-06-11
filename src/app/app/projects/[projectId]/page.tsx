@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 
 import {
+  agentPushAccessLabels,
+  deploymentModeLabels,
+  deploymentOwnerLabels,
   deploymentTargetLabels,
   executionTargetLabels,
   projectStatusLabels,
+  qaModeLabels,
   repositoryModeLabels,
+  repositoryOwnerLabels,
+  repositoryVisibilityLabels,
 } from "@/lib/projects/project-options";
 import { getProject } from "@/lib/projects/project-store";
 
@@ -24,7 +31,7 @@ const placeholderSections = [
   {
     title: "Questionnaire",
     description:
-      "Adaptive question sessions will be implemented after the basic workspace model.",
+      "Adaptive question sessions are planned for PDC-008 after classification.",
   },
   {
     title: "Roadmap",
@@ -101,6 +108,11 @@ export default async function ProjectDetailPage({
               <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {project.initialIdea}
               </p>
+              {project.targetUser ? (
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                  Audience: {project.targetUser}
+                </p>
+              ) : null}
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
               {projectStatusLabels[project.status]}
@@ -110,6 +122,10 @@ export default async function ProjectDetailPage({
           <dl className="mt-6 grid gap-4 border-t border-[var(--panel-border)] pt-5 sm:grid-cols-2 lg:grid-cols-4">
             <ProjectMeta label="Created" value={formatDate(project.createdAt)} />
             <ProjectMeta label="Updated" value={formatDate(project.updatedAt)} />
+            <ProjectMeta
+              label="Project type"
+              value={project.projectType ?? "Not provided"}
+            />
             <ProjectMeta
               label="Repository"
               value={
@@ -141,6 +157,97 @@ export default async function ProjectDetailPage({
           </dl>
         </header>
 
+        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+          <ContextPanel title="Repository context">
+            <ProjectMeta
+              label="Mode"
+              value={
+                project.repositoryMode
+                  ? repositoryModeLabels[project.repositoryMode]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Visibility"
+              value={
+                project.repositoryVisibility
+                  ? repositoryVisibilityLabels[project.repositoryVisibility]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Repository creator"
+              value={
+                project.repositoryOwner
+                  ? repositoryOwnerLabels[project.repositoryOwner]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Agent can push"
+              value={
+                project.agentCanPush
+                  ? agentPushAccessLabels[project.agentCanPush]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Default branch"
+              value={project.defaultBranch ?? "Not provided"}
+            />
+          </ContextPanel>
+
+          <ContextPanel title="Deployment context">
+            <ProjectMeta
+              label="Target"
+              value={
+                project.deploymentTarget
+                  ? deploymentTargetLabels[project.deploymentTarget]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Mode"
+              value={
+                project.deploymentMode
+                  ? deploymentModeLabels[project.deploymentMode]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="Configured by"
+              value={
+                project.deploymentOwner
+                  ? deploymentOwnerLabels[project.deploymentOwner]
+                  : "Not set"
+              }
+            />
+          </ContextPanel>
+
+          <ContextPanel title="Execution context">
+            <ProjectMeta
+              label="Execution target"
+              value={
+                project.executionTarget
+                  ? executionTargetLabels[project.executionTarget]
+                  : "Not set"
+              }
+            />
+            <ProjectMeta
+              label="QA preference"
+              value={
+                project.qaPreference
+                  ? qaModeLabels[project.qaPreference]
+                  : "Not set"
+              }
+            />
+            <div className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
+              Intake complete. Classification and adaptive questions are future
+              Phase 2 tasks.
+            </div>
+          </ContextPanel>
+        </section>
+
         <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {placeholderSections.map((section) => (
             <article
@@ -159,6 +266,21 @@ export default async function ProjectDetailPage({
         </section>
       </div>
     </main>
+  );
+}
+
+function ContextPanel({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <article className="grid gap-4 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <dl className="grid gap-4">{children}</dl>
+    </article>
   );
 }
 

@@ -57,9 +57,13 @@ Project workspace routes now use the Prisma data layer:
 
 If `DATABASE_URL` is missing, these routes show a database setup state instead of using permanent mock storage.
 
+Phase 2 extends project creation into a guided idea intake flow. Intake data is stored structurally on `Project` for now because it is foundational project context rather than a separate questionnaire session. Questionnaire sessions, questions, and answers remain dedicated models for PDC-008.
+
+The current intake fields include audience, optional user-provided project type, repository readiness, repository visibility, repository owner, agent GitHub push access, default branch, deployment target, deployment mode, deployment owner, execution target, and initial QA preference.
+
 ## AI Architecture
 
-No AI calls are implemented in Phase 0.
+No AI calls are implemented before PDC-007.
 
 Later phases should introduce an AI provider abstraction so prompts, models, retries, and provider-specific behavior are isolated from product workflow code.
 
