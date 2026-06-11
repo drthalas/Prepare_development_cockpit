@@ -73,3 +73,5 @@ https://github.com/drthalas/Prepare_development_cockpit
 ## Railway-First Deployment
 
 The application is designed to be deployable on Railway, but Phase 0 does not create Railway projects, services, databases, or environment variables automatically. See `docs/deployment_railway.md` for the manual deployment baseline.
+
+For Phase 0, Railway deployment is a manual GitHub-connected Next.js service using `npm run build`, `npm run start`, and `/api/health` for verification.
