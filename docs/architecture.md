@@ -1,45 +1,70 @@
 # Architecture
 
-## Current Architecture
+## Current Baseline
 
-Prepare Development Cockpit currently uses a minimal Next.js App Router architecture.
+Prepare Development Cockpit currently uses a minimal Railway-ready SaaS foundation:
+
+- Next.js App Router.
+- TypeScript.
+- Tailwind CSS.
+- npm lockfile.
+- Health endpoint at `/api/health`.
+- Documentation-first Phase 0 workflow.
+
+## Target Application Architecture
 
 ```text
-prepare-development-cockpit/
-  src/
-    app/
-      api/
-        health/
-          route.ts
-      layout.tsx
-      page.tsx
-  docs/
-  public/
+src/app/          Routes, layouts, route handlers
+src/components/   Shared UI and future shadcn/ui components
+src/config/       Product and runtime configuration defaults
+src/lib/          Shared helpers and integration abstractions
+src/types/        Shared TypeScript contracts
+docs/             Product, architecture, workflow, Linear, Codex, Railway docs
 ```
 
-## Application Layer
+## Frontend
 
-- Framework: Next.js.
-- Router: App Router.
+- Framework: Next.js App Router.
 - Language: TypeScript.
-- Package manager: npm.
+- Styling: Tailwind CSS.
+- UI system: shadcn/ui later, built on reusable components and design tokens.
+- Motion: Framer Motion later when product flows need transitions.
+- Editing: TipTap or a rich Markdown editor later for editable specifications.
 
-## Health Endpoint
+## Backend And Data
 
-`GET /api/health` returns a static JSON response that can be used for local checks and future deployment readiness checks.
+Phase 0 has no database and no persistent product data.
 
-## Configuration
+Target later architecture:
 
-Phase 0 does not require runtime environment variables. `.env.example` is present so future phases have a documented place to add configuration.
+- PostgreSQL on Railway.
+- Prisma after persistence requirements are defined.
+- Server-side product workflows behind App Router route handlers or server actions, chosen per feature.
+- Explicit validation at API and form boundaries.
 
-## Data
+## AI Architecture
 
-No database, database models, migrations, or persistence layer exist in Phase 0.
+No AI calls are implemented in Phase 0.
 
-## Integrations
+Later phases should introduce an AI provider abstraction so prompts, models, retries, and provider-specific behavior are isolated from product workflow code.
 
-No external product integrations exist in Phase 0. Railway, Linear, billing, auth, and AI generation are intentionally not configured.
+## Linear Architecture
 
-## Future Architecture Notes
+Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.
 
-Future phases should add capabilities incrementally and update this document when they introduce new runtime dependencies, data models, integrations, or deployment topology.
+## Deployment Architecture
+
+Railway is the first deployment target. The app should stay compatible with a standard Railway GitHub deployment flow and use `/api/health` for deployment checks.
+
+Codex must not create Railway projects, services, Postgres instances, or environment variables. Those steps remain manual until explicitly scoped in a later task.
+
+## Out Of Scope For Phase 0
+
+- Database schema.
+- Prisma setup.
+- Authentication.
+- Billing.
+- AI provider implementation.
+- Linear API integration.
+- Railway resource creation.
+- Product generation engines.

@@ -1,64 +1,56 @@
 # Development Workflow
 
-## Local Setup
+## Source Of Work
 
-Install dependencies:
+Development is driven by Linear tasks in the `Prepare Development Cockpit` project. Work should proceed by phase, and each task should have a clear scope, acceptance criteria, and review checkpoint.
 
-```bash
-npm install
-```
+## Phase Discipline
 
-Run the app:
+Do not implement future tasks early. If a later feature becomes obvious while working, document it or leave a note for the relevant Linear task instead of adding unscoped code.
 
-```bash
-npm run dev
-```
+Phase 0 covers only product and SaaS foundation:
 
-Open:
+- PDC-001 Product Definition & Repository Foundation.
+- PDC-002 UI System & Visual SaaS Shell.
+- PDC-003 Railway Deployment Baseline.
 
-```text
-http://localhost:3000
-```
+## Task Workflow
 
-## Health Check
-
-With the development server running:
-
-```bash
-curl http://localhost:3000/api/health
-```
+1. Read the current Linear task and its Codex Prompt.
+2. Confirm the task belongs to the active phase.
+3. Inspect the existing code and documentation before changing files.
+4. Implement only the scoped change.
+5. Run available checks.
+6. Commit the task with a task-specific message.
+7. Report changed files, checks, risks, and the next recommended task.
 
 ## Quality Checks
 
-Run lint checks before committing:
+Use the checks that apply to the change:
 
 ```bash
 npm run lint
-```
-
-Run a production build check when changing application behavior:
-
-```bash
 npm run build
 ```
 
+Run additional tests when a task adds testable behavior.
+
 ## Git Workflow
 
-Use small commits with clear messages. Keep Phase 0 changes limited to project foundation, documentation, and basic application health.
+- Keep commits small and task-scoped.
+- Do not mix unrelated Linear tasks in one commit.
+- Do not rewrite git history unless explicitly requested.
+- Do not assume GitHub push access exists until it has been checked.
 
-Expected remote:
+## Boundaries
 
-```text
-https://github.com/drthalas/Prepare_development_cockpit
-```
+Do not add these unless the active Linear task explicitly requires them:
 
-## Phase Boundaries
-
-Do not add these during Phase 0:
-
-- Railway project or services.
-- AI generation.
+- Railway projects or services.
+- AI calls.
 - Database models.
+- Prisma.
 - Authentication.
 - Billing.
 - Linear API integration.
+- Product generation engines.

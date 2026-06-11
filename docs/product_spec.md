@@ -1,39 +1,68 @@
 # Product Spec
 
-## Product Summary
+## Current Product Intent
 
-Prepare Development Cockpit will help organize development preparation work: context, requirements, architecture notes, workflow decisions, and later implementation tasks.
+Prepare Development Cockpit helps a user transform a product idea into a development-ready package. The product should guide scope discovery, make the generated specification editable, and produce artifacts that can support implementation and review.
 
-## Phase 0 Product Requirements
+## Primary User Journey
 
-The Phase 0 product surface is intentionally minimal:
+1. The user opens the site.
+2. The user describes a product idea in plain language.
+3. The product asks adaptive questions to clarify goals, audience, constraints, repository status, deployment expectations, and quality requirements.
+4. The user receives an editable specification.
+5. The user can improve, check, or revise the specification before moving forward.
+6. The product generates a roadmap from the approved specification.
+7. The product generates scoped implementation tasks from the roadmap.
+8. Each task includes a Codex Prompt that can be used to execute that task in the repository.
+9. The user selects QA depth for the generated work.
+10. The user exports Linear-ready artifacts first, with direct Linear API integration planned later.
 
-- A working Next.js application shell.
-- A health endpoint for local and future deployment checks.
-- Documentation that explains the project context, intended scope, architecture, and workflow.
+## QA Options
 
-## Initial User Value
+QA is an explicit option, not a hidden default. Supported planning levels:
 
-The project gives the team a stable place to:
+- `Off`: no generated QA guidance.
+- `Minimal`: smoke checks and basic acceptance criteria.
+- `Standard`: lint/build/test expectations and manual review notes.
+- `Strict`: deeper verification, regression focus, and release readiness checks.
+- `Custom`: user-defined QA requirements.
 
-- Open the codebase locally.
-- Run the app.
-- Verify the service is alive.
-- Continue future implementation phases from a documented baseline.
+## Repository Readiness
 
-## Non-Goals For Phase 0
+The questionnaire must ask about GitHub and repository readiness before generating implementation tasks. It should capture whether a repository exists, whether Codex can access it, what stack is already chosen, and whether deployment targets are known.
 
-- No AI content generation.
-- No persistence layer.
-- No user accounts.
+## Linear Export
+
+Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.
+
+## Deployment Guidance
+
+The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.
+
+## Phase 0 Scope
+
+Phase 0 includes only:
+
+- Next.js App Router foundation.
+- TypeScript baseline.
+- Tailwind CSS baseline.
+- Minimal SaaS shell.
+- Health endpoint.
+- Environment template.
+- Architecture and workflow documentation.
+- GitHub remote readiness.
+
+## Phase 0 Non-Goals
+
+- No AI generation.
+- No questionnaire engine.
+- No roadmap generator.
+- No task prompt generator.
+- No QA generator.
+- No export bundle.
+- No database models.
+- No Prisma.
+- No authentication.
 - No billing.
-- No task-management API integrations.
-- No deployment automation.
-
-## Acceptance Criteria
-
-- The app runs locally with `npm run dev`.
-- `/api/health` returns a JSON status response.
-- Required documentation files exist under `docs/`.
-- `.env.example` exists and documents the current lack of required variables.
-- Git remote points to the expected GitHub repository.
+- No Linear API.
+- No Railway resource automation.
