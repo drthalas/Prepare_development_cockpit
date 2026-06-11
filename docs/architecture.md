@@ -7,6 +7,8 @@ Prepare Development Cockpit currently uses a minimal Railway-ready SaaS foundati
 - Next.js App Router.
 - TypeScript.
 - Tailwind CSS.
+- Marketing landing page at `/`.
+- Static workspace shell at `/app`.
 - npm lockfile.
 - Health endpoint at `/api/health`.
 - Documentation-first Phase 0 workflow.

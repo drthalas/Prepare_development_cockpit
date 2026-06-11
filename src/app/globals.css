@@ -8,6 +8,16 @@
   --panel-border: #d8dee4;
   --accent: #0f766e;
   --accent-strong: #115e59;
+  --soft-accent: #dff3ef;
+  --soft-blue: #dbeafe;
+  --soft-warning: #fef3c7;
+  --hero-surface: #eef3f1;
+  --nav-surface: rgba(247, 248, 250, 0.92);
+  --section-surface: #eef1f4;
+  --workspace-bg: #f5f7f8;
+  --workspace-rail: #eef1f4;
+  --line-soft: #d7dee4;
+  --cta-muted: #b8c7c4;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +29,16 @@
     --panel-border: #2b333a;
     --accent: #2dd4bf;
     --accent-strong: #5eead4;
+    --soft-accent: #123c39;
+    --soft-blue: #102b4d;
+    --soft-warning: #46351a;
+    --hero-surface: #111a1b;
+    --nav-surface: rgba(16, 19, 22, 0.92);
+    --section-surface: #151a1e;
+    --workspace-bg: #101316;
+    --workspace-rail: #151a1e;
+    --line-soft: #26313a;
+    --cta-muted: #9fb4ae;
   }
 }
 
@@ -41,6 +61,13 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 * {

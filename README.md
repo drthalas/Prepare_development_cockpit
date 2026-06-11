@@ -30,6 +30,11 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+Routes:
+
+- `/` landing page for the product story and planned flow.
+- `/app` static workspace shell for future project/spec/roadmap/task modules.
+
 Check the health endpoint:
 
 ```bash
