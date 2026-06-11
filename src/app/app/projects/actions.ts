@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import {
+  classifyAndSaveProject,
   createProject,
   parseAgentPushAccess,
   parseDeploymentMode,
@@ -14,6 +15,16 @@ import {
   parseRepositoryOwner,
   parseRepositoryVisibility,
 } from "@/lib/projects/project-store";
+
+export async function classifyProjectAction(projectId: string) {
+  const result = await classifyAndSaveProject(projectId);
+
+  if (!result.ok) {
+    redirect(`/app/projects/${projectId}?classification=${result.reason}`);
+  }
+
+  redirect(`/app/projects/${projectId}?classification=saved`);
+}
 
 export async function createProjectAction(formData: FormData) {
   const result = await createProject({

@@ -1,3 +1,5 @@
+import { classifyProjectIdea } from "@/lib/ai/classifier";
+import type { ProjectClassificationResult } from "@/lib/ai/types";
 import { getPrismaClient } from "@/lib/db/prisma";
 import {
   agentPushAccessValues,
@@ -29,6 +31,9 @@ export type ProjectListItem = {
   initialIdea: string;
   targetUser: string | null;
   projectType: string | null;
+  classification: ProjectClassificationResult | null;
+  classificationMode: string | null;
+  classificationUpdatedAt: Date | null;
   status: ProjectStatusValue;
   repositoryMode: RepositoryModeValue | null;
   repositoryUrl: string | null;
@@ -75,6 +80,13 @@ export type CreateProjectInput = {
 export type CreateProjectResult =
   | { ok: true; projectId: string }
   | { ok: false; reason: "database" | "validation" };
+
+export type ClassifyProjectResult =
+  | {
+      classification: ProjectClassificationResult;
+      ok: true;
+    }
+  | { ok: false; reason: "database" | "not_found" | "provider" };
 
 const databaseMissingMessage =
   "DATABASE_URL is not configured. Project persistence requires PostgreSQL.";
@@ -204,6 +216,57 @@ export async function createProject(
   }
 }
 
+export async function classifyAndSaveProject(
+  projectId: string,
+): Promise<ClassifyProjectResult> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: projectListSelect,
+    });
+
+    if (!project) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const classification = await classifyProjectIdea({
+      agentCanPush: project.agentCanPush,
+      defaultBranch: project.defaultBranch,
+      deploymentMode: project.deploymentMode,
+      deploymentOwner: project.deploymentOwner,
+      deploymentTarget: project.deploymentTarget,
+      executionTarget: project.executionTarget,
+      initialIdea: project.initialIdea,
+      projectType: project.projectType,
+      repositoryMode: project.repositoryMode,
+      repositoryOwner: project.repositoryOwner,
+      repositoryUrl: project.repositoryUrl,
+      repositoryVisibility: project.repositoryVisibility,
+      targetUser: project.targetUser,
+      title: project.title,
+    });
+
+    await prisma.project.update({
+      data: {
+        classificationJson: classification,
+        classificationMode: classification.mode,
+        classificationUpdatedAt: new Date(),
+        projectType: classification.projectType,
+      },
+      where: { id: projectId },
+    });
+
+    return { classification, ok: true };
+  } catch {
+    return { ok: false, reason: "provider" };
+  }
+}
+
 export function parseRepositoryMode(value: FormDataEntryValue | null) {
   return parseEnumValue(value, repositoryModes);
 }
@@ -274,6 +337,9 @@ const projectListSelect = {
   initialIdea: true,
   targetUser: true,
   projectType: true,
+  classificationJson: true,
+  classificationMode: true,
+  classificationUpdatedAt: true,
   status: true,
   repositoryMode: true,
   repositoryUrl: true,
@@ -291,6 +357,9 @@ const projectListSelect = {
 
 function mapProject(project: {
   agentCanPush: AgentPushAccessValue | null;
+  classificationJson: unknown;
+  classificationMode: string | null;
+  classificationUpdatedAt: Date | null;
   defaultBranch: string | null;
   deploymentMode: DeploymentModeValue | null;
   deploymentOwner: DeploymentOwnerValue | null;
@@ -317,6 +386,9 @@ function mapProject(project: {
     initialIdea: project.initialIdea,
     targetUser: project.targetUser,
     projectType: project.projectType,
+    classification: parseProjectClassification(project.classificationJson),
+    classificationMode: project.classificationMode,
+    classificationUpdatedAt: project.classificationUpdatedAt,
     status: projectStatuses.includes(project.status) ? project.status : "draft",
     repositoryMode: project.repositoryMode,
     repositoryUrl: project.repositoryUrl,
@@ -330,5 +402,37 @@ function mapProject(project: {
     executionTarget: project.executionTarget,
     qaPreference: project.qaPreference,
     updatedAt: project.updatedAt,
+  };
+}
+
+function parseProjectClassification(
+  value: unknown,
+): ProjectClassificationResult | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const result = value as Partial<ProjectClassificationResult>;
+
+  if (
+    typeof result.projectType !== "string" ||
+    typeof result.complexity !== "string" ||
+    !Array.isArray(result.suggestedModules) ||
+    !Array.isArray(result.missingInformationAreas) ||
+    !Array.isArray(result.recommendedQuestionBlocks)
+  ) {
+    return null;
+  }
+
+  return {
+    confidence:
+      typeof result.confidence === "number" ? result.confidence : 0,
+    complexity: result.complexity as ProjectClassificationResult["complexity"],
+    missingInformationAreas: result.missingInformationAreas.map(String),
+    mode: result.mode === "configured" ? "configured" : "mock",
+    projectType: result.projectType as ProjectClassificationResult["projectType"],
+    recommendedQuestionBlocks: result.recommendedQuestionBlocks.map(String),
+    suggestedModules: result.suggestedModules.map(String),
+    summary: typeof result.summary === "string" ? result.summary : "",
   };
 }

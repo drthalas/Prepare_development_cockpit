@@ -47,6 +47,19 @@ Phase 2 starts with a guided idea intake flow before adaptive questions are gene
 
 Completing intake moves the project into questionnaire readiness. It does not classify the project, generate questionnaire sessions, generate specs, generate roadmaps, create tasks, create prompts, or export to Linear.
 
+## Project Type Classification
+
+After intake, the user can analyze the idea and saved context. The classifier returns:
+
+- Project type.
+- Complexity.
+- Suggested modules.
+- Missing information areas.
+- Recommended question blocks for the later adaptive questionnaire.
+- Confidence and provider mode.
+
+Local development must work in mock mode without an `AI_API_KEY`. Classification is saved to the project, but it does not create questionnaire sessions or generate specs.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

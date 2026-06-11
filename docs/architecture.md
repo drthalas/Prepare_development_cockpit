@@ -63,9 +63,16 @@ The current intake fields include audience, optional user-provided project type,
 
 ## AI Architecture
 
-No AI calls are implemented before PDC-007.
+PDC-007 introduces the first AI abstraction layer:
 
-Later phases should introduce an AI provider abstraction so prompts, models, retries, and provider-specific behavior are isolated from product workflow code.
+- `src/lib/ai/types.ts`: shared AI provider and classification contracts.
+- `src/lib/ai/provider.ts`: env-configured provider resolver.
+- `src/lib/ai/mock-provider.ts`: deterministic local provider for development without an API key.
+- `src/lib/ai/classifier.ts`: `classifyProjectIdea()` entry point used by product workflows.
+
+`AI_PROVIDER=mock` or a missing `AI_API_KEY` uses mock mode. Non-mock providers are intentionally not wired to external APIs yet; provider-specific API clients can be added behind the same interface later without changing project UI code.
+
+Project classification results are persisted on `Project.classificationJson` with provider mode and update timestamp. Classification can update `Project.projectType`, but it does not generate adaptive questionnaires, specs, roadmaps, tasks, prompts, QA artifacts, or Linear exports.
 
 ## Linear Architecture
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { classifyProjectAction } from "@/app/app/projects/actions";
 import {
   agentPushAccessLabels,
   deploymentModeLabels,
@@ -20,6 +21,7 @@ export const dynamic = "force-dynamic";
 
 type ProjectDetailPageProps = {
   params: Promise<{ projectId: string }>;
+  searchParams: Promise<{ classification?: string | string[] }>;
 };
 
 const placeholderSections = [
@@ -57,9 +59,14 @@ const placeholderSections = [
 
 export default async function ProjectDetailPage({
   params,
+  searchParams,
 }: ProjectDetailPageProps) {
   const { projectId } = await params;
+  const query = await searchParams;
   const result = await getProject(projectId);
+  const classificationState = Array.isArray(query.classification)
+    ? query.classification[0]
+    : query.classification;
 
   if (!result.databaseReady) {
     return (
@@ -87,6 +94,7 @@ export default async function ProjectDetailPage({
   }
 
   const project = result.data;
+  const classifyAction = classifyProjectAction.bind(null, project.id);
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -156,6 +164,103 @@ export default async function ProjectDetailPage({
             />
           </dl>
         </header>
+
+        {classificationState ? (
+          <div
+            className={`mt-6 rounded-lg border p-4 text-sm font-medium ${
+              classificationState === "saved"
+                ? "border-[var(--panel-border)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
+                : "border-amber-200 bg-[var(--soft-warning)] text-amber-900"
+            }`}
+          >
+            {classificationState === "saved"
+              ? "Project classification saved."
+              : getClassificationErrorMessage(classificationState)}
+          </div>
+        ) : null}
+
+        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+                AI classifier
+              </p>
+              <h2 className="mt-2 text-xl font-semibold">
+                Project type classification
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                Analyze the intake context to identify project type,
+                complexity, suggested modules, missing information, and
+                recommended question blocks. Without an AI key, this runs in
+                deterministic mock mode.
+              </p>
+            </div>
+            <form action={classifyAction}>
+              <button
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                type="submit"
+              >
+                Analyze idea
+              </button>
+            </form>
+          </div>
+
+          {project.classification ? (
+            <div className="mt-5 grid gap-4 border-t border-[var(--panel-border)] pt-5 lg:grid-cols-3">
+              <div className="grid gap-4">
+                <ProjectMeta
+                  label="Project type"
+                  value={project.classification.projectType}
+                />
+                <ProjectMeta
+                  label="Complexity"
+                  value={capitalize(project.classification.complexity)}
+                />
+                <ProjectMeta
+                  label="Confidence"
+                  value={`${Math.round(project.classification.confidence * 100)}%`}
+                />
+                <ProjectMeta
+                  label="Mode"
+                  value={
+                    project.classification.mode === "mock"
+                      ? "Mock mode"
+                      : "Configured provider"
+                  }
+                />
+                <ProjectMeta
+                  label="Updated"
+                  value={
+                    project.classificationUpdatedAt
+                      ? formatDate(project.classificationUpdatedAt)
+                      : "Not recorded"
+                  }
+                />
+              </div>
+              <ClassificationList
+                items={project.classification.suggestedModules}
+                title="Suggested modules"
+              />
+              <div className="grid gap-4">
+                <ClassificationList
+                  items={project.classification.missingInformationAreas}
+                  title="Missing information"
+                />
+                <ClassificationList
+                  items={project.classification.recommendedQuestionBlocks}
+                  title="Recommended question blocks"
+                />
+              </div>
+              <p className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm leading-6 text-[var(--muted)] lg:col-span-3">
+                {project.classification.summary}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-5 rounded-md bg-[var(--section-surface)] px-3 py-3 text-sm text-[var(--muted)]">
+              No classification saved yet.
+            </div>
+          )}
+        </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-3">
           <ContextPanel title="Repository context">
@@ -269,6 +374,30 @@ export default async function ProjectDetailPage({
   );
 }
 
+function ClassificationList({
+  items,
+  title,
+}: {
+  items: string[];
+  title: string;
+}) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold">{title}</h3>
+      <ul className="mt-3 grid gap-2">
+        {items.map((item) => (
+          <li
+            className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]"
+            key={item}
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function ContextPanel({
   children,
   title,
@@ -302,4 +431,20 @@ function formatDate(date: Date) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function getClassificationErrorMessage(reason: string) {
+  if (reason === "database") {
+    return "Classification could not run because the database is not configured or reachable.";
+  }
+
+  if (reason === "not_found") {
+    return "Project was not found.";
+  }
+
+  return "Classification provider failed. Check AI_PROVIDER settings or use mock mode.";
 }
