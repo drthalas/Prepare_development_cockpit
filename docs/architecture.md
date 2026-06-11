@@ -35,14 +35,20 @@ docs/             Product, architecture, workflow, Linear, Codex, Railway docs
 
 ## Backend And Data
 
-Phase 0 has no database and no persistent product data.
+Phase 1 introduces the PostgreSQL-oriented data layer:
 
-Target later architecture:
+- ORM: Prisma.
+- Production database target: PostgreSQL on Railway, created manually when persistence is needed.
+- Schema: `prisma/schema.prisma`.
+- Prisma config: `prisma.config.ts`.
+- Prisma client helper: `src/lib/db/prisma.ts`.
+- PostgreSQL driver adapter: `@prisma/adapter-pg` with `pg`.
+- Initial migration: `prisma/migrations/20260611112000_init/migration.sql`.
+- Generated client output: `src/generated/prisma`, produced by `npm run prisma:generate` or `npm run build`.
 
-- PostgreSQL on Railway.
-- Prisma after persistence requirements are defined.
-- Server-side product workflows behind App Router route handlers or server actions, chosen per feature.
-- Explicit validation at API and form boundaries.
+The initial data model covers projects, specs, spec versions, questionnaire sessions, questions, answers, roadmaps, phases, tasks, prompts, QA configuration, and export bundles. `DATABASE_URL` is required for runtime persistence and database migrations. Schema validation and Prisma client generation can run without a live database.
+
+Server-side product workflows should use App Router route handlers or server actions, chosen per feature, with explicit validation at API and form boundaries.
 
 ## AI Architecture
 
@@ -58,7 +64,7 @@ Initial Linear support should generate Linear-ready exports without API access. 
 
 Railway is the first deployment target. The app should stay compatible with a standard Railway GitHub deployment flow and use `/api/health` for deployment checks.
 
-Codex must not create Railway projects, services, Postgres instances, or environment variables. Those steps remain manual until explicitly scoped in a later task.
+Codex must not create Railway projects, services, Postgres instances, or environment variables. Railway Postgres is created manually later and then supplied through `DATABASE_URL`.
 
 ## Out Of Scope For Phase 0
 

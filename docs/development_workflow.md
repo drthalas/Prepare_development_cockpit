@@ -14,6 +14,11 @@ Phase 0 covers only product and SaaS foundation:
 - PDC-002 UI System & Visual SaaS Shell.
 - PDC-003 Railway Deployment Baseline.
 
+Phase 1 covers the data model and core workspace foundation:
+
+- PDC-004 Database & ORM Setup.
+- PDC-005 Project Workspace Model.
+
 ## Task Workflow
 
 1. Read the current Linear task and its Codex Prompt.
@@ -33,6 +38,17 @@ npm run lint
 npm run build
 ```
 
+When changing the Prisma schema, also run:
+
+```bash
+npx prisma validate
+npm run prisma:generate
+```
+
+Run `npm run prisma:migrate` only when a valid `DATABASE_URL` is available. Do not invent local or production database secrets.
+
+The generated Prisma client is written to `src/generated/prisma` and is intentionally ignored by git. Regenerate it after schema changes.
+
 Run additional tests when a task adds testable behavior.
 
 ## Git Workflow
@@ -48,8 +64,8 @@ Do not add these unless the active Linear task explicitly requires them:
 
 - Railway projects or services.
 - AI calls.
-- Database models.
-- Prisma.
+- Database models outside the current Linear task.
+- Prisma changes outside the current Linear task.
 - Authentication.
 - Billing.
 - Linear API integration.

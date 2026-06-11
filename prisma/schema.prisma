@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectStatus {
+  draft
+  questionnaire
+  spec_ready
+  roadmap_ready
+  exported
+}
+
+enum QuestionnaireStatus {
+  draft
+  in_progress
+  completed
+}
+
+enum RepositoryMode {
+  none
+  existing
+  new_repository
+  undecided
+}
+
+enum RepositoryVisibility {
+  public
+  private
+  internal
+  undecided
+}
+
+enum DeploymentTarget {
+  railway
+  vercel
+  render
+  other
+  undecided
+}
+
+enum ExecutionTarget {
+  codex
+  human_team
+  hybrid
+  undecided
+}
+
+enum QuestionType {
+  text
+  textarea
+  single_select
+  multi_select
+  boolean
+  number
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  blocked
+  done
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum PromptTarget {
+  codex
+  claude
+  cursor
+  generic
+}
+
+enum QAMode {
+  off
+  minimal
+  standard
+  strict
+  custom
+}
+
+enum ExportBundleType {
+  linear_ready
+  artifact_bundle
+  markdown
+  json
+}
+
+model Project {
+  id                   String                @id @default(cuid())
+  title                String
+  shortId              String                @unique
+  initialIdea          String                @db.Text
+  projectType          String?
+  status               ProjectStatus         @default(draft)
+  repositoryMode       RepositoryMode?
+  repositoryUrl        String?
+  repositoryVisibility RepositoryVisibility?
+  deploymentTarget     DeploymentTarget?
+  executionTarget      ExecutionTarget?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  spec                  Spec?
+  questionnaireSessions QuestionnaireSession[]
+  roadmaps              Roadmap[]
+  qaConfig              QAConfig?
+  exportBundles         ExportBundle[]
+
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model Spec {
+  id               String       @id @default(cuid())
+  projectId        String       @unique
+  currentVersionId String?      @unique
+  markdown         String       @db.Text
+  structuredJson   Json?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  currentVersion SpecVersion?  @relation("CurrentSpecVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions       SpecVersion[] @relation("SpecVersions")
+}
+
+model SpecVersion {
+  id             String   @id @default(cuid())
+  specId         String
+  version        Int
+  markdown       String   @db.Text
+  structuredJson Json?
+  createdAt      DateTime @default(now())
+
+  spec           Spec  @relation("SpecVersions", fields: [specId], references: [id], onDelete: Cascade)
+  currentForSpec Spec? @relation("CurrentSpecVersion")
+
+  @@unique([specId, version])
+  @@index([specId])
+}
+
+model QuestionnaireSession {
+  id          String              @id @default(cuid())
+  projectId   String
+  status      QuestionnaireStatus @default(draft)
+  currentStep Int?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  sessionId   String
+  key         String
+  label       String
+  type        QuestionType
+  optionsJson Json?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  session QuestionnaireSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@unique([sessionId, key])
+  @@unique([sessionId, order])
+  @@index([sessionId])
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  valueJson  Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Roadmap {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phases  Phase[]
+
+  @@index([projectId])
+}
+
+model Phase {
+  id          String   @id @default(cuid())
+  roadmapId   String
+  title       String
+  description String?  @db.Text
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roadmap Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  tasks   Task[]
+
+  @@unique([roadmapId, order])
+  @@index([roadmapId])
+}
+
+model Task {
+  id                     String       @id @default(cuid())
+  phaseId                String
+  title                  String
+  description            String       @db.Text
+  status                 TaskStatus   @default(todo)
+  priority               TaskPriority?
+  order                  Int
+  context                String?      @db.Text
+  requirementsJson       Json?
+  acceptanceCriteriaJson Json?
+  dependenciesJson       Json?
+  implementationNotes    String?      @db.Text
+  linearIssueId          String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  phase   Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  prompts Prompt[]
+
+  @@unique([phaseId, order])
+  @@index([phaseId])
+  @@index([status])
+  @@index([linearIssueId])
+}
+
+model Prompt {
+  id        String       @id @default(cuid())
+  taskId    String
+  target    PromptTarget
+  content   String       @db.Text
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, target])
+  @@index([taskId])
+}
+
+model QAConfig {
+  id                  String   @id @default(cuid())
+  projectId           String   @unique
+  mode                QAMode   @default(standard)
+  checkpointFrequency String?
+  settingsJson        Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ExportBundle {
+  id          String           @id @default(cuid())
+  projectId   String
+  type        ExportBundleType
+  contentJson Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([type])
+}

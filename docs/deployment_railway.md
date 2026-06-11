@@ -30,7 +30,7 @@ Railway start command:
 npm run start
 ```
 
-The current `package.json` maps `npm run start` to `next start`.
+The current `package.json` maps `npm run build` to `prisma generate && next build`, and maps `npm run start` to `next start`.
 
 ## Pre-Deployment Checks
 
@@ -38,6 +38,8 @@ Run these locally before connecting or redeploying the Railway service:
 
 ```bash
 npm run lint
+npx prisma validate
+npm run prisma:generate
 npm run build
 ```
 
@@ -83,7 +85,9 @@ NODE_ENV=
 
 Only add real values in Railway or local untracked environment files.
 
-Phase 0 does not use a database, AI provider, or Linear API. `DATABASE_URL` may remain empty until a later phase adds actual persistence. The same is true for `AI_PROVIDER`, `AI_API_KEY`, and `LINEAR_API_KEY` until those integrations are explicitly scoped.
+Phase 1 introduces the Prisma schema and PostgreSQL-oriented data layer. `DATABASE_URL` is required for migrations and runtime persistence. It may remain empty only when running schema validation, Prisma client generation, lint, or a build that does not exercise runtime database queries.
+
+The app does not use an AI provider or Linear API yet. `AI_PROVIDER`, `AI_API_KEY`, and `LINEAR_API_KEY` may remain empty until those integrations are explicitly scoped.
 
 Suggested Railway values for Phase 0:
 
@@ -124,14 +128,16 @@ After Railway deploys the service:
 
 ## Database
 
-Railway Postgres is planned for a later phase, closer to Phase 1. Do not add Postgres, Prisma, migrations, or database models during Phase 0.
+The schema is Prisma-based and targets PostgreSQL. Railway Postgres is still created manually by the user or Hermes; Codex must not create the database service.
 
-When a future task introduces persistence, add Railway Postgres manually and then update:
+When persistence is enabled for a deployed environment:
 
-- `DATABASE_URL`
-- architecture documentation
-- deployment verification steps
-- data migration workflow
+1. Add Railway Postgres manually.
+2. Copy the Railway-provided connection string into `DATABASE_URL`.
+3. Run the appropriate Prisma migration workflow against the intended environment.
+4. Re-run `/api/health` and relevant workspace smoke checks.
+
+The initial migration is committed under `prisma/migrations/20260611112000_init/migration.sql`, but it is not applied until a valid PostgreSQL `DATABASE_URL` exists.
 
 ## Not Automated In Phase 0
 
