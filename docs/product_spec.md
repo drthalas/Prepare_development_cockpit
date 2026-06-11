@@ -60,6 +60,19 @@ After intake, the user can analyze the idea and saved context. The classifier re
 
 Local development must work in mock mode without an `AI_API_KEY`. Classification is saved to the project, but it does not create questionnaire sessions or generate specs.
 
+## Adaptive Questionnaire
+
+After intake and optional classification, the user can open a step-by-step adaptive questionnaire. The questionnaire:
+
+- Selects questions from project-type templates.
+- Adds missing-information questions from the classification result.
+- Includes repository readiness, deployment planning, execution/Codex target, QA preference, constraints and risks, and out-of-scope prompts.
+- Saves answers structurally to questionnaire sessions, questions, and answers.
+- Allows back navigation and editing before completion.
+- Marks the questionnaire session as completed.
+
+The questionnaire does not generate an editable spec. Spec generation starts in the next phase.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

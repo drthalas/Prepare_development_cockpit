@@ -33,7 +33,8 @@ const placeholderSections = [
   {
     title: "Questionnaire",
     description:
-      "Adaptive question sessions are planned for PDC-008 after classification.",
+      "Adaptive question sessions collect requirements before spec generation.",
+    href: "questionnaire",
   },
   {
     title: "Roadmap",
@@ -366,6 +367,14 @@ export default async function ProjectDetailPage({
               <div className="mt-5 rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
                 Future phase placeholder
               </div>
+              {section.href ? (
+                <Link
+                  className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                  href={`/app/projects/${project.id}/${section.href}`}
+                >
+                  Open questionnaire
+                </Link>
+              ) : null}
             </article>
           ))}
         </section>

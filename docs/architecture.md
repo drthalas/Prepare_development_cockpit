@@ -74,6 +74,18 @@ PDC-007 introduces the first AI abstraction layer:
 
 Project classification results are persisted on `Project.classificationJson` with provider mode and update timestamp. Classification can update `Project.projectType`, but it does not generate adaptive questionnaires, specs, roadmaps, tasks, prompts, QA artifacts, or Linear exports.
 
+## Questionnaire Architecture
+
+PDC-008 adds a rule-based adaptive questionnaire layer:
+
+- `src/lib/questionnaire/question-templates.ts`: project-type and missing-information question templates.
+- `src/lib/questionnaire/questionnaire-store.ts`: session creation, question persistence, answer persistence, and completion state.
+- `/app/projects/[projectId]/questionnaire`: step-by-step questionnaire route.
+
+Question selection uses project type, classification `missingInformationAreas`, recommended question blocks, repository readiness, deployment planning, execution target, QA preference, constraints, and out-of-scope prompts. Answers are stored in `Answer.valueJson` under existing Prisma models.
+
+Completing the questionnaire marks `QuestionnaireSession.status` as `completed`. It does not generate specs, roadmaps, tasks, prompts, QA artifacts, or exports.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.
