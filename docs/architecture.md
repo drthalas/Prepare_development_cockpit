@@ -157,6 +157,14 @@ PDC-014 extends the roadmap route into an editable task board:
 
 The roadmap editor keeps structured database records as the source of truth. It does not generate prompts, full QA artifacts, Linear exports, auth, or billing.
 
+PDC-015 expands each `Task` into a fuller implementation unit:
+
+- `Task` stores editable context, requirements, acceptance criteria, dependencies, implementation notes, QA instruction placeholders, prompt block placeholders, and Linear metadata placeholders.
+- `/app/projects/[projectId]/roadmap/tasks/[taskId]` is the primary task detail editor for these fields.
+- `/api/projects/[projectId]/roadmap/tasks/[taskId]` supports reading and updating the expanded task detail for runtime persistence checks.
+
+PDC-015 only prepares task detail structure. It does not generate Codex prompts, QA checkpoint tasks, Linear exports, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

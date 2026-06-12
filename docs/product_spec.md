@@ -164,6 +164,18 @@ After roadmap generation, the user can review and edit the structured roadmap:
 
 The structured PostgreSQL model is the source of truth. The roadmap editor does not generate per-task Codex prompts, Master Project Prompts, full QA checkpoint artifacts, Linear exports, or Linear API calls.
 
+## Task Detail Model
+
+Each roadmap task becomes an implementation unit before prompt generation. The task detail view supports:
+
+- Task title, phase, description, status, priority, category, and order context.
+- Editable context, requirements, acceptance criteria, dependencies, and implementation notes.
+- QA instructions placeholder for later QA mode/checkpoint generation.
+- Codex Prompt placeholder for later per-task prompt generation.
+- Linear metadata placeholder for later export/API phases.
+
+Task detail data is persisted structurally in PostgreSQL. This step does not generate Codex prompts, QA checkpoint tasks, Linear exports, or Linear API calls.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

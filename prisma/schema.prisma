@@ -335,6 +335,9 @@ model Task {
   acceptanceCriteriaJson Json?
   dependenciesJson       Json?
   implementationNotes    String?       @db.Text
+  qaInstructionsJson     Json?
+  promptBlocksJson       Json?
+  linearMetadataJson     Json?
   linearIssueId          String?
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt

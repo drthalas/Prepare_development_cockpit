@@ -83,8 +83,11 @@ export type StoredRoadmapTaskView = {
   description: string;
   id: string;
   implementationNotes: string | null;
+  linearMetadata: string[];
   order: number;
   priority: RoadmapTaskPriority | null;
+  promptBlocks: string[];
+  qaInstructions: string[];
   requirements: string[];
   status: "todo" | "in_progress" | "blocked" | "done";
   title: string;

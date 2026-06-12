@@ -58,12 +58,28 @@ export async function updateRoadmapTaskAction(
   formData: FormData,
 ) {
   const result = await updateRoadmapTask(projectId, taskId, {
+    acceptanceCriteria: parseLineList(formData.get("acceptanceCriteria")),
     category: parseTaskCategory(formData.get("category")),
+    context: parseOptionalString(formData.get("context")),
+    dependencies: parseLineList(formData.get("dependencies")),
     description: String(formData.get("description") ?? ""),
+    implementationNotes: parseOptionalString(formData.get("implementationNotes")),
+    linearMetadata: parseLineList(formData.get("linearMetadata")),
     priority: parseTaskPriority(formData.get("priority")),
+    promptBlocks: parseLineList(formData.get("promptBlocks")),
+    qaInstructions: parseLineList(formData.get("qaInstructions")),
+    requirements: parseLineList(formData.get("requirements")),
     status: parseTaskStatus(formData.get("status")),
     title: String(formData.get("title") ?? ""),
   });
+
+  if (formData.get("returnToTaskDetail") === "on") {
+    redirect(
+      `/app/projects/${projectId}/roadmap/tasks/${taskId}?task=${
+        result.ok ? "saved" : result.reason
+      }`,
+    );
+  }
 
   redirectWithMutationState(projectId, "task", result.ok ? "saved" : result.reason);
 }
@@ -161,4 +177,17 @@ function parseTaskStatus(
     statuses.includes(value as StoredRoadmapTaskView["status"])
     ? (value as StoredRoadmapTaskView["status"])
     : "todo";
+}
+
+function parseLineList(value: FormDataEntryValue | null) {
+  return typeof value === "string"
+    ? value
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : undefined;
+}
+
+function parseOptionalString(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value : undefined;
 }

@@ -188,8 +188,11 @@ export async function generateAndSaveRoadmap(
                   dependenciesJson: task.dependencies,
                   description: task.description,
                   implementationNotes: task.implementationNotes,
+                  linearMetadataJson: [],
                   order: taskIndex + 1,
                   priority: task.priority,
+                  promptBlocksJson: [],
+                  qaInstructionsJson: [],
                   requirementsJson: task.requirements,
                   title: task.title,
                 })),
@@ -270,9 +273,17 @@ export async function updateRoadmapTask(
   projectId: string,
   taskId: string,
   input: {
+    acceptanceCriteria?: string[];
     category: StoredRoadmapTaskView["category"];
+    context?: string;
+    dependencies?: string[];
     description: string;
+    implementationNotes?: string;
+    linearMetadata?: string[];
     priority: StoredRoadmapTaskView["priority"];
+    promptBlocks?: string[];
+    qaInstructions?: string[];
+    requirements?: string[];
     status: StoredRoadmapTaskView["status"];
     title: string;
   },
@@ -301,9 +312,23 @@ export async function updateRoadmapTask(
 
     await prisma.task.update({
       data: {
+        acceptanceCriteriaJson: input.acceptanceCriteria,
         category: input.category,
+        context:
+          typeof input.context === "string"
+            ? normalizeOptionalString(input.context)
+            : undefined,
+        dependenciesJson: input.dependencies,
         description,
+        implementationNotes:
+          typeof input.implementationNotes === "string"
+            ? normalizeOptionalString(input.implementationNotes)
+            : undefined,
+        linearMetadataJson: input.linearMetadata,
         priority: input.priority,
+        promptBlocksJson: input.promptBlocks,
+        qaInstructionsJson: input.qaInstructions,
+        requirementsJson: input.requirements,
         status: input.status,
         title,
       },
@@ -362,8 +387,11 @@ export async function addRoadmapTask(
         description,
         implementationNotes:
           "Refine this task before future prompt generation or export.",
+        linearMetadataJson: [],
         order: (latest?.order ?? 0) + 1,
         priority: input.priority,
+        promptBlocksJson: [],
+        qaInstructionsJson: [],
         requirementsJson: ["Review and refine task scope."],
         title,
         phaseId,
@@ -490,6 +518,7 @@ export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
         description: true,
         id: true,
         implementationNotes: true,
+        linearMetadataJson: true,
         order: true,
         phase: {
           select: {
@@ -502,6 +531,8 @@ export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
           },
         },
         priority: true,
+        promptBlocksJson: true,
+        qaInstructionsJson: true,
         requirementsJson: true,
         status: true,
         title: true,
@@ -645,8 +676,11 @@ function mapRoadmap(roadmap: {
       description: string;
       id: string;
       implementationNotes: string | null;
+      linearMetadataJson: unknown;
       order: number;
       priority: StoredRoadmapTaskView["priority"];
+      promptBlocksJson: unknown;
+      qaInstructionsJson: unknown;
       requirementsJson: unknown;
       status: StoredRoadmapTaskView["status"];
       title: string;
@@ -682,8 +716,11 @@ function mapTask(task: {
   description: string;
   id: string;
   implementationNotes: string | null;
+  linearMetadataJson: unknown;
   order: number;
   priority: StoredRoadmapTaskView["priority"];
+  promptBlocksJson: unknown;
+  qaInstructionsJson: unknown;
   requirementsJson: unknown;
   status: StoredRoadmapTaskView["status"];
   title: string;
@@ -696,8 +733,11 @@ function mapTask(task: {
     description: task.description,
     id: task.id,
     implementationNotes: task.implementationNotes,
+    linearMetadata: parseStringArray(task.linearMetadataJson),
     order: task.order,
     priority: task.priority,
+    promptBlocks: parseStringArray(task.promptBlocksJson),
+    qaInstructions: parseStringArray(task.qaInstructionsJson),
     requirements: parseStringArray(task.requirementsJson),
     status: task.status,
     title: task.title,
