@@ -214,6 +214,19 @@ The first Linear-ready export bundle includes:
 
 Exports are generated from the structured PostgreSQL model. Missing Codex prompts produce a warning but do not block export. This step does not call Linear APIs or create Linear entities.
 
+## Linear Project Structure Preview
+
+Before direct API integration, the product maps internal data into a previewable Linear structure:
+
+- Project maps to Linear Project name, description, and summary.
+- Roadmap phases map to milestones or grouping labels.
+- Tasks map to Linear issues with title, description, milestone, priority, estimate, labels, category, and status suggestion.
+- QA checkpoint tasks map to issues with a `qa` label.
+- Manual infrastructure tasks map to `manual-infra` and deployment labels.
+- Codex Prompts are included in issue description sections when available.
+
+The preview shows project, milestones, issue count, labels, issue list, and warnings for missing roadmap/spec/prompt data. It does not call Linear APIs or create Linear entities.
+
 ## Deployment Guidance
 
 The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.

@@ -194,6 +194,15 @@ PDC-018 adds an API-free Linear-ready export layer:
 
 Exports are generated on demand in PDC-018 instead of saving every preview/download to `ExportBundle`, which avoids creating persistent noise during review. The existing `ExportBundle` model remains available for later artifact bundle or API attempt history. PDC-018 does not call Linear APIs, require `LINEAR_API_KEY`, add auth, or add billing.
 
+PDC-019 adds an internal Linear Project Structure mapping layer:
+
+- `src/lib/linear/types.ts`: project, milestone, issue, label, priority, and warning contracts.
+- `src/lib/linear/linear-mapper.ts`: maps the normalized export bundle into Linear project, milestone, and issue previews.
+- `src/lib/linear/linear-structure.ts`: project-level read function for preview/API consumers.
+- `/app/projects/[projectId]/linear-preview`: API-free preview of what would be exported or created.
+
+The mapper converts phases to milestones, tasks to issues, QA checkpoint tasks to QA-labeled issues, task categories to labels, task priorities to Linear priority values, task status to suggested Linear status, and Codex Prompts to issue description sections. PDC-019 does not call Linear APIs, require `LINEAR_API_KEY`, add auth, or add billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

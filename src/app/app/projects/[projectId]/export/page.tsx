@@ -60,9 +60,9 @@ export default async function ExportPage({ params }: ExportPageProps) {
             </div>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
-              href={`/app/projects/${bundle.project.id}/roadmap`}
+              href={`/app/projects/${bundle.project.id}/linear-preview`}
             >
-              Open roadmap
+              Open Linear preview
             </Link>
           </div>
         </header>

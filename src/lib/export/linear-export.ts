@@ -50,6 +50,8 @@ export function buildLinearReadyExports(input: {
       project: input.project,
       specSummary,
     }),
+    phases: input.phases,
+    specSummary,
   };
 }
 

@@ -38,15 +38,19 @@ export type LinearReadyExportBundle = {
   jsonTasksBundle: string;
   linearImportPrompt: string;
   markdownRoadmap: string;
+  phases: ExportPhase[];
   project: {
     deploymentMode: string | null;
     deploymentOwner: string | null;
     deploymentTarget: string | null;
     executionTarget: string | null;
     id: string;
+    initialIdea: string;
     repositoryMode: string | null;
     repositoryUrl: string | null;
     shortId: string;
+    targetUser: string | null;
     title: string;
   };
+  specSummary: string;
 };
