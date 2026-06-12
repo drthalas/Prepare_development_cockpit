@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { updateRoadmapTaskAction } from "@/app/app/projects/[projectId]/roadmap/actions";
+import {
+  generateTaskPromptAction,
+  updateRoadmapTaskAction,
+} from "@/app/app/projects/[projectId]/roadmap/actions";
+import { CopyButton } from "@/components/copy-button";
 import { getRoadmapTaskDetail } from "@/lib/roadmap/roadmap-store";
 
 export const dynamic = "force-dynamic";
 
 type TaskDetailPageProps = {
   params: Promise<{ projectId: string; taskId: string }>;
-  searchParams: Promise<{ task?: string | string[] }>;
+  searchParams: Promise<{ prompt?: string | string[]; task?: string | string[] }>;
 };
 
 export default async function TaskDetailPage({
@@ -17,6 +21,9 @@ export default async function TaskDetailPage({
 }: TaskDetailPageProps) {
   const { projectId, taskId } = await params;
   const query = await searchParams;
+  const promptState = Array.isArray(query.prompt)
+    ? query.prompt[0]
+    : query.prompt;
   const taskState = Array.isArray(query.task) ? query.task[0] : query.task;
   const result = await getRoadmapTaskDetail(projectId, taskId);
 
@@ -42,6 +49,11 @@ export default async function TaskDetailPage({
 
   const task = result.data;
   const updateAction = updateRoadmapTaskAction.bind(null, projectId, task.id);
+  const generatePromptAction = generateTaskPromptAction.bind(
+    null,
+    projectId,
+    task.id,
+  );
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -74,6 +86,20 @@ export default async function TaskDetailPage({
             {taskState === "saved"
               ? "Task detail saved."
               : "Task detail was not saved. Check required fields and database connectivity."}
+          </div>
+        ) : null}
+
+        {promptState ? (
+          <div
+            className={`mt-4 rounded-lg border p-4 text-sm font-medium ${
+              promptState === "generated"
+                ? "border-[var(--accent)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
+                : "border-amber-300 bg-[var(--soft-warning)] text-amber-900"
+            }`}
+          >
+            {promptState === "generated"
+              ? "Codex Prompt generated and saved."
+              : "Codex Prompt generation failed. Check database connectivity and task scope."}
           </div>
         ) : null}
 
@@ -227,6 +253,57 @@ export default async function TaskDetailPage({
             title="Linear metadata placeholder"
           />
         </section>
+
+        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+                Codex Prompt
+              </p>
+              <h2 className="mt-2 text-xl font-semibold">
+                Scoped task prompt
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                Generates a plain-text prompt for this task only. It includes
+                project context, task requirements, acceptance criteria, checks,
+                and guardrails against future-scope work.
+              </p>
+            </div>
+            <form action={generatePromptAction}>
+              <button
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                type="submit"
+              >
+                {task.codexPrompt ? "Regenerate prompt" : "Generate prompt"}
+              </button>
+            </form>
+          </div>
+
+          {task.codexPrompt ? (
+            <div className="mt-5 grid gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-[var(--muted)]">
+                  Last generated {formatDate(task.codexPrompt.updatedAt)}
+                </p>
+                <CopyButton text={task.codexPrompt.content} />
+              </div>
+              <textarea
+                className="min-h-[520px] rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
+                readOnly
+                value={task.codexPrompt.content}
+              />
+            </div>
+          ) : (
+            <div className="mt-5 rounded-md border border-dashed border-[var(--panel-border)] bg-[var(--section-surface)] p-5">
+              <h3 className="font-semibold">No prompt generated yet</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                Generate a scoped Codex Prompt after the task detail is clear.
+                QA checkpoint generation and Linear export are separate future
+                steps.
+              </p>
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );
@@ -342,6 +419,13 @@ function formatLabel(value: string) {
 
 function linesToTextarea(items: string[]) {
   return items.join("\n");
+}
+
+function formatDate(value: Date) {
+  return new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(value);
 }
 
 function DetailText({

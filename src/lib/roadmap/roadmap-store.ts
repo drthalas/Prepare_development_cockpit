@@ -531,6 +531,16 @@ export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
           },
         },
         priority: true,
+        prompts: {
+          orderBy: { updatedAt: "desc" },
+          select: {
+            content: true,
+            target: true,
+            updatedAt: true,
+          },
+          take: 1,
+          where: { target: "codex" },
+        },
         promptBlocksJson: true,
         qaInstructionsJson: true,
         requirementsJson: true,
@@ -543,7 +553,14 @@ export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
     return {
       data: task
         ? {
-            ...mapTask(task),
+            ...parseTaskView(task),
+            codexPrompt: task.prompts[0]
+              ? {
+                  content: task.prompts[0].content,
+                  target: "codex" as const,
+                  updatedAt: task.prompts[0].updatedAt,
+                }
+              : null,
             phaseTitle: task.phase.title,
             roadmapTitle: task.phase.roadmap.title,
             updatedAt: task.updatedAt,
@@ -694,7 +711,7 @@ function mapRoadmap(roadmap: {
     description: phase.description,
     id: phase.id,
     order: phase.order,
-    tasks: phase.tasks.map(mapTask),
+    tasks: phase.tasks.map(parseTaskView),
     title: phase.title,
   }));
 
@@ -708,7 +725,7 @@ function mapRoadmap(roadmap: {
   };
 }
 
-function mapTask(task: {
+export function parseTaskView(task: {
   acceptanceCriteriaJson: unknown;
   category: StoredRoadmapTaskView["category"];
   context: string | null;

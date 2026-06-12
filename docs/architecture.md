@@ -165,6 +165,15 @@ PDC-015 expands each `Task` into a fuller implementation unit:
 
 PDC-015 only prepares task detail structure. It does not generate Codex prompts, QA checkpoint tasks, Linear exports, auth, or billing.
 
+PDC-016 adds per-task Codex Prompt generation:
+
+- `src/lib/prompts/task-prompt-generator.ts`: deterministic plain-text prompt generator for a single roadmap task.
+- `src/lib/prompts/prompt-store.ts`: loads project/spec/execution/roadmap/task context and upserts `Prompt(target=codex)`.
+- Task detail UI can generate, view, copy, and regenerate the prompt.
+- The task API supports prompt generation for runtime persistence checks.
+
+Prompts include task scope, requirements, acceptance criteria, dependencies, implementation notes, checks, Git expectations, final report format, and guardrails against future roadmap work. PDC-016 does not create Master Project Prompts, QA checkpoints, Linear exports/API calls, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { generateAndSaveTaskPrompt } from "@/lib/prompts/prompt-store";
 import {
   addRoadmapTask,
   deleteRoadmapTask,
@@ -121,6 +122,16 @@ export async function moveRoadmapTaskAction(
   const result = await moveRoadmapTask(projectId, taskId, direction);
 
   redirectWithMutationState(projectId, "task", result.ok ? "moved" : result.reason);
+}
+
+export async function generateTaskPromptAction(projectId: string, taskId: string) {
+  const result = await generateAndSaveTaskPrompt(projectId, taskId);
+
+  redirect(
+    `/app/projects/${projectId}/roadmap/tasks/${taskId}?prompt=${
+      result.ok ? "generated" : result.reason
+    }`,
+  );
 }
 
 function redirectWithMutationState(

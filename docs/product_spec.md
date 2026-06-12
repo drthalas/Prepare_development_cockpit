@@ -176,6 +176,18 @@ Each roadmap task becomes an implementation unit before prompt generation. The t
 
 Task detail data is persisted structurally in PostgreSQL. This step does not generate Codex prompts, QA checkpoint tasks, Linear exports, or Linear API calls.
 
+## Codex Prompt Per Task
+
+After task detail is clear, the user can generate a scoped Codex Prompt for a single roadmap task. The prompt includes:
+
+- Project name, local path placeholder, and GitHub repository if known.
+- Current task title, phase, goal, context, requirements, acceptance criteria, and dependencies.
+- Relevant spec summary and execution settings.
+- Scope boundaries, what to change, what not to change, checks to run, Git expectations, and final report format.
+- Guardrails to work only on the current task, avoid unrelated refactors, avoid secrets, avoid external infrastructure unless explicitly required, and stop/report if blocked.
+
+The prompt is stored in PostgreSQL as `Prompt(target=codex)` and can be viewed, copied, or regenerated. This step does not generate QA checkpoints, Master Project Prompts, Linear exports, or Linear API calls.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

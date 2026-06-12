@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { generateAndSaveTaskPrompt } from "@/lib/prompts/prompt-store";
 import {
   deleteRoadmapTask,
   getRoadmapTaskDetail,
@@ -91,6 +92,19 @@ export async function POST(
     );
 
     return mutationResponse(result);
+  }
+
+  if (body?.action === "generatePrompt") {
+    const result = await generateAndSaveTaskPrompt(projectId, taskId);
+
+    if (!result.ok) {
+      return NextResponse.json(
+        { ok: false, reason: result.reason },
+        { status: result.reason === "not_found" ? 404 : 400 },
+      );
+    }
+
+    return NextResponse.json({ ok: true, prompt: result.prompt });
   }
 
   return NextResponse.json(
