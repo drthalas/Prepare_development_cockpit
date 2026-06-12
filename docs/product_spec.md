@@ -73,6 +73,19 @@ After intake and optional classification, the user can open a step-by-step adapt
 
 The questionnaire does not generate an editable spec. Spec generation starts in the next phase.
 
+## Spec Generation
+
+The first spec generation step uses saved project data:
+
+- Initial idea and intake context.
+- Project classification result.
+- Completed questionnaire answers when available.
+- Repository, deployment, execution, and QA preferences.
+
+Generated specs must include overview, problem, target users, goals, non-goals, user stories, functional requirements, non-functional requirements, integrations, data/storage assumptions, repository readiness, deployment planning, execution target assumptions, QA preference, edge cases, MVP scope, out of scope, and open questions.
+
+The result is saved as Markdown and structured sections. Each generation creates a version. Rich editing, quality checks, roadmap generation, task generation, and Linear export remain separate tasks.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

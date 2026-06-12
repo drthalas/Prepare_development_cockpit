@@ -86,6 +86,18 @@ Question selection uses project type, classification `missingInformationAreas`, 
 
 Completing the questionnaire marks `QuestionnaireSession.status` as `completed`. It does not generate specs, roadmaps, tasks, prompts, QA artifacts, or exports.
 
+## Spec Generation Architecture
+
+PDC-009 adds the first spec generation path:
+
+- `src/lib/spec/spec-generator.ts`: deterministic mock spec generation from project context.
+- `src/lib/spec/spec-store.ts`: loads intake, classification, questionnaire answers, and persists `Spec` plus `SpecVersion`.
+- `/app/projects/[projectId]/spec`: spec generation and preview route.
+
+The generated spec is stored as Markdown on `Spec.markdown` and as structured sections on `Spec.structuredJson`. Each generation creates a new `SpecVersion` and updates `Spec.currentVersionId`. The generator uses the existing AI provider mode resolver; without a real provider it runs in mock mode.
+
+Spec generation does not create roadmaps, tasks, prompts, QA artifacts, Linear exports, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

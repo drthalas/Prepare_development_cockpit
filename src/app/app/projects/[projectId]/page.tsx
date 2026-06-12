@@ -28,7 +28,8 @@ const placeholderSections = [
   {
     title: "Specification",
     description:
-      "Editable spec generation and rich editing are planned for later phases.",
+      "Generate and open the first editable specification for this project.",
+    href: "spec",
   },
   {
     title: "Questionnaire",
@@ -372,7 +373,9 @@ export default async function ProjectDetailPage({
                   className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                   href={`/app/projects/${project.id}/${section.href}`}
                 >
-                  Open questionnaire
+                  {section.title === "Specification"
+                    ? "Open spec"
+                    : "Open questionnaire"}
                 </Link>
               ) : null}
             </article>
