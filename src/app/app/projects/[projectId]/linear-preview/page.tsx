@@ -67,7 +67,8 @@ export default async function LinearPreviewPage({
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 Preview the internal Linear Project Structure that future API
-                integration will create. No Linear API calls run on this page.
+                integration can create. Manual export and dry run stay API-safe;
+                real creation is isolated behind an advanced confirmation.
               </p>
             </div>
             <Link
@@ -117,7 +118,7 @@ export default async function LinearPreviewPage({
         ) : null}
 
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
                 Linear API
@@ -128,10 +129,32 @@ export default async function LinearPreviewPage({
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {apiStatus.message}
               </p>
+              <div className="mt-4 rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
+                <h3 className="font-semibold">Manual export</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  The safest prototype path is still manual export. Use the
+                  export bundle to copy milestones, issues, Codex prompts, and
+                  QA checkpoints without creating Linear entities.
+                </p>
+                <Link
+                  className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
+                  href={`/app/projects/${projectId}/export`}
+                >
+                  Open manual exports
+                </Link>
+              </div>
             </div>
-            <form action={dryRunAction}>
+            <form
+              action={dryRunAction}
+              className="rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4"
+            >
+              <h3 className="font-semibold">Dry run</h3>
+              <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--muted)]">
+                Records a preview result only. No Linear API creation calls are
+                made.
+              </p>
               <button
-                className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
+                className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
                 type="submit"
               >
                 Run dry run
@@ -140,32 +163,33 @@ export default async function LinearPreviewPage({
           </div>
 
           {apiStatus.configured ? (
-            <form
-              action={createAction}
-              className="mt-5 grid gap-3 rounded-md border border-amber-200 bg-[var(--soft-warning)] p-4"
-            >
-              <h3 className="font-semibold text-amber-950">
-                Real Linear creation
-              </h3>
-              <p className="text-sm leading-6 text-amber-900">
-                This can create a real Linear project and issues. Type the exact
-                confirmation phrase before submitting.
-              </p>
-              <label className="grid gap-2 text-sm font-semibold text-amber-950">
-                Confirmation
-                <input
-                  className="min-h-10 rounded-md border border-amber-300 bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none"
-                  name="confirmCreate"
-                  placeholder="CREATE LINEAR PROJECT"
-                />
-              </label>
-              <button
-                className="w-fit min-h-10 rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950"
-                type="submit"
-              >
-                Create Linear project and issues
-              </button>
-            </form>
+            <details className="mt-5 rounded-md border border-red-300 bg-red-50 p-4 text-red-950">
+              <summary className="cursor-pointer text-sm font-semibold">
+                Advanced / dangerous action: real Linear creation
+              </summary>
+              <form action={createAction} className="mt-4 grid gap-3">
+                <h3 className="font-semibold">Real Linear creation</h3>
+                <p className="text-sm leading-6 text-red-900">
+                  This can create a real Linear project and issues in the
+                  connected workspace. Do not use this during prototype review
+                  unless you intentionally want real Linear entities.
+                </p>
+                <label className="grid gap-2 text-sm font-semibold">
+                  Confirmation
+                  <input
+                    className="min-h-10 rounded-md border border-red-300 bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none"
+                    name="confirmCreate"
+                    placeholder="CREATE LINEAR PROJECT"
+                  />
+                </label>
+                <button
+                  className="w-fit min-h-10 rounded-md border border-red-400 bg-red-100 px-4 py-2 text-sm font-semibold text-red-950 transition hover:bg-red-200"
+                  type="submit"
+                >
+                  Create real Linear project and issues
+                </button>
+              </form>
+            </details>
           ) : (
             <div className="mt-5 rounded-md border border-dashed border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
               <p className="text-sm leading-6 text-[var(--muted)]">

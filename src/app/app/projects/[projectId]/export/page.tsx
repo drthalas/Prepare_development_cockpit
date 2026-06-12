@@ -38,6 +38,15 @@ export default async function ExportPage({ params }: ExportPageProps) {
   }
 
   const bundle = result.data;
+  const missingPromptTasks = bundle.phases.flatMap((phase) =>
+    phase.tasks
+      .filter((task) => !task.codexPrompt)
+      .map((task) => ({
+        href: `/app/projects/${bundle.project.id}/roadmap/tasks/${task.id}`,
+        phaseTitle: phase.title,
+        title: task.title,
+      })),
+  );
   const artifactResult = await getProjectArtifactBundle(bundle.project.id);
   const artifactBundle =
     artifactResult.databaseReady && artifactResult.data
@@ -114,7 +123,8 @@ export default async function ExportPage({ params }: ExportPageProps) {
           {bundle.exportSummary.missingPromptCount > 0 ? (
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
-              text="Some tasks do not have Codex prompts yet. Export is allowed, but those issue descriptions will mark prompts as missing."
+              linkLabel="Open roadmap"
+              text="Some tasks do not have Codex prompts yet. Export is allowed, but those issue descriptions will mark prompts as missing. Open a task and use Generate Codex Prompt to close the gap."
             />
           ) : null}
 
@@ -122,6 +132,52 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <Warning key={warning} text={warning} />
           ))}
         </section>
+
+        {missingPromptTasks.length > 0 ? (
+          <section className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-5 text-amber-950 shadow-sm">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase">
+                  Prompt coverage
+                </p>
+                <h2 className="mt-2 text-xl font-semibold">
+                  {missingPromptTasks.length} task(s) need Codex prompts
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900">
+                  Export remains available. Generate prompts from task detail
+                  pages so Linear issues include scoped implementation
+                  instructions.
+                </p>
+              </div>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 transition hover:border-amber-500"
+                href={missingPromptTasks[0].href}
+              >
+                Generate first missing prompt
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-2 md:grid-cols-2">
+              {missingPromptTasks.slice(0, 8).map((task) => (
+                <Link
+                  className="rounded-md border border-amber-200 bg-[var(--panel)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-amber-400"
+                  href={task.href}
+                  key={`${task.phaseTitle}-${task.title}`}
+                >
+                  <span className="block text-xs font-medium text-[var(--muted)]">
+                    {task.phaseTitle}
+                  </span>
+                  {task.title}
+                </Link>
+              ))}
+            </div>
+            {missingPromptTasks.length > 8 ? (
+              <p className="mt-3 text-sm text-amber-900">
+                {missingPromptTasks.length - 8} more task(s) are available from
+                the roadmap page.
+              </p>
+            ) : null}
+          </section>
+        ) : null}
 
         {artifactBundle ? (
           <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
@@ -291,13 +347,21 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Warning({ href, text }: { href?: string; text: string }) {
+function Warning({
+  href,
+  linkLabel = "Open roadmap",
+  text,
+}: {
+  href?: string;
+  linkLabel?: string;
+  text: string;
+}) {
   return (
     <div className="mt-4 flex flex-col gap-3 rounded-md border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
       <p>{text}</p>
       {href ? (
         <Link className="font-semibold underline" href={href}>
-          Open roadmap
+          {linkLabel}
         </Link>
       ) : null}
     </div>

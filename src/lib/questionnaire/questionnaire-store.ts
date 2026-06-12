@@ -164,6 +164,10 @@ export async function saveQuestionnaireAnswers(
 
     await prisma.$transaction(async (tx) => {
       for (const question of session.questions) {
+        if (!isQuestionSubmitted(formData, question.id)) {
+          continue;
+        }
+
         const answer = parseQuestionAnswer(formData, question.id, question.type);
 
         await tx.answer.deleteMany({ where: { questionId: question.id } });
@@ -234,7 +238,7 @@ const sessionInclude = {
 function mapSession(session: {
   currentStep: number | null;
   id: string;
-    questions: Array<{
+  questions: Array<{
     answers: Array<{ valueJson: unknown }>;
     id: string;
     key: string;
@@ -260,6 +264,13 @@ function mapSession(session: {
     })),
     status: session.status,
   };
+}
+
+function isQuestionSubmitted(formData: FormData, questionId: string) {
+  return (
+    formData.has(`question_present_${questionId}`) ||
+    formData.has(`question_${questionId}`)
+  );
 }
 
 function parseQuestionAnswer(

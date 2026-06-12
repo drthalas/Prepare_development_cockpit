@@ -5,6 +5,10 @@ import type {
   LinearReadyExportBundle,
 } from "@/lib/export/types";
 import { isDatabaseConfigured } from "@/lib/projects/project-store";
+import {
+  normalizeLineItems,
+  normalizePromptContent,
+} from "@/lib/text/field-normalization";
 
 export type ExportBundleResult =
   | { data: LinearReadyExportBundle; databaseReady: true }
@@ -68,6 +72,7 @@ export async function getLinearReadyExportBundle(
                     context: true,
                     dependenciesJson: true,
                     description: true,
+                    id: true,
                     implementationNotes: true,
                     linearMetadataJson: true,
                     order: true,
@@ -103,11 +108,14 @@ export async function getLinearReadyExportBundle(
         tasks: phase.tasks.map((task) => ({
           acceptanceCriteria: parseStringArray(task.acceptanceCriteriaJson),
           category: task.category,
-          codexPrompt: task.prompts[0]?.content ?? null,
+          codexPrompt: task.prompts[0]?.content
+            ? normalizePromptContent(task.prompts[0].content)
+            : null,
           context: task.context,
           dependencies: parseStringArray(task.dependenciesJson),
           description: task.description,
           implementationNotes: task.implementationNotes,
+          id: task.id,
           labels: getTaskLabels({
             category: task.category,
             title: task.title,
@@ -174,5 +182,5 @@ export async function getLinearReadyExportBundle(
 }
 
 function parseStringArray(value: unknown) {
-  return Array.isArray(value) ? value.map(String) : [];
+  return normalizeLineItems(value);
 }

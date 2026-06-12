@@ -8,6 +8,10 @@ import {
   updateRoadmapTask,
 } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapTaskView } from "@/lib/roadmap/types";
+import {
+  normalizeLineItems,
+  normalizeTextareaValue,
+} from "@/lib/text/field-normalization";
 
 export const dynamic = "force-dynamic";
 
@@ -177,9 +181,11 @@ function parseStatus(value: unknown): StoredRoadmapTaskView["status"] {
 }
 
 function parseOptionalString(value: unknown) {
-  return typeof value === "string" ? value : undefined;
+  return typeof value === "string" ? normalizeTextareaValue(value) : undefined;
 }
 
 function parseStringList(value: unknown) {
-  return Array.isArray(value) ? value.map(String).filter(Boolean) : undefined;
+  return Array.isArray(value) || typeof value === "string"
+    ? normalizeLineItems(value)
+    : undefined;
 }

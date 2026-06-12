@@ -10,13 +10,17 @@ import { listProjects } from "@/lib/projects/project-store";
 export const dynamic = "force-dynamic";
 
 type ProjectsPageProps = {
-  searchParams: Promise<{ error?: string | string[] }>;
+  searchParams: Promise<{
+    deleted?: string | string[];
+    error?: string | string[];
+  }>;
 };
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
   const query = await searchParams;
   const projectsResult = await listProjects();
   const error = Array.isArray(query.error) ? query.error[0] : query.error;
+  const deleted = Array.isArray(query.deleted) ? query.deleted[0] : query.deleted;
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] text-[var(--foreground)]">
@@ -57,6 +61,12 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
               {error === "validation"
                 ? "Title and initial idea are required."
                 : "Project could not be saved because the database is not configured or reachable."}
+            </div>
+          ) : null}
+
+          {deleted ? (
+            <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--soft-accent)] p-4 text-sm font-medium text-[var(--accent-strong)]">
+              Review/test project deleted.
             </div>
           ) : null}
 

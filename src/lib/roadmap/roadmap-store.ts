@@ -15,6 +15,12 @@ import type {
 } from "@/lib/roadmap/types";
 import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
 import { generateAndSaveSpec } from "@/lib/spec/spec-store";
+import {
+  normalizeLineItems,
+  normalizeOptionalText,
+  normalizePromptContent,
+  normalizeTextareaValue,
+} from "@/lib/text/field-normalization";
 
 export type RoadmapWorkspace = {
   latestRoadmap: StoredRoadmapView | null;
@@ -324,7 +330,7 @@ export async function updateRoadmapTask(
   },
 ): Promise<RoadmapMutationResult> {
   const title = input.title.trim();
-  const description = input.description.trim();
+  const description = normalizeTextareaValue(input.description);
 
   if (!title || !description) {
     return { ok: false, reason: "validation" };
@@ -347,23 +353,35 @@ export async function updateRoadmapTask(
 
     await prisma.task.update({
       data: {
-        acceptanceCriteriaJson: input.acceptanceCriteria,
+        acceptanceCriteriaJson: input.acceptanceCriteria
+          ? normalizeLineItems(input.acceptanceCriteria)
+          : undefined,
         category: input.category,
         context:
           typeof input.context === "string"
-            ? normalizeOptionalString(input.context)
+            ? normalizeOptionalText(input.context)
             : undefined,
-        dependenciesJson: input.dependencies,
+        dependenciesJson: input.dependencies
+          ? normalizeLineItems(input.dependencies)
+          : undefined,
         description,
         implementationNotes:
           typeof input.implementationNotes === "string"
-            ? normalizeOptionalString(input.implementationNotes)
+            ? normalizeOptionalText(input.implementationNotes)
             : undefined,
-        linearMetadataJson: input.linearMetadata,
+        linearMetadataJson: input.linearMetadata
+          ? normalizeLineItems(input.linearMetadata)
+          : undefined,
         priority: input.priority,
-        promptBlocksJson: input.promptBlocks,
-        qaInstructionsJson: input.qaInstructions,
-        requirementsJson: input.requirements,
+        promptBlocksJson: input.promptBlocks
+          ? normalizeLineItems(input.promptBlocks)
+          : undefined,
+        qaInstructionsJson: input.qaInstructions
+          ? normalizeLineItems(input.qaInstructions)
+          : undefined,
+        requirementsJson: input.requirements
+          ? normalizeLineItems(input.requirements)
+          : undefined,
         status: input.status,
         title,
       },
@@ -591,7 +609,7 @@ export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
             ...parseTaskView(task),
             codexPrompt: task.prompts[0]
               ? {
-                  content: task.prompts[0].content,
+                  content: normalizePromptContent(task.prompts[0].content),
                   target: "codex" as const,
                   updatedAt: task.prompts[0].updatedAt,
                 }
@@ -780,11 +798,11 @@ export function parseTaskView(task: {
   return {
     acceptanceCriteria: parseStringArray(task.acceptanceCriteriaJson),
     category: task.category,
-    context: task.context,
+    context: normalizeOptionalText(task.context),
     dependencies: parseStringArray(task.dependenciesJson),
-    description: task.description,
+    description: normalizeTextareaValue(task.description),
     id: task.id,
-    implementationNotes: task.implementationNotes,
+    implementationNotes: normalizeOptionalText(task.implementationNotes),
     linearMetadata: parseStringArray(task.linearMetadataJson),
     order: task.order,
     priority: task.priority,
@@ -885,7 +903,7 @@ function parseQualityCheck(value: unknown): SpecQualityCheckResult | null {
 }
 
 function parseStringArray(value: unknown) {
-  return Array.isArray(value) ? value.map(String) : [];
+  return normalizeLineItems(value);
 }
 
 function normalizeOptionalString(value: string) {

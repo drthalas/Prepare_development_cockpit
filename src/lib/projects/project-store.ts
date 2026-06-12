@@ -88,6 +88,17 @@ export type ClassifyProjectResult =
     }
   | { ok: false; reason: "database" | "not_found" | "provider" };
 
+export type DeleteReviewProjectResult =
+  | { ok: true }
+  | {
+      ok: false;
+      reason:
+        | "confirmation"
+        | "database"
+        | "not_found"
+        | "not_review_test_project";
+    };
+
 const databaseMissingMessage =
   "DATABASE_URL is not configured. Project persistence requires PostgreSQL.";
 
@@ -265,6 +276,56 @@ export async function classifyAndSaveProject(
   } catch {
     return { ok: false, reason: "provider" };
   }
+}
+
+export async function deleteReviewProject(
+  projectId: string,
+  confirmationTitle: string,
+): Promise<DeleteReviewProjectResult> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: {
+        id: true,
+        shortId: true,
+        title: true,
+      },
+    });
+
+    if (!project) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    if (!isReviewTestProject(project)) {
+      return { ok: false, reason: "not_review_test_project" };
+    }
+
+    if (confirmationTitle.trim() !== project.title) {
+      return { ok: false, reason: "confirmation" };
+    }
+
+    await prisma.project.delete({ where: { id: project.id } });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export function isReviewTestProject(project: {
+  shortId: string;
+  title: string;
+}) {
+  const value = `${project.title} ${project.shortId}`.toLowerCase();
+
+  return ["checkpoint", "review", "test"].some((marker) =>
+    value.includes(marker),
+  );
 }
 
 export function parseRepositoryMode(value: FormDataEntryValue | null) {

@@ -8,6 +8,7 @@ export type ExportTask = {
   implementationNotes: string | null;
   labels: string[];
   linearMetadata: string[];
+  id: string;
   order: number;
   phaseOrder: number;
   phaseTitle: string;

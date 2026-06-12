@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   classifyAndSaveProject,
   createProject,
+  deleteReviewProject,
   parseAgentPushAccess,
   parseDeploymentMode,
   parseDeploymentOwner,
@@ -52,4 +53,20 @@ export async function createProjectAction(formData: FormData) {
   }
 
   redirect(`/app/projects/${result.projectId}`);
+}
+
+export async function deleteReviewProjectAction(
+  projectId: string,
+  formData: FormData,
+) {
+  const result = await deleteReviewProject(
+    projectId,
+    String(formData.get("confirmationTitle") ?? ""),
+  );
+
+  if (!result.ok) {
+    redirect(`/app/projects/${projectId}?delete=${result.reason}`);
+  }
+
+  redirect("/app/projects?deleted=review_test_project");
 }

@@ -14,6 +14,10 @@ import {
   updateRoadmapTask,
 } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapTaskView } from "@/lib/roadmap/types";
+import {
+  normalizeLineItems,
+  normalizeTextareaValue,
+} from "@/lib/text/field-normalization";
 
 export async function generateRoadmapAction(
   projectId: string,
@@ -202,14 +206,9 @@ function parseTaskStatus(
 }
 
 function parseLineList(value: FormDataEntryValue | null) {
-  return typeof value === "string"
-    ? value
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : undefined;
+  return typeof value === "string" ? normalizeLineItems(value) : undefined;
 }
 
 function parseOptionalString(value: FormDataEntryValue | null) {
-  return typeof value === "string" ? value : undefined;
+  return typeof value === "string" ? normalizeTextareaValue(value) : undefined;
 }

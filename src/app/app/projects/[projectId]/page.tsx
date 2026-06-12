@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { classifyProjectAction } from "@/app/app/projects/actions";
+import {
+  classifyProjectAction,
+  deleteReviewProjectAction,
+} from "@/app/app/projects/actions";
 import {
   executionSettingLabels,
   type ExecutionSettingsView,
@@ -20,7 +23,10 @@ import {
   repositoryOwnerLabels,
   repositoryVisibilityLabels,
 } from "@/lib/projects/project-options";
-import { getProject } from "@/lib/projects/project-store";
+import {
+  getProject,
+  isReviewTestProject,
+} from "@/lib/projects/project-store";
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
@@ -28,7 +34,10 @@ export const dynamic = "force-dynamic";
 
 type ProjectDetailPageProps = {
   params: Promise<{ projectId: string }>;
-  searchParams: Promise<{ classification?: string | string[] }>;
+  searchParams: Promise<{
+    classification?: string | string[];
+    delete?: string | string[];
+  }>;
 };
 
 const placeholderSections = [
@@ -86,6 +95,7 @@ export default async function ProjectDetailPage({
   const classificationState = Array.isArray(query.classification)
     ? query.classification[0]
     : query.classification;
+  const deleteState = Array.isArray(query.delete) ? query.delete[0] : query.delete;
 
   if (!result.databaseReady) {
     return (
@@ -265,6 +275,12 @@ export default async function ProjectDetailPage({
             {classificationState === "saved"
               ? "Project classification saved."
               : getClassificationErrorMessage(classificationState)}
+          </div>
+        ) : null}
+
+        {deleteState ? (
+          <div className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm font-medium text-amber-900">
+            {getDeleteErrorMessage(deleteState)}
           </div>
         ) : null}
 
@@ -545,8 +561,50 @@ export default async function ProjectDetailPage({
             </article>
           ))}
         </section>
+
+        {isReviewTestProject(project) ? (
+          <ReviewCleanupSection projectId={project.id} title={project.title} />
+        ) : null}
       </div>
     </main>
+  );
+}
+
+function ReviewCleanupSection({
+  projectId,
+  title,
+}: {
+  projectId: string;
+  title: string;
+}) {
+  const deleteAction = deleteReviewProjectAction.bind(null, projectId);
+
+  return (
+    <section className="mt-6 rounded-lg border border-red-200 bg-red-50 p-5 text-red-950 shadow-sm">
+      <p className="text-xs font-semibold uppercase">Review cleanup</p>
+      <h2 className="mt-2 text-xl font-semibold">Delete test project</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-red-900">
+        This action is only available for projects marked as review/test/checkpoint
+        workspaces. It deletes the project and related prototype data through
+        Prisma cascade rules.
+      </p>
+      <form action={deleteAction} className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+        <label className="grid gap-2 text-sm font-semibold">
+          Type the exact project title to confirm
+          <input
+            className="min-h-10 rounded-md border border-red-300 bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none"
+            name="confirmationTitle"
+            placeholder={title}
+          />
+        </label>
+        <button
+          className="min-h-10 self-end rounded-md border border-red-400 bg-red-100 px-4 py-2 text-sm font-semibold text-red-950 transition hover:bg-red-200"
+          type="submit"
+        >
+          Delete test project
+        </button>
+      </form>
+    </section>
   );
 }
 
@@ -666,4 +724,20 @@ function getClassificationErrorMessage(reason: string) {
   }
 
   return "Classification provider failed. Check AI_PROVIDER settings or use mock mode.";
+}
+
+function getDeleteErrorMessage(reason: string) {
+  if (reason === "confirmation") {
+    return "Project was not deleted because the confirmation title did not match.";
+  }
+
+  if (reason === "not_review_test_project") {
+    return "Project was not deleted because cleanup is limited to review/test/checkpoint projects.";
+  }
+
+  if (reason === "not_found") {
+    return "Project was not found.";
+  }
+
+  return "Project could not be deleted because the database is not configured or reachable.";
 }

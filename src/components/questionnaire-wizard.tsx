@@ -95,6 +95,11 @@ export function QuestionnaireWizard({
           </p>
           <h3 className="mt-2 text-xl font-semibold">{question.label}</h3>
           <div className="mt-5">
+            <input
+              name={`question_present_${question.id}`}
+              type="hidden"
+              value="1"
+            />
             <QuestionInput question={question} />
           </div>
         </div>
