@@ -204,6 +204,16 @@ Generated QA checkpoint tasks are structured roadmap tasks with `qa_checkpoint` 
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.
 
+The first Linear-ready export bundle includes:
+
+- A Linear import prompt for manual project/milestone/issue creation.
+- A Markdown roadmap export with phases, tasks, acceptance criteria, QA checkpoints, and Codex prompts when available.
+- A JSON tasks bundle with project metadata, phases, tasks, prompts, QA instructions, and Linear metadata placeholders.
+- A CSV issues export with title, description, phase, priority, category, status, labels, and Codex Prompt.
+- A copy-all-tasks text view for manual transfer.
+
+Exports are generated from the structured PostgreSQL model. Missing Codex prompts produce a warning but do not block export. This step does not call Linear APIs or create Linear entities.
+
 ## Deployment Guidance
 
 The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.

@@ -63,7 +63,8 @@ const placeholderSections = [
   {
     title: "Exports",
     description:
-      "Linear-ready export and artifact bundle generation are future work.",
+      "Copy or download Linear-ready export bundles for manual transfer.",
+    href: "export",
   },
 ];
 
@@ -409,7 +410,9 @@ export default async function ProjectDetailPage({
                     ? "Open spec"
                     : section.title === "Roadmap"
                       ? "Open roadmap"
-                      : "Open questionnaire"}
+                      : section.title === "Questionnaire"
+                        ? "Open questionnaire"
+                        : "Open export"}
                 </Link>
               ) : null}
               {section.title === "Specification" && specQuality ? (

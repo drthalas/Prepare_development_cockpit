@@ -184,6 +184,16 @@ PDC-017 adds optional QA mode and checkpoint generation:
 
 Strict mode also attaches task-level QA instruction placeholders to implementation tasks. This remains a planning artifact only; PDC-017 does not run external test tools, export to Linear, call Linear APIs, add auth, or add billing.
 
+## Export Architecture
+
+PDC-018 adds an API-free Linear-ready export layer:
+
+- `src/lib/export/export-service.ts`: loads project, spec, latest roadmap, phases, tasks, prompts, QA instructions, and repository/deployment context from PostgreSQL.
+- `src/lib/export/linear-export.ts`: builds the Linear import prompt, Markdown roadmap export, JSON task bundle, CSV issue export, and copy-all-tasks text from the structured model.
+- `/app/projects/[projectId]/export`: UI for copying or downloading the generated export package.
+
+Exports are generated on demand in PDC-018 instead of saving every preview/download to `ExportBundle`, which avoids creating persistent noise during review. The existing `ExportBundle` model remains available for later artifact bundle or API attempt history. PDC-018 does not call Linear APIs, require `LINEAR_API_KEY`, add auth, or add billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.
