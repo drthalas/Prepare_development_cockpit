@@ -86,6 +86,18 @@ Generated specs must include overview, problem, target users, goals, non-goals, 
 
 The result is saved as Markdown and structured sections. Each generation creates a version. Rich editing, quality checks, roadmap generation, task generation, and Linear export remain separate tasks.
 
+## Editable Spec Editor
+
+The first editor is a Markdown-based editor with preview. It supports:
+
+- Editing the current generated spec.
+- Autosaving draft changes to the current spec.
+- Explicit save version behavior through `SpecVersion`.
+- Version history display.
+- Placeholder controls for future section improvement or regeneration.
+
+The editor does not run quality checks, regenerate sections with AI, create roadmaps, or export artifacts.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

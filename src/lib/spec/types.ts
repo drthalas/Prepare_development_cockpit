@@ -53,4 +53,11 @@ export type StoredSpecView = {
   mode: "mock" | "configured" | "unknown";
   sections: SpecSection[];
   updatedAt: Date;
+  versions: SpecVersionSummary[];
+};
+
+export type SpecVersionSummary = {
+  createdAt: Date;
+  id: string;
+  version: number;
 };

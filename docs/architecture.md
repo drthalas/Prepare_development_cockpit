@@ -98,6 +98,14 @@ The generated spec is stored as Markdown on `Spec.markdown` and as structured se
 
 Spec generation does not create roadmaps, tasks, prompts, QA artifacts, Linear exports, auth, or billing.
 
+PDC-010 extends `/app/projects/[projectId]/spec` into an editable Markdown spec editor:
+
+- `src/components/spec-editor.tsx`: client-side editor, preview, autosave status, version history, and future section-action placeholders.
+- `src/app/api/projects/[projectId]/spec/autosave`: draft autosave route that updates the current `Spec`.
+- `saveSpecVersionAction`: explicit save that creates a new `SpecVersion` and updates the current version pointer.
+
+Autosave updates the current spec markdown and structured section extraction. Explicit save creates an auditable version. Section improve/regenerate controls are placeholders only; no AI section regeneration is implemented in PDC-010.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

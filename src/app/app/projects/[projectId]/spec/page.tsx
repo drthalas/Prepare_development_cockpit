@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { generateSpecAction } from "@/app/app/projects/[projectId]/spec/actions";
+import {
+  generateSpecAction,
+  saveSpecVersionAction,
+} from "@/app/app/projects/[projectId]/spec/actions";
+import { SpecEditor } from "@/components/spec-editor";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
 export const dynamic = "force-dynamic";
 
 type SpecPageProps = {
   params: Promise<{ projectId: string }>;
-  searchParams: Promise<{ mode?: string | string[]; spec?: string | string[] }>;
+  searchParams: Promise<{
+    mode?: string | string[];
+    spec?: string | string[];
+    version?: string | string[];
+  }>;
 };
 
 export default async function SpecPage({ params, searchParams }: SpecPageProps) {
@@ -40,6 +48,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
 
   const { project, spec } = result.data;
   const generateAction = generateSpecAction.bind(null, project.id);
+  const saveVersionAction = saveSpecVersionAction.bind(null, project.id);
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -54,9 +63,9 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Generate the first specification from intake, classification,
-                and questionnaire answers. Rich editing and quality checks are
-                handled in the next Phase 3 tasks.
+                Generate and edit the first specification from intake,
+                classification, and questionnaire answers. Quality checks are
+                handled in the next Phase 3 task.
               </p>
             </div>
             <form action={generateAction}>
@@ -87,12 +96,19 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
           >
             {state === "generated"
               ? `Spec generated and saved${mode ? ` in ${mode} mode` : ""}.`
+              : state === "saved"
+                ? `Spec version saved${firstQueryValue(query.version) ? ` as v${firstQueryValue(query.version)}` : ""}.`
               : getSpecErrorMessage(state)}
           </div>
         ) : null}
 
         {spec ? (
-          <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="mt-6 grid gap-6">
+            <SpecEditor
+              projectId={project.id}
+              saveAction={saveVersionAction}
+              spec={spec}
+            />
             <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
               <h2 className="text-xl font-semibold">Spec status</h2>
               <dl className="mt-5 grid gap-4">
@@ -118,38 +134,6 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
                   >
                     {section.title}
                   </a>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-              <h2 className="text-xl font-semibold">Generated markdown</h2>
-              <pre className="mt-4 max-h-[680px] overflow-auto whitespace-pre-wrap rounded-md bg-[var(--section-surface)] p-4 text-sm leading-6 text-[var(--foreground)]">
-                {spec.markdown}
-              </pre>
-            </section>
-
-            <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm lg:col-span-2">
-              <h2 className="text-xl font-semibold">Structured preview</h2>
-              <div className="mt-5 grid gap-4">
-                {spec.sections.map((section) => (
-                  <article
-                    className="rounded-md bg-[var(--section-surface)] p-4"
-                    id={section.id}
-                    key={section.id}
-                  >
-                    <h3 className="text-lg font-semibold">{section.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                      {section.content}
-                    </p>
-                    {section.items && section.items.length > 0 ? (
-                      <ul className="mt-3 grid gap-2 text-sm text-[var(--muted)]">
-                        {section.items.map((item) => (
-                          <li key={item}>- {item}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </article>
                 ))}
               </div>
             </section>

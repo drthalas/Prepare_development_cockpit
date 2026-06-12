@@ -27,6 +27,10 @@ export type GenerateSpecResult =
   | { mode: "mock" | "configured"; ok: true; specId: string }
   | { ok: false; reason: "database" | "not_found" | "provider" };
 
+export type SaveSpecResult =
+  | { ok: true; version?: number }
+  | { ok: false; reason: "database" | "not_found" | "validation" };
+
 const databaseMissingMessage =
   "DATABASE_URL is not configured. Spec persistence requires PostgreSQL.";
 
@@ -55,6 +59,10 @@ export async function getProjectSpecWorkspace(
         spec: {
           include: {
             currentVersion: true,
+            versions: {
+              orderBy: { version: "desc" },
+              take: 8,
+            },
           },
         },
         title: true,
@@ -83,6 +91,117 @@ export async function getProjectSpecWorkspace(
       databaseReady: false,
       message: "Spec database is not reachable.",
     };
+  }
+}
+
+export async function autosaveSpecDraft(
+  projectId: string,
+  markdown: string,
+): Promise<SaveSpecResult> {
+  const normalizedMarkdown = markdown.trim();
+
+  if (!normalizedMarkdown) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const spec = await prisma.spec.findUnique({
+      where: { projectId },
+      select: { id: true, structuredJson: true },
+    });
+
+    if (!spec) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    await prisma.spec.update({
+      data: {
+        markdown: normalizedMarkdown,
+        structuredJson: updateStructuredMarkdown(
+          spec.structuredJson,
+          normalizedMarkdown,
+        ),
+      },
+      where: { id: spec.id },
+    });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function saveSpecVersion(
+  projectId: string,
+  markdown: string,
+): Promise<SaveSpecResult> {
+  const normalizedMarkdown = markdown.trim();
+
+  if (!normalizedMarkdown) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const spec = await prisma.spec.findUnique({
+      where: { projectId },
+      select: { id: true, structuredJson: true },
+    });
+
+    if (!spec) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const structuredJson = updateStructuredMarkdown(
+      spec.structuredJson,
+      normalizedMarkdown,
+    );
+
+    const version = await prisma.$transaction(async (tx) => {
+      const latestVersion = await tx.specVersion.findFirst({
+        orderBy: { version: "desc" },
+        select: { version: true },
+        where: { specId: spec.id },
+      });
+      const nextVersion = (latestVersion?.version ?? 0) + 1;
+
+      await tx.spec.update({
+        data: {
+          markdown: normalizedMarkdown,
+          structuredJson,
+        },
+        where: { id: spec.id },
+      });
+
+      const createdVersion = await tx.specVersion.create({
+        data: {
+          markdown: normalizedMarkdown,
+          specId: spec.id,
+          structuredJson,
+          version: nextVersion,
+        },
+      });
+
+      await tx.spec.update({
+        data: { currentVersionId: createdVersion.id },
+        where: { id: spec.id },
+      });
+
+      return createdVersion.version;
+    });
+
+    return { ok: true, version };
+  } catch {
+    return { ok: false, reason: "database" };
   }
 }
 
@@ -266,6 +385,11 @@ function mapSpec(spec: {
   markdown: string;
   structuredJson: unknown;
   updatedAt: Date;
+  versions: Array<{
+    createdAt: Date;
+    id: string;
+    version: number;
+  }>;
 }): StoredSpecView {
   const structured = parseStructuredSpec(spec.structuredJson);
 
@@ -276,7 +400,54 @@ function mapSpec(spec: {
     mode: structured.mode,
     sections: structured.sections,
     updatedAt: spec.updatedAt,
+    versions: spec.versions.map((version) => ({
+      createdAt: version.createdAt,
+      id: version.id,
+      version: version.version,
+    })),
   };
+}
+
+function updateStructuredMarkdown(value: unknown, markdown: string) {
+  const current =
+    value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+
+  return {
+    ...current,
+    editedAt: new Date().toISOString(),
+    editorMode: "markdown",
+    sections: parseMarkdownSections(markdown),
+  };
+}
+
+function parseMarkdownSections(markdown: string): SpecSection[] {
+  const sections: SpecSection[] = [];
+  const chunks = markdown.split(/\n(?=## )/);
+
+  for (const chunk of chunks) {
+    if (!chunk.startsWith("## ")) {
+      continue;
+    }
+
+    const [heading = "", ...bodyLines] = chunk.split("\n");
+    const title = heading.replace(/^##\s+/, "").trim();
+    const content = bodyLines.join("\n").trim();
+
+    if (!title) {
+      continue;
+    }
+
+    sections.push({
+      content,
+      id: title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
+      title,
+    });
+  }
+
+  return sections;
 }
 
 function parseStructuredSpec(value: unknown): {
