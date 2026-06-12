@@ -106,6 +106,17 @@ PDC-010 extends `/app/projects/[projectId]/spec` into an editable Markdown spec 
 
 Autosave updates the current spec markdown and structured section extraction. Explicit save creates an auditable version. Section improve/regenerate controls are placeholders only; no AI section regeneration is implemented in PDC-010.
 
+PDC-011 adds a pre-roadmap spec quality check:
+
+- `src/lib/spec/spec-quality-checker.ts`: mock/rule-based readiness analysis for the current spec.
+- `src/lib/spec/quality-types.ts`: shared quality result contracts.
+- `runAndSaveSpecQualityCheck()`: stores the latest readiness result in `Spec.structuredJson`.
+- `applySpecClarification()`: appends a clarification to the spec and creates a new `SpecVersion`.
+- `/api/projects/[projectId]/spec/quality`: POST smoke endpoint for the quality check.
+- `/api/projects/[projectId]/spec/clarification`: POST smoke endpoint for clarifications.
+
+The readiness result includes score, level, missing information, vague requirements, risk areas, recommended follow-up questions, and a `canProceedToRoadmap` indicator. PDC-011 does not create roadmaps, tasks, prompts, QA checkpoint artifacts, Linear exports, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

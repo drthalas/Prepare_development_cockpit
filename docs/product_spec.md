@@ -98,6 +98,22 @@ The first editor is a Markdown-based editor with preview. It supports:
 
 The editor does not run quality checks, regenerate sections with AI, create roadmaps, or export artifacts.
 
+## Spec Quality Check
+
+Before roadmap generation, the user can run a readiness check on the current editable spec. The check returns:
+
+- Readiness score from 0 to 100.
+- Readiness level: `low`, `medium`, or `high`.
+- Missing information.
+- Vague requirements.
+- Risk areas.
+- Recommended follow-up questions.
+- A `canProceedToRoadmap` indicator.
+
+Local development must work in mock/rule-based mode without an `AI_API_KEY`. The quality result is saved with the spec metadata. The user can add clarifications, which are appended to the spec and saved as a new version.
+
+The quality check does not generate roadmaps, tasks, Codex prompts, QA checkpoint artifacts, or Linear exports.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

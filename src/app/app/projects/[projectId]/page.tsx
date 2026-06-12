@@ -16,6 +16,7 @@ import {
   repositoryVisibilityLabels,
 } from "@/lib/projects/project-options";
 import { getProject } from "@/lib/projects/project-store";
+import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +98,11 @@ export default async function ProjectDetailPage({
 
   const project = result.data;
   const classifyAction = classifyProjectAction.bind(null, project.id);
+  const specResult = await getProjectSpecWorkspace(project.id);
+  const specQuality =
+    specResult.databaseReady && specResult.data?.spec
+      ? specResult.data.spec.qualityCheck
+      : null;
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -377,6 +383,15 @@ export default async function ProjectDetailPage({
                     ? "Open spec"
                     : "Open questionnaire"}
                 </Link>
+              ) : null}
+              {section.title === "Specification" && specQuality ? (
+                <div className="mt-4 rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]">
+                  Readiness:{" "}
+                  <span className="font-semibold text-[var(--foreground)]">
+                    {specQuality.readinessScore}/100
+                  </span>{" "}
+                  ({capitalize(specQuality.readinessLevel)})
+                </div>
               ) : null}
             </article>
           ))}

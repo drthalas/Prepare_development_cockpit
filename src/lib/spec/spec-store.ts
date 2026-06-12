@@ -1,7 +1,9 @@
 import type { ProjectClassificationResult } from "@/lib/ai/types";
 import { getPrismaClient } from "@/lib/db/prisma";
 import { isDatabaseConfigured } from "@/lib/projects/project-store";
+import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
 import { generateSpec } from "@/lib/spec/spec-generator";
+import { checkSpecQuality } from "@/lib/spec/spec-quality-checker";
 import type {
   QuestionnaireAnswerSummary,
   SpecGenerationInput,
@@ -30,6 +32,10 @@ export type GenerateSpecResult =
 export type SaveSpecResult =
   | { ok: true; version?: number }
   | { ok: false; reason: "database" | "not_found" | "validation" };
+
+export type CheckSpecQualityResult =
+  | { ok: true; qualityCheck: SpecQualityCheckResult }
+  | { ok: false; reason: "database" | "not_found" | "provider" };
 
 const databaseMissingMessage =
   "DATABASE_URL is not configured. Spec persistence requires PostgreSQL.";
@@ -200,6 +206,148 @@ export async function saveSpecVersion(
     });
 
     return { ok: true, version };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function runAndSaveSpecQualityCheck(
+  projectId: string,
+): Promise<CheckSpecQualityResult> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: {
+        deploymentTarget: true,
+        executionTarget: true,
+        id: true,
+        initialIdea: true,
+        questionnaireSessions: {
+          include: {
+            questions: {
+              include: {
+                answers: {
+                  take: 1,
+                },
+              },
+            },
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 1,
+        },
+        spec: {
+          select: {
+            id: true,
+            markdown: true,
+            structuredJson: true,
+          },
+        },
+        repositoryMode: true,
+        targetUser: true,
+        title: true,
+      },
+    });
+
+    if (!project?.spec) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const qualityCheck = await checkSpecQuality({
+      markdown: project.spec.markdown,
+      projectContext: {
+        deploymentTarget: project.deploymentTarget,
+        executionTarget: project.executionTarget,
+        initialIdea: project.initialIdea,
+        repositoryMode: project.repositoryMode,
+        targetUser: project.targetUser,
+      },
+      projectTitle: project.title,
+      questionnaireAnswers: project.questionnaireSessions[0]
+        ? mapQuestionnaireAnswers(project.questionnaireSessions[0].questions)
+        : [],
+      structuredSections: parseStructuredSpec(project.spec.structuredJson)
+        .sections,
+    });
+
+    await prisma.spec.update({
+      data: {
+        structuredJson: {
+          ...normalizeStructuredJson(project.spec.structuredJson),
+          latestQualityCheck: {
+            ...qualityCheck,
+            checkedAt: new Date().toISOString(),
+          },
+        },
+      },
+      where: { id: project.spec.id },
+    });
+
+    return { ok: true, qualityCheck };
+  } catch {
+    return { ok: false, reason: "provider" };
+  }
+}
+
+export async function applySpecClarification(
+  projectId: string,
+  clarification: string,
+): Promise<SaveSpecResult> {
+  const normalizedClarification = clarification.trim();
+
+  if (!normalizedClarification) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const spec = await prisma.spec.findUnique({
+      where: { projectId },
+      select: {
+        id: true,
+        markdown: true,
+        structuredJson: true,
+      },
+    });
+
+    if (!spec) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const nextMarkdown = appendClarification(
+      spec.markdown,
+      normalizedClarification,
+    );
+    const structuredJson = {
+      ...updateStructuredMarkdown(spec.structuredJson, nextMarkdown),
+      clarifications: [
+        ...parseClarifications(spec.structuredJson),
+        {
+          content: normalizedClarification,
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    };
+    const saved = await saveSpecVersion(projectId, nextMarkdown);
+
+    if (!saved.ok) {
+      return saved;
+    }
+
+    await prisma.spec.update({
+      data: { structuredJson },
+      where: { id: spec.id },
+    });
+
+    return saved;
   } catch {
     return { ok: false, reason: "database" };
   }
@@ -398,6 +546,7 @@ function mapSpec(spec: {
     id: spec.id,
     markdown: spec.markdown,
     mode: structured.mode,
+    qualityCheck: structured.qualityCheck,
     sections: structured.sections,
     updatedAt: spec.updatedAt,
     versions: spec.versions.map((version) => ({
@@ -452,10 +601,11 @@ function parseMarkdownSections(markdown: string): SpecSection[] {
 
 function parseStructuredSpec(value: unknown): {
   mode: "mock" | "configured" | "unknown";
+  qualityCheck: SpecQualityCheckResult | null;
   sections: SpecSection[];
 } {
   if (!value || typeof value !== "object") {
-    return { mode: "unknown", sections: [] };
+    return { mode: "unknown", qualityCheck: null, sections: [] };
   }
 
   const structured = value as {
@@ -468,12 +618,78 @@ function parseStructuredSpec(value: unknown): {
       structured.mode === "mock" || structured.mode === "configured"
         ? structured.mode
         : "unknown",
+    qualityCheck: parseQualityCheck(
+      (structured as { latestQualityCheck?: unknown }).latestQualityCheck,
+    ),
     sections: Array.isArray(structured.sections)
       ? structured.sections
           .map(parseSpecSection)
           .filter((section): section is SpecSection => Boolean(section))
       : [],
   };
+}
+
+function normalizeStructuredJson(value: unknown) {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function parseQualityCheck(value: unknown): SpecQualityCheckResult | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const result = value as Partial<SpecQualityCheckResult>;
+
+  if (
+    typeof result.readinessScore !== "number" ||
+    typeof result.readinessLevel !== "string" ||
+    !Array.isArray(result.missingInformation) ||
+    !Array.isArray(result.vagueRequirements) ||
+    !Array.isArray(result.riskAreas) ||
+    !Array.isArray(result.recommendedFollowUpQuestions)
+  ) {
+    return null;
+  }
+
+  return {
+    canProceedToRoadmap: Boolean(result.canProceedToRoadmap),
+    missingInformation: result.missingInformation.map(String),
+    mode: result.mode === "configured" ? "configured" : "mock",
+    readinessLevel:
+      result.readinessLevel === "high" ||
+      result.readinessLevel === "medium" ||
+      result.readinessLevel === "low"
+        ? result.readinessLevel
+        : "low",
+    readinessScore: result.readinessScore,
+    recommendedFollowUpQuestions:
+      result.recommendedFollowUpQuestions.map(String),
+    riskAreas: result.riskAreas.map(String),
+    summary: typeof result.summary === "string" ? result.summary : "",
+    vagueRequirements: result.vagueRequirements.map(String),
+  };
+}
+
+function appendClarification(markdown: string, clarification: string) {
+  const heading = "## Clarifications";
+
+  if (markdown.includes(heading)) {
+    return `${markdown.trim()}\n\n- ${clarification}\n`;
+  }
+
+  return `${markdown.trim()}\n\n${heading}\n\n- ${clarification}\n`;
+}
+
+function parseClarifications(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+
+  const clarifications = (value as { clarifications?: unknown }).clarifications;
+
+  return Array.isArray(clarifications) ? clarifications : [];
 }
 
 function parseSpecSection(value: unknown): SpecSection | null {

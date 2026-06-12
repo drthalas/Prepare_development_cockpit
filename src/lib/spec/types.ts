@@ -1,4 +1,5 @@
 import type { ProjectClassificationResult } from "@/lib/ai/types";
+import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
 
 export type SpecSection = {
   content: string;
@@ -51,6 +52,7 @@ export type StoredSpecView = {
   id: string;
   markdown: string;
   mode: "mock" | "configured" | "unknown";
+  qualityCheck: SpecQualityCheckResult | null;
   sections: SpecSection[];
   updatedAt: Date;
   versions: SpecVersionSummary[];
