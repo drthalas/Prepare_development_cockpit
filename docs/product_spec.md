@@ -241,6 +241,24 @@ The first API integration is guarded:
 
 The API key is never printed, committed, or stored in project records. Duplicate prevention is limited to warning and result persistence in this phase; users should review previous export attempts before rerunning real creation.
 
+## Downloadable Artifact Bundle
+
+The downloadable artifact bundle packages the current project into ZIP and individual files:
+
+- `project_metadata.json`
+- `spec.md`
+- `roadmap.md`
+- `tasks.json`
+- `linear_export.md`
+- `codex_prompts.md`
+- `qa_plan.md`
+- `deployment_guide.md`
+- `README_export.md`
+
+The bundle is generated from structured project, spec, roadmap, task, prompt, QA, execution, repository, deployment, and Linear-ready export data. It works without Linear API and without a real AI provider. Missing spec, roadmap, prompts, QA checkpoints, or deployment target produce warnings instead of blocking the download.
+
+The bundle must not include `.env.local`, real secrets, database URLs, AI keys, Linear keys, Authorization headers, or internal logs.
+
 ## Deployment Guidance
 
 The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.

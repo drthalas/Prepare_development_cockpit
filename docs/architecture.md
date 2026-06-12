@@ -212,6 +212,16 @@ PDC-020 adds the first guarded Linear API integration layer:
 
 `LINEAR_API_KEY` is read only from runtime env and is never printed or stored. Dry runs do not call the Linear API and persist an attempt record in `ExportBundle(type=linear_ready)`. Real creation requires the key and an exact confirmation phrase. Creation stores result metadata in `ExportBundle`, including created project data, issue count, warnings, and errors. Label creation is deferred; labels are preserved in issue descriptions and preview/export data.
 
+PDC-021 adds downloadable project artifact bundles:
+
+- `src/lib/export/artifact-bundle.ts`: builds project artifact files from structured project/spec/roadmap/task/prompt/QA/export data.
+- `src/lib/export/zip-builder.ts`: lightweight stored ZIP writer used without adding a package dependency.
+- `/api/projects/[projectId]/export/bundle`: downloads a ZIP artifact bundle and records artifact metadata in `ExportBundle(type=artifact_bundle)`.
+- `/api/projects/[projectId]/export/files/[fileName]`: downloads individual artifact files.
+- `/app/projects/[projectId]/export`: ZIP download, individual file downloads, and copy actions.
+
+The bundle includes `project_metadata.json`, `spec.md`, `roadmap.md`, `tasks.json`, `linear_export.md`, `codex_prompts.md`, `qa_plan.md`, `deployment_guide.md`, and `README_export.md`. The builders scrub known secret-bearing env assignments and never include `.env.local`, database URLs, API keys, Authorization headers, or local logs.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.
