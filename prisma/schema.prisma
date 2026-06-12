@@ -110,6 +110,13 @@ enum TaskPriority {
   urgent
 }
 
+enum TaskCategory {
+  coding
+  manual_infrastructure
+  documentation_recommendation
+  qa_checkpoint
+}
+
 enum PromptTarget {
   codex
   claude
@@ -319,6 +326,7 @@ model Task {
   phaseId                String
   title                  String
   description            String        @db.Text
+  category               TaskCategory  @default(coding)
   status                 TaskStatus    @default(todo)
   priority               TaskPriority?
   order                  Int

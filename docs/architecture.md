@@ -130,6 +130,23 @@ Execution settings are managed through:
 
 Defaults are derived from existing project intake fields where possible. These settings are read-only inputs for future roadmap/task/prompt/export workflows; PDC-012 does not generate roadmaps or tasks.
 
+## Roadmap Architecture
+
+PDC-013 adds deterministic roadmap generation from the current spec and execution settings:
+
+- `src/lib/roadmap/types.ts`: roadmap generation and stored roadmap contracts.
+- `src/lib/roadmap/roadmap-generator.ts`: mock/deterministic generation logic.
+- `src/lib/roadmap/roadmap-store.ts`: precheck, generation input loading, persistence, and latest roadmap reads.
+- `/app/projects/[projectId]/roadmap`: roadmap generation and read-only review page.
+- `/api/projects/[projectId]/roadmap/generate`: POST endpoint used for runtime generation checks.
+- `/api/projects/[projectId]/spec/generate`: POST endpoint that reuses the existing spec generation store for pre-roadmap regeneration checks.
+
+The generator reads `Spec.markdown`, structured spec sections, latest quality metadata, `ExecutionSettings`, repository context, deployment context, and QA settings. It saves structured `Roadmap`, `Phase`, and `Task` records. `Task.category` separates coding, manual infrastructure, documentation/recommendation, and QA checkpoint placeholder tasks.
+
+Generation includes a precheck that blocks short smoke-test specs or very low-readiness specs unless the user explicitly generates a draft anyway. Users can regenerate the spec from saved project data before generating a roadmap.
+
+PDC-013 does not implement roadmap editing, per-task prompt generation, full QA generation, Linear export/API, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

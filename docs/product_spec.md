@@ -130,6 +130,27 @@ Defaults are derived from intake where possible. Railway remains a first-class d
 
 Execution settings do not generate roadmaps, tasks, prompts, QA checkpoints, or Linear exports by themselves.
 
+## Roadmap Generation
+
+Roadmap generation uses the current editable spec plus execution settings. It should not build a production roadmap directly from a short smoke-test spec or a very low-readiness spec without warning.
+
+The roadmap generator:
+
+- Checks whether a spec exists.
+- Warns when the spec is too short, appears to be a smoke-test placeholder, or has a low readiness score.
+- Allows regenerating the spec from saved project data before roadmap generation.
+- Allows an explicit draft override if the user still wants a roadmap.
+- Creates structured phases and tasks in PostgreSQL.
+
+The first task rule is fixed:
+
+- New project: `Project Foundation / Development Context Setup`.
+- Existing project: `Audit Existing Project & Align Development Context`.
+
+Roadmap tasks must separate coding work, manual infrastructure work, documentation/recommendation work, and QA checkpoint placeholders. Deployment planning remains manual; the product does not create Railway, Vercel, Render, or other resources automatically.
+
+Roadmap generation does not generate per-task Codex prompts, full QA checkpoint artifacts, Linear exports, or Linear API calls.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

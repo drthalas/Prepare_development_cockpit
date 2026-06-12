@@ -21,6 +21,7 @@ import {
   repositoryVisibilityLabels,
 } from "@/lib/projects/project-options";
 import { getProject } from "@/lib/projects/project-store";
+import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +47,8 @@ const placeholderSections = [
   {
     title: "Roadmap",
     description:
-      "Roadmap generation and editing are deferred to future product tasks.",
+      "Generate and review the structured roadmap for this project.",
+    href: "roadmap",
   },
   {
     title: "Tasks",
@@ -112,6 +114,11 @@ export default async function ProjectDetailPage({
   const specQuality =
     specResult.databaseReady && specResult.data?.spec
       ? specResult.data.spec.qualityCheck
+      : null;
+  const roadmapResult = await getRoadmapWorkspace(project.id);
+  const latestRoadmap =
+    roadmapResult.databaseReady && roadmapResult.data
+      ? roadmapResult.data.latestRoadmap
       : null;
 
   return (
@@ -400,7 +407,9 @@ export default async function ProjectDetailPage({
                 >
                   {section.title === "Specification"
                     ? "Open spec"
-                    : "Open questionnaire"}
+                    : section.title === "Roadmap"
+                      ? "Open roadmap"
+                      : "Open questionnaire"}
                 </Link>
               ) : null}
               {section.title === "Specification" && specQuality ? (
@@ -410,6 +419,18 @@ export default async function ProjectDetailPage({
                     {specQuality.readinessScore}/100
                   </span>{" "}
                   ({capitalize(specQuality.readinessLevel)})
+                </div>
+              ) : null}
+              {section.title === "Roadmap" && latestRoadmap ? (
+                <div className="mt-4 rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]">
+                  Latest:{" "}
+                  <span className="font-semibold text-[var(--foreground)]">
+                    {latestRoadmap.phases.length} phases
+                  </span>
+                  ,{" "}
+                  <span className="font-semibold text-[var(--foreground)]">
+                    {latestRoadmap.taskCount} tasks
+                  </span>
                 </div>
               ) : null}
             </article>
