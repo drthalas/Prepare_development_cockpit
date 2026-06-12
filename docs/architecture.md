@@ -117,6 +117,19 @@ PDC-011 adds a pre-roadmap spec quality check:
 
 The readiness result includes score, level, missing information, vague requirements, risk areas, recommended follow-up questions, and a `canProceedToRoadmap` indicator. PDC-011 does not create roadmaps, tasks, prompts, QA checkpoint artifacts, Linear exports, auth, or billing.
 
+## Execution Settings Architecture
+
+PDC-012 adds a one-to-one `ExecutionSettings` model for pre-roadmap planning settings. The model stores execution target, task system, QA mode, QA checkpoint frequency, project mode, roadmap style, deployment target, deployment mode, and deployment owner.
+
+Execution settings are managed through:
+
+- `src/lib/execution/execution-options.ts`: typed values and labels.
+- `src/lib/execution/execution-store.ts`: default derivation, validation, reads, and writes.
+- `/app/projects/[projectId]/execution`: settings UI.
+- `/api/projects/[projectId]/execution-settings`: POST endpoint used for runtime persistence checks.
+
+Defaults are derived from existing project intake fields where possible. These settings are read-only inputs for future roadmap/task/prompt/export workflows; PDC-012 does not generate roadmaps or tasks.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

@@ -70,6 +70,11 @@ enum DeploymentOwner {
   not_decided
 }
 
+enum ProjectMode {
+  new_project
+  existing_project
+}
+
 enum ExecutionTarget {
   codex
   claude_code
@@ -120,6 +125,30 @@ enum QAMode {
   custom
 }
 
+enum TaskSystem {
+  none
+  linear_export
+  linear_api_later
+  github_issues_later
+  pdlc_later
+}
+
+enum QACheckpointFrequency {
+  after_every_task
+  after_every_3_tasks
+  after_each_phase
+  before_release_only
+  custom
+  unknown
+}
+
+enum RoadmapStyle {
+  quick_mvp
+  production_ready
+  enterprise_grade
+  low_cost_prototype
+}
+
 enum ExportBundleType {
   linear_ready
   artifact_bundle
@@ -153,6 +182,7 @@ model Project {
   updatedAt               DateTime              @updatedAt
 
   spec                  Spec?
+  executionSettings     ExecutionSettings?
   questionnaireSessions QuestionnaireSession[]
   roadmaps              Roadmap[]
   qaConfig              QAConfig?
@@ -160,6 +190,24 @@ model Project {
 
   @@index([status])
   @@index([updatedAt])
+}
+
+model ExecutionSettings {
+  id                    String                @id @default(cuid())
+  projectId             String                @unique
+  executionTarget       ExecutionTarget       @default(codex)
+  taskSystem            TaskSystem            @default(linear_export)
+  qaMode                QAMode                @default(standard)
+  qaCheckpointFrequency QACheckpointFrequency @default(after_each_phase)
+  projectMode           ProjectMode           @default(new_project)
+  roadmapStyle          RoadmapStyle          @default(production_ready)
+  deploymentTarget      DeploymentTarget      @default(undecided)
+  deploymentMode        DeploymentMode        @default(manual_instructions)
+  deploymentOwner       DeploymentOwner       @default(not_decided)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Spec {

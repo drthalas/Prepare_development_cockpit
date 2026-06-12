@@ -114,6 +114,22 @@ Local development must work in mock/rule-based mode without an `AI_API_KEY`. The
 
 The quality check does not generate roadmaps, tasks, Codex prompts, QA checkpoint artifacts, or Linear exports.
 
+## Execution Settings
+
+Before roadmap generation, the user configures execution settings for the project:
+
+- Execution target: Codex, Claude Code, Cursor, human developer, multiple, or unknown.
+- Task system: none, Linear export, Linear API later, GitHub Issues later, or PDLC later.
+- QA mode: Off, Minimal, Standard, Strict, or Custom.
+- QA checkpoint frequency.
+- Project mode: new project or existing project.
+- Roadmap style: quick MVP, production-ready, enterprise-grade, or low-cost prototype.
+- Deployment target, deployment mode, and deployment owner.
+
+Defaults are derived from intake where possible. Railway remains a first-class deployment target. These settings are saved before roadmap generation and should shape future roadmap, task, prompt, QA, and export behavior.
+
+Execution settings do not generate roadmaps, tasks, prompts, QA checkpoints, or Linear exports by themselves.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

@@ -4,6 +4,11 @@ import type { ReactNode } from "react";
 
 import { classifyProjectAction } from "@/app/app/projects/actions";
 import {
+  executionSettingLabels,
+  type ExecutionSettingsView,
+} from "@/lib/execution/execution-options";
+import { getExecutionSettings } from "@/lib/execution/execution-store";
+import {
   agentPushAccessLabels,
   deploymentModeLabels,
   deploymentOwnerLabels,
@@ -98,6 +103,11 @@ export default async function ProjectDetailPage({
 
   const project = result.data;
   const classifyAction = classifyProjectAction.bind(null, project.id);
+  const executionSettingsResult = await getExecutionSettings(project.id);
+  const executionSettings =
+    executionSettingsResult.databaseReady && executionSettingsResult.data
+      ? executionSettingsResult.data.settings
+      : null;
   const specResult = await getProjectSpecWorkspace(project.id);
   const specQuality =
     specResult.databaseReady && specResult.data?.spec
@@ -355,11 +365,20 @@ export default async function ProjectDetailPage({
               }
             />
             <div className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-              Intake complete. Classification and adaptive questions are future
-              Phase 2 tasks.
+              Execution settings now shape future roadmap and task planning.
             </div>
+            <Link
+              className="inline-flex min-h-10 w-fit items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+              href={`/app/projects/${project.id}/execution`}
+            >
+              Edit execution settings
+            </Link>
           </ContextPanel>
         </section>
+
+        {executionSettings ? (
+          <ExecutionSettingsSummary settings={executionSettings} />
+        ) : null}
 
         <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {placeholderSections.map((section) => (
@@ -398,6 +417,49 @@ export default async function ProjectDetailPage({
         </section>
       </div>
     </main>
+  );
+}
+
+function ExecutionSettingsSummary({
+  settings,
+}: {
+  settings: ExecutionSettingsView;
+}) {
+  return (
+    <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+            Execution settings
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">
+            Roadmap planning defaults
+          </h2>
+        </div>
+      </div>
+      <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ProjectMeta
+          label="Task system"
+          value={executionSettingLabels.taskSystemLabels[settings.taskSystem]}
+        />
+        <ProjectMeta
+          label="QA frequency"
+          value={
+            executionSettingLabels.qaCheckpointFrequencyLabels[
+              settings.qaCheckpointFrequency
+            ]
+          }
+        />
+        <ProjectMeta
+          label="Project mode"
+          value={executionSettingLabels.projectModeLabels[settings.projectMode]}
+        />
+        <ProjectMeta
+          label="Roadmap style"
+          value={executionSettingLabels.roadmapStyleLabels[settings.roadmapStyle]}
+        />
+      </dl>
+    </section>
   );
 }
 
