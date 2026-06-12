@@ -46,6 +46,14 @@ export type RegenerateSpecForRoadmapResult =
   | { ok: true; mode: "mock" | "configured" }
   | { ok: false; reason: "database" | "not_found" | "provider" };
 
+export type RoadmapMutationResult =
+  | { ok: true }
+  | { ok: false; reason: "database" | "not_found" | "validation" };
+
+export type AddRoadmapTaskResult =
+  | { ok: true; taskId: string }
+  | { ok: false; reason: "database" | "not_found" | "validation" };
+
 const databaseMissingMessage =
   "DATABASE_URL is not configured. Roadmap persistence requires PostgreSQL.";
 
@@ -218,6 +226,309 @@ export async function regenerateSpecForRoadmap(
   return { mode: result.mode, ok: true };
 }
 
+export async function updateRoadmapPhase(
+  projectId: string,
+  phaseId: string,
+  input: { description: string; title: string },
+): Promise<RoadmapMutationResult> {
+  const title = input.title.trim();
+
+  if (!title) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const phase = await prisma.phase.findFirst({
+      where: { id: phaseId, roadmap: { projectId } },
+      select: { id: true },
+    });
+
+    if (!phase) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    await prisma.phase.update({
+      data: {
+        description: normalizeOptionalString(input.description),
+        title,
+      },
+      where: { id: phaseId },
+    });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function updateRoadmapTask(
+  projectId: string,
+  taskId: string,
+  input: {
+    category: StoredRoadmapTaskView["category"];
+    description: string;
+    priority: StoredRoadmapTaskView["priority"];
+    status: StoredRoadmapTaskView["status"];
+    title: string;
+  },
+): Promise<RoadmapMutationResult> {
+  const title = input.title.trim();
+  const description = input.description.trim();
+
+  if (!title || !description) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, phase: { roadmap: { projectId } } },
+      select: { id: true },
+    });
+
+    if (!task) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    await prisma.task.update({
+      data: {
+        category: input.category,
+        description,
+        priority: input.priority,
+        status: input.status,
+        title,
+      },
+      where: { id: taskId },
+    });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function addRoadmapTask(
+  projectId: string,
+  phaseId: string,
+  input: {
+    category: StoredRoadmapTaskView["category"];
+    description: string;
+    priority: StoredRoadmapTaskView["priority"];
+    title: string;
+  },
+): Promise<AddRoadmapTaskResult> {
+  const title = input.title.trim();
+  const description = input.description.trim();
+
+  if (!title || !description) {
+    return { ok: false, reason: "validation" };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const phase = await prisma.phase.findFirst({
+      where: { id: phaseId, roadmap: { projectId } },
+      select: { id: true },
+    });
+
+    if (!phase) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const latest = await prisma.task.findFirst({
+      orderBy: { order: "desc" },
+      select: { order: true },
+      where: { phaseId },
+    });
+    const task = await prisma.task.create({
+      data: {
+        acceptanceCriteriaJson: ["New task acceptance criteria is defined."],
+        category: input.category,
+        context: "Added manually in the roadmap editor.",
+        dependenciesJson: [],
+        description,
+        implementationNotes:
+          "Refine this task before future prompt generation or export.",
+        order: (latest?.order ?? 0) + 1,
+        priority: input.priority,
+        requirementsJson: ["Review and refine task scope."],
+        title,
+        phaseId,
+      },
+      select: { id: true },
+    });
+
+    return { ok: true, taskId: task.id };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function deleteRoadmapTask(
+  projectId: string,
+  taskId: string,
+): Promise<RoadmapMutationResult> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, phase: { roadmap: { projectId } } },
+      select: { id: true, phaseId: true },
+    });
+
+    if (!task) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.task.delete({ where: { id: task.id } });
+      const remaining = await tx.task.findMany({
+        orderBy: { order: "asc" },
+        select: { id: true },
+        where: { phaseId: task.phaseId },
+      });
+
+      for (const [index, item] of remaining.entries()) {
+        await tx.task.update({
+          data: { order: index + 1 },
+          where: { id: item.id },
+        });
+      }
+    });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function moveRoadmapTask(
+  projectId: string,
+  taskId: string,
+  direction: "down" | "up",
+): Promise<RoadmapMutationResult> {
+  if (!isDatabaseConfigured()) {
+    return { ok: false, reason: "database" };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, phase: { roadmap: { projectId } } },
+      select: { id: true, order: true, phaseId: true },
+    });
+
+    if (!task) {
+      return { ok: false, reason: "not_found" };
+    }
+
+    const adjacent = await prisma.task.findFirst({
+      orderBy: { order: direction === "up" ? "desc" : "asc" },
+      select: { id: true, order: true },
+      where: {
+        phaseId: task.phaseId,
+        order: direction === "up" ? { lt: task.order } : { gt: task.order },
+      },
+    });
+
+    if (!adjacent) {
+      return { ok: true };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.task.update({ data: { order: -1 }, where: { id: task.id } });
+      await tx.task.update({
+        data: { order: task.order },
+        where: { id: adjacent.id },
+      });
+      await tx.task.update({
+        data: { order: adjacent.order },
+        where: { id: task.id },
+      });
+    });
+
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "database" };
+  }
+}
+
+export async function getRoadmapTaskDetail(projectId: string, taskId: string) {
+  if (!isDatabaseConfigured()) {
+    return {
+      data: null,
+      databaseReady: false,
+      message: databaseMissingMessage,
+    };
+  }
+
+  try {
+    const prisma = getPrismaClient();
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, phase: { roadmap: { projectId } } },
+      select: {
+        acceptanceCriteriaJson: true,
+        category: true,
+        context: true,
+        dependenciesJson: true,
+        description: true,
+        id: true,
+        implementationNotes: true,
+        order: true,
+        phase: {
+          select: {
+            title: true,
+            roadmap: {
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
+        priority: true,
+        requirementsJson: true,
+        status: true,
+        title: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      data: task
+        ? {
+            ...mapTask(task),
+            phaseTitle: task.phase.title,
+            roadmapTitle: task.phase.roadmap.title,
+            updatedAt: task.updatedAt,
+          }
+        : null,
+      databaseReady: true,
+    };
+  } catch {
+    return {
+      data: null,
+      databaseReady: false,
+      message: "Roadmap database is not reachable.",
+    };
+  }
+}
+
 async function loadRoadmapGenerationInput(projectId: string) {
   const prisma = getPrismaClient();
   const project = await prisma.project.findUnique({
@@ -327,11 +638,16 @@ function mapRoadmap(roadmap: {
     id: string;
     order: number;
     tasks: Array<{
+      acceptanceCriteriaJson: unknown;
       category: StoredRoadmapTaskView["category"];
+      context: string | null;
+      dependenciesJson: unknown;
       description: string;
       id: string;
+      implementationNotes: string | null;
       order: number;
       priority: StoredRoadmapTaskView["priority"];
+      requirementsJson: unknown;
       status: StoredRoadmapTaskView["status"];
       title: string;
     }>;
@@ -344,15 +660,7 @@ function mapRoadmap(roadmap: {
     description: phase.description,
     id: phase.id,
     order: phase.order,
-    tasks: phase.tasks.map((task) => ({
-      category: task.category,
-      description: task.description,
-      id: task.id,
-      order: task.order,
-      priority: task.priority,
-      status: task.status,
-      title: task.title,
-    })),
+    tasks: phase.tasks.map(mapTask),
     title: phase.title,
   }));
 
@@ -363,6 +671,36 @@ function mapRoadmap(roadmap: {
     taskCount: phases.reduce((count, phase) => count + phase.tasks.length, 0),
     title: roadmap.title,
     updatedAt: roadmap.updatedAt,
+  };
+}
+
+function mapTask(task: {
+  acceptanceCriteriaJson: unknown;
+  category: StoredRoadmapTaskView["category"];
+  context: string | null;
+  dependenciesJson: unknown;
+  description: string;
+  id: string;
+  implementationNotes: string | null;
+  order: number;
+  priority: StoredRoadmapTaskView["priority"];
+  requirementsJson: unknown;
+  status: StoredRoadmapTaskView["status"];
+  title: string;
+}): StoredRoadmapTaskView {
+  return {
+    acceptanceCriteria: parseStringArray(task.acceptanceCriteriaJson),
+    category: task.category,
+    context: task.context,
+    dependencies: parseStringArray(task.dependenciesJson),
+    description: task.description,
+    id: task.id,
+    implementationNotes: task.implementationNotes,
+    order: task.order,
+    priority: task.priority,
+    requirements: parseStringArray(task.requirementsJson),
+    status: task.status,
+    title: task.title,
   };
 }
 
@@ -452,4 +790,13 @@ function parseQualityCheck(value: unknown): SpecQualityCheckResult | null {
     summary: typeof result.summary === "string" ? result.summary : "",
     vagueRequirements: result.vagueRequirements.map(String),
   };
+}
+
+function parseStringArray(value: unknown) {
+  return Array.isArray(value) ? value.map(String) : [];
+}
+
+function normalizeOptionalString(value: string) {
+  const normalized = value.trim();
+  return normalized ? normalized : null;
 }

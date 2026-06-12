@@ -2,8 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import {
+  addRoadmapTaskAction,
+  deleteRoadmapTaskAction,
   generateRoadmapAction,
+  moveRoadmapTaskAction,
   regenerateSpecForRoadmapAction,
+  updateRoadmapPhaseAction,
+  updateRoadmapTaskAction,
 } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapView } from "@/lib/roadmap/types";
@@ -13,8 +18,10 @@ export const dynamic = "force-dynamic";
 type RoadmapPageProps = {
   params: Promise<{ projectId: string }>;
   searchParams: Promise<{
+    phase?: string | string[];
     roadmap?: string | string[];
     spec?: string | string[];
+    task?: string | string[];
   }>;
 };
 
@@ -24,8 +31,10 @@ export default async function RoadmapPage({
 }: RoadmapPageProps) {
   const { projectId } = await params;
   const query = await searchParams;
+  const phaseState = firstQueryValue(query.phase);
   const roadmapState = firstQueryValue(query.roadmap);
   const specState = firstQueryValue(query.spec);
+  const taskState = firstQueryValue(query.task);
   const result = await getRoadmapWorkspace(projectId);
 
   if (!result.databaseReady) {
@@ -104,6 +113,24 @@ export default async function RoadmapPage({
           />
         ) : null}
 
+        {phaseState ? (
+          <StatusMessage
+            ok={phaseState === "saved"}
+            text={
+              phaseState === "saved"
+                ? "Phase saved."
+                : getMutationErrorMessage(phaseState)
+            }
+          />
+        ) : null}
+
+        {taskState ? (
+          <StatusMessage
+            ok={["added", "deleted", "moved", "saved"].includes(taskState)}
+            text={getTaskStateMessage(taskState)}
+          />
+        ) : null}
+
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -165,7 +192,7 @@ export default async function RoadmapPage({
         </section>
 
         {latestRoadmap ? (
-          <RoadmapView roadmap={latestRoadmap} />
+          <RoadmapView projectId={project.id} roadmap={latestRoadmap} />
         ) : (
           <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
             <h2 className="text-xl font-semibold">No roadmap generated yet</h2>
@@ -180,7 +207,13 @@ export default async function RoadmapPage({
   );
 }
 
-function RoadmapView({ roadmap }: { roadmap: StoredRoadmapView }) {
+function RoadmapView({
+  projectId,
+  roadmap,
+}: {
+  projectId: string;
+  roadmap: StoredRoadmapView;
+}) {
   return (
     <section className="mt-6 grid gap-5">
       <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
@@ -197,18 +230,38 @@ function RoadmapView({ roadmap }: { roadmap: StoredRoadmapView }) {
           className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
           key={phase.id}
         >
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <form
+              action={updateRoadmapPhaseAction.bind(null, projectId, phase.id)}
+              className="grid flex-1 gap-3"
+            >
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
                 Phase {phase.order}
               </p>
-              <h3 className="mt-1 text-lg font-semibold">{phase.title}</h3>
-              {phase.description ? (
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  {phase.description}
-                </p>
-              ) : null}
-            </div>
+              <label className="grid gap-2 text-sm font-semibold">
+                Phase title
+                <input
+                  className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                  defaultValue={phase.title}
+                  name="title"
+                  required
+                />
+              </label>
+              <label className="grid gap-2 text-sm font-semibold">
+                Phase description
+                <textarea
+                  className="min-h-24 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                  defaultValue={phase.description ?? ""}
+                  name="description"
+                />
+              </label>
+              <button
+                className="w-fit min-h-10 rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)]"
+                type="submit"
+              >
+                Save phase
+              </button>
+            </form>
             <span className="w-fit rounded-full bg-[var(--section-surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
               {phase.tasks.length} tasks
             </span>
@@ -219,28 +272,212 @@ function RoadmapView({ roadmap }: { roadmap: StoredRoadmapView }) {
                 className="rounded-md bg-[var(--section-surface)] p-4"
                 key={task.id}
               >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h4 className="font-semibold">{task.title}</h4>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                      {task.description}
-                    </p>
+                <form
+                  action={updateRoadmapTaskAction.bind(null, projectId, task.id)}
+                  className="grid gap-3"
+                >
+                  <div className="grid gap-3 lg:grid-cols-[1fr_180px_140px_180px]">
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Task title
+                      <input
+                        className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                        defaultValue={task.title}
+                        name="title"
+                        required
+                      />
+                    </label>
+                    <SelectField
+                      defaultValue={task.category}
+                      label="Category"
+                      name="category"
+                      options={taskCategoryOptions}
+                    />
+                    <SelectField
+                      defaultValue={task.priority ?? "medium"}
+                      label="Priority"
+                      name="priority"
+                      options={taskPriorityOptions}
+                    />
+                    <SelectField
+                      defaultValue={task.status}
+                      label="Status"
+                      name="status"
+                      options={taskStatusOptions}
+                    />
                   </div>
-                  <div className="flex flex-wrap gap-2 text-xs font-semibold text-[var(--muted)]">
-                    <span className="rounded-full bg-[var(--panel)] px-3 py-1">
-                      {formatCategory(task.category)}
-                    </span>
-                    <span className="rounded-full bg-[var(--panel)] px-3 py-1">
-                      {task.priority ?? "medium"}
-                    </span>
+                  <label className="grid gap-2 text-sm font-semibold">
+                    Description
+                    <textarea
+                      className="min-h-28 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                      defaultValue={task.description}
+                      name="description"
+                      required
+                    />
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      className="min-h-10 rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+                      type="submit"
+                    >
+                      Save task
+                    </button>
+                    <Link
+                      className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
+                      href={`/app/projects/${projectId}/roadmap/tasks/${task.id}`}
+                    >
+                      Open detail
+                    </Link>
                   </div>
+                </form>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <form
+                    action={moveRoadmapTaskAction.bind(
+                      null,
+                      projectId,
+                      task.id,
+                      "up",
+                    )}
+                  >
+                    <button
+                      className="min-h-9 rounded-md border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--muted)]"
+                      type="submit"
+                    >
+                      Move up
+                    </button>
+                  </form>
+                  <form
+                    action={moveRoadmapTaskAction.bind(
+                      null,
+                      projectId,
+                      task.id,
+                      "down",
+                    )}
+                  >
+                    <button
+                      className="min-h-9 rounded-md border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--muted)]"
+                      type="submit"
+                    >
+                      Move down
+                    </button>
+                  </form>
+                  <form
+                    action={deleteRoadmapTaskAction.bind(
+                      null,
+                      projectId,
+                      task.id,
+                    )}
+                    className="flex min-h-9 items-center gap-2"
+                  >
+                    <label className="flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
+                      <input name="confirmDelete" type="checkbox" />
+                      Confirm delete
+                    </label>
+                    <button
+                      className="min-h-9 rounded-md border border-amber-300 px-3 text-xs font-semibold text-amber-900"
+                      type="submit"
+                    >
+                      Delete
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}
           </div>
+          <form
+            action={addRoadmapTaskAction.bind(null, projectId, phase.id)}
+            className="mt-4 grid gap-3 rounded-md border border-dashed border-[var(--panel-border)] p-4"
+          >
+            <h4 className="font-semibold">Add task</h4>
+            <div className="grid gap-3 lg:grid-cols-[1fr_180px_140px]">
+              <label className="grid gap-2 text-sm font-semibold">
+                Task title
+                <input
+                  className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                  name="title"
+                  required
+                />
+              </label>
+              <SelectField
+                defaultValue="coding"
+                label="Category"
+                name="category"
+                options={taskCategoryOptions}
+              />
+              <SelectField
+                defaultValue="medium"
+                label="Priority"
+                name="priority"
+                options={taskPriorityOptions}
+              />
+            </div>
+            <label className="grid gap-2 text-sm font-semibold">
+              Description
+              <textarea
+                className="min-h-24 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                name="description"
+                required
+              />
+            </label>
+            <button
+              className="w-fit min-h-10 rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)]"
+              type="submit"
+            >
+              Add task
+            </button>
+          </form>
         </article>
       ))}
     </section>
+  );
+}
+
+const taskCategoryOptions = [
+  ["coding", "Coding"],
+  ["manual_infrastructure", "Manual infrastructure"],
+  ["documentation_recommendation", "Documentation/recommendation"],
+  ["qa_checkpoint", "QA checkpoint"],
+] as const;
+
+const taskPriorityOptions = [
+  ["low", "Low"],
+  ["medium", "Medium"],
+  ["high", "High"],
+  ["urgent", "Urgent"],
+] as const;
+
+const taskStatusOptions = [
+  ["todo", "Todo"],
+  ["in_progress", "In progress"],
+  ["blocked", "Blocked"],
+  ["done", "Done"],
+] as const;
+
+function SelectField<const T extends string>({
+  defaultValue,
+  label,
+  name,
+  options,
+}: {
+  defaultValue: T;
+  label: string;
+  name: string;
+  options: readonly (readonly [T, string])[];
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-semibold">
+      {label}
+      <select
+        className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+        defaultValue={defaultValue}
+        name={name}
+      >
+        {options.map(([value, optionLabel]) => (
+          <option key={value} value={value}>
+            {optionLabel}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
@@ -293,10 +530,6 @@ function formatDate(date: Date) {
   }).format(date);
 }
 
-function formatCategory(value: string) {
-  return value.replace(/_/g, " ");
-}
-
 function formatPrecheckReason(reason: string) {
   const labels: Record<string, string> = {
     low_readiness_score: "Latest readiness score is low.",
@@ -322,4 +555,29 @@ function getRoadmapErrorMessage(reason: string) {
   }
 
   return "Roadmap generation failed.";
+}
+
+function getTaskStateMessage(state: string) {
+  const messages: Record<string, string> = {
+    added: "Task added.",
+    confirm_delete: "Check Confirm delete before deleting a task.",
+    database: "Task change could not be saved because the database is not reachable.",
+    deleted: "Task deleted.",
+    moved: "Task order updated.",
+    not_found: "Task or phase was not found.",
+    saved: "Task saved.",
+    validation: "Task title and description are required.",
+  };
+
+  return messages[state] ?? getMutationErrorMessage(state);
+}
+
+function getMutationErrorMessage(state: string) {
+  const messages: Record<string, string> = {
+    database: "Change could not be saved because the database is not reachable.",
+    not_found: "Roadmap item was not found.",
+    validation: "Required fields are missing.",
+  };
+
+  return messages[state] ?? "Change could not be saved.";
 }

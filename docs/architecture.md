@@ -147,6 +147,16 @@ Generation includes a precheck that blocks short smoke-test specs or very low-re
 
 PDC-013 does not implement roadmap editing, per-task prompt generation, full QA generation, Linear export/API, auth, or billing.
 
+PDC-014 extends the roadmap route into an editable task board:
+
+- Phase edit forms update `Phase.title` and `Phase.description`.
+- Task edit forms update `Task.title`, `Task.description`, `Task.category`, `Task.priority`, and `Task.status`.
+- Add/delete/move operations persist to the structured `Task` model and preserve task order inside each phase.
+- `/app/projects/[projectId]/roadmap/tasks/[taskId]` opens task detail with requirements, acceptance criteria, dependencies, context, and implementation notes.
+- API routes under `/api/projects/[projectId]/roadmap/...` support runtime persistence checks.
+
+The roadmap editor keeps structured database records as the source of truth. It does not generate prompts, full QA artifacts, Linear exports, auth, or billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

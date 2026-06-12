@@ -76,11 +76,16 @@ export type StoredRoadmapPhaseView = {
 };
 
 export type StoredRoadmapTaskView = {
+  acceptanceCriteria: string[];
   category: RoadmapTaskCategory;
+  context: string | null;
+  dependencies: string[];
   description: string;
   id: string;
+  implementationNotes: string | null;
   order: number;
   priority: RoadmapTaskPriority | null;
+  requirements: string[];
   status: "todo" | "in_progress" | "blocked" | "done";
   title: string;
 };

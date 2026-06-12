@@ -151,6 +151,19 @@ Roadmap tasks must separate coding work, manual infrastructure work, documentati
 
 Roadmap generation does not generate per-task Codex prompts, full QA checkpoint artifacts, Linear exports, or Linear API calls.
 
+## Roadmap Editor And Task Board
+
+After roadmap generation, the user can review and edit the structured roadmap:
+
+- Edit phase title and description.
+- Edit task title, description, category, priority, and status.
+- Add tasks to a phase.
+- Delete tasks with explicit confirmation.
+- Move tasks up or down within a phase.
+- Open a task detail page.
+
+The structured PostgreSQL model is the source of truth. The roadmap editor does not generate per-task Codex prompts, Master Project Prompts, full QA checkpoint artifacts, Linear exports, or Linear API calls.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.

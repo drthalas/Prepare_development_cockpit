@@ -3,9 +3,15 @@
 import { redirect } from "next/navigation";
 
 import {
+  addRoadmapTask,
+  deleteRoadmapTask,
   generateAndSaveRoadmap,
+  moveRoadmapTask,
   regenerateSpecForRoadmap,
+  updateRoadmapPhase,
+  updateRoadmapTask,
 } from "@/lib/roadmap/roadmap-store";
+import type { StoredRoadmapTaskView } from "@/lib/roadmap/types";
 
 export async function generateRoadmapAction(
   projectId: string,
@@ -31,4 +37,128 @@ export async function regenerateSpecForRoadmapAction(projectId: string) {
   }
 
   redirect(`/app/projects/${projectId}/roadmap?spec=regenerated`);
+}
+
+export async function updateRoadmapPhaseAction(
+  projectId: string,
+  phaseId: string,
+  formData: FormData,
+) {
+  const result = await updateRoadmapPhase(projectId, phaseId, {
+    description: String(formData.get("description") ?? ""),
+    title: String(formData.get("title") ?? ""),
+  });
+
+  redirectWithMutationState(projectId, "phase", result.ok ? "saved" : result.reason);
+}
+
+export async function updateRoadmapTaskAction(
+  projectId: string,
+  taskId: string,
+  formData: FormData,
+) {
+  const result = await updateRoadmapTask(projectId, taskId, {
+    category: parseTaskCategory(formData.get("category")),
+    description: String(formData.get("description") ?? ""),
+    priority: parseTaskPriority(formData.get("priority")),
+    status: parseTaskStatus(formData.get("status")),
+    title: String(formData.get("title") ?? ""),
+  });
+
+  redirectWithMutationState(projectId, "task", result.ok ? "saved" : result.reason);
+}
+
+export async function addRoadmapTaskAction(
+  projectId: string,
+  phaseId: string,
+  formData: FormData,
+) {
+  const result = await addRoadmapTask(projectId, phaseId, {
+    category: parseTaskCategory(formData.get("category")),
+    description: String(formData.get("description") ?? ""),
+    priority: parseTaskPriority(formData.get("priority")),
+    title: String(formData.get("title") ?? ""),
+  });
+
+  redirectWithMutationState(projectId, "task", result.ok ? "added" : result.reason);
+}
+
+export async function deleteRoadmapTaskAction(
+  projectId: string,
+  taskId: string,
+  formData: FormData,
+) {
+  if (formData.get("confirmDelete") !== "on") {
+    redirectWithMutationState(projectId, "task", "confirm_delete");
+  }
+
+  const result = await deleteRoadmapTask(projectId, taskId);
+
+  redirectWithMutationState(projectId, "task", result.ok ? "deleted" : result.reason);
+}
+
+export async function moveRoadmapTaskAction(
+  projectId: string,
+  taskId: string,
+  direction: "down" | "up",
+) {
+  const result = await moveRoadmapTask(projectId, taskId, direction);
+
+  redirectWithMutationState(projectId, "task", result.ok ? "moved" : result.reason);
+}
+
+function redirectWithMutationState(
+  projectId: string,
+  key: "phase" | "task",
+  state: string,
+): never {
+  redirect(`/app/projects/${projectId}/roadmap?${key}=${state}`);
+}
+
+function parseTaskCategory(
+  value: FormDataEntryValue | null,
+): StoredRoadmapTaskView["category"] {
+  const categories: Array<StoredRoadmapTaskView["category"]> = [
+    "coding",
+    "manual_infrastructure",
+    "documentation_recommendation",
+    "qa_checkpoint",
+  ];
+
+  return typeof value === "string" &&
+    categories.includes(value as StoredRoadmapTaskView["category"])
+    ? (value as StoredRoadmapTaskView["category"])
+    : "coding";
+}
+
+function parseTaskPriority(
+  value: FormDataEntryValue | null,
+): StoredRoadmapTaskView["priority"] {
+  const priorities: Array<NonNullable<StoredRoadmapTaskView["priority"]>> = [
+    "low",
+    "medium",
+    "high",
+    "urgent",
+  ];
+
+  return typeof value === "string" &&
+    priorities.includes(value as NonNullable<StoredRoadmapTaskView["priority"]>)
+    ? (value as NonNullable<StoredRoadmapTaskView["priority"]>)
+    : "medium";
+}
+
+function parseTaskStatus(
+  value: FormDataEntryValue | null,
+): StoredRoadmapTaskView["status"] {
+  const statuses: Array<StoredRoadmapTaskView["status"]> = [
+    "todo",
+    "in_progress",
+    "blocked",
+    "done",
+  ];
+
+  return typeof value === "string" &&
+    statuses.includes(value as StoredRoadmapTaskView["status"])
+    ? (value as StoredRoadmapTaskView["status"])
+    : "todo";
 }
