@@ -37,8 +37,9 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
               Create DB-backed project workspaces with product idea,
-              repository, deployment, execution, and QA context ready for the
-              next questionnaire step.
+              repository, deployment, execution, and QA context. Continue each
+              project through questionnaire, spec, roadmap, prompts, QA, and
+              export from the detail page.
             </p>
           </div>
 
@@ -63,7 +64,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             {projectsResult.data.length === 0 ? (
               <EmptyState
                 actionLabel="Create your first project"
-                description="Projects will appear here after PostgreSQL is configured and a project is created."
+                description="Start with the intake wizard. The prototype will then guide you through classification, questionnaire, editable spec, roadmap, task prompts, QA checkpoints, and exports."
                 title="No projects yet"
               />
             ) : (
@@ -111,9 +112,9 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <h2 className="text-xl font-semibold">Idea intake wizard</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            Capture the first product context without running AI
-            classification, adaptive questionnaire logic, spec generation,
-            roadmap generation, or Linear export.
+            Capture the first product context. This is the start of the
+            end-to-end prototype flow; generation and export steps remain
+            explicit actions after the project is created.
           </p>
 
           <div className="mt-6">

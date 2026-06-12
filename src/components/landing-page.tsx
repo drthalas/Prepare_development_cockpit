@@ -20,21 +20,21 @@ const flow = [
 const features = [
   {
     accent: "#0f766e",
-    title: "Spec-first planning",
+    title: "Editable spec as source of truth",
     description:
-      "Keep the editable specification as the working source of truth before roadmap and task generation begin.",
+      "Generate, edit, version, and check a product specification before roadmap work begins.",
   },
   {
     accent: "#2563eb",
-    title: "Implementation-ready tasks",
+    title: "Task prompts for AI execution",
     description:
-      "Shape future task output around scope, acceptance criteria, repository readiness, and Codex handoff prompts.",
+      "Turn roadmap tasks into scoped Codex prompts with guardrails, checks, and final report format.",
   },
   {
     accent: "#c2410c",
-    title: "QA choices up front",
+    title: "Export-ready delivery package",
     description:
-      "Make quality expectations explicit with planned Off, Minimal, Standard, Strict, and Custom QA modes.",
+      "Package roadmap, prompts, QA plan, Linear-ready export, and artifact files for handoff.",
   },
 ];
 
@@ -42,17 +42,17 @@ const howItWorks = [
   {
     title: "Clarify the idea",
     description:
-      "The future workflow starts with a plain-language product idea and focused clarification questions.",
+      "Start with a plain-language product idea, repository context, deployment expectations, and execution target.",
   },
   {
     title: "Review the spec",
     description:
-      "The user edits and approves the specification before any roadmap or implementation task is created.",
+      "Generate the spec from saved answers, edit it, run quality checks, and add clarifications.",
   },
   {
     title: "Package the work",
     description:
-      "Roadmap, tasks, Codex prompts, QA guidance, and Linear-ready exports become a connected artifact bundle.",
+      "Generate roadmap tasks, Codex prompts, QA checkpoints, Linear preview, and downloadable artifacts.",
   },
 ];
 
@@ -150,7 +150,7 @@ export function LandingPage() {
         <div className="relative mx-auto flex min-h-[760px] max-w-7xl items-center px-5 py-20 sm:px-8">
           <div className="max-w-4xl pt-12">
             <p className="w-fit rounded-full border border-[var(--panel-border)] bg-[var(--panel)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
-              Phase 0 SaaS shell
+              Public prototype
             </p>
             <h1 className="mt-7 max-w-4xl text-5xl font-semibold leading-tight tracking-normal sm:text-6xl lg:text-7xl">
               Prepare Development Cockpit
@@ -160,7 +160,7 @@ export function LandingPage() {
               Linear-ready exports.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="/app">View workspace shell</Button>
+              <Button href="/app/projects">Start a project</Button>
               <Button href="#flow" variant="secondary">
                 Explore product flow
               </Button>
@@ -198,7 +198,7 @@ export function LandingPage() {
       >
         <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
           <SectionHeader
-            description="PDC-002 is a UI foundation only, but it presents the product promises that later phases will implement."
+            description="The prototype now carries the core workflow from idea intake through exportable implementation artifacts."
             eyebrow="Key features"
             title="Built for development preparation, not generic documents"
           />
@@ -212,7 +212,7 @@ export function LandingPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8" id="how-it-works">
         <SectionHeader
-          description="The shell shows where the future workflow will live while keeping implementation logic out of Phase 0."
+          description="Each step produces structured data that feeds the next artifact instead of disconnected documents."
           eyebrow="How it works"
           title="Clarify, approve, then package the work"
         />
@@ -233,18 +233,18 @@ export function LandingPage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase text-[var(--cta-muted)]">
-                Ready for the next Phase 0 task
+                Ready for manual review
               </p>
               <h2 className="mt-3 max-w-2xl text-3xl font-semibold sm:text-4xl">
-                The visual shell is ready to support Railway deployment baseline
-                work.
+                Create a project, generate the spec and roadmap, then export a
+                complete handoff bundle.
               </h2>
             </div>
             <Button
               className="bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--panel-border)]"
               href="/app"
             >
-              Open workspace shell
+              Open workspace
             </Button>
           </div>
         </div>
@@ -253,7 +253,7 @@ export function LandingPage() {
       <footer className="border-t border-[var(--panel-border)]">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-8 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p>{appConfig.name}</p>
-          <p>Railway-first SaaS foundation. No generation logic in PDC-002.</p>
+          <p>Railway-first SaaS prototype with mock-safe generation paths.</p>
         </div>
       </footer>
     </main>

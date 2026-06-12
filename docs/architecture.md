@@ -222,6 +222,14 @@ PDC-021 adds downloadable project artifact bundles:
 
 The bundle includes `project_metadata.json`, `spec.md`, `roadmap.md`, `tasks.json`, `linear_export.md`, `codex_prompts.md`, `qa_plan.md`, `deployment_guide.md`, and `README_export.md`. The builders scrub known secret-bearing env assignments and never include `.env.local`, database URLs, API keys, Authorization headers, or local logs.
 
+PDC-022 polishes the public prototype without adding new backend product scope:
+
+- Landing and workspace copy are aligned to the current end-to-end prototype.
+- Project detail exposes progress indicators across intake, classification, questionnaire, spec, execution settings, roadmap, prompts/QA, and export.
+- `src/components/prototype-feedback.tsx` provides a lightweight feedback link without a backend dependency.
+- `src/config/analytics.ts` documents that analytics are intentionally disabled until a provider is selected.
+- The prototype continues to use deterministic/mock-safe generation unless runtime provider credentials are configured.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

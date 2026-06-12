@@ -259,6 +259,22 @@ The bundle is generated from structured project, spec, roadmap, task, prompt, QA
 
 The bundle must not include `.env.local`, real secrets, database URLs, AI keys, Linear keys, Authorization headers, or internal logs.
 
+## Public Prototype Polish
+
+The Phase 7 prototype should be presentable to an external reviewer. It should make the end-to-end path visible without adding auth, billing, production deployment, or new post-roadmap feature scope.
+
+The polished prototype includes:
+
+- A landing page that clearly explains idea to spec to roadmap to tasks to Codex prompts to QA to Linear/export.
+- Project onboarding that starts from intake and then guides the reviewer through the remaining project steps.
+- Project detail progress indicators for intake, classification, questionnaire, spec, execution settings, roadmap, prompts/QA, and export.
+- Clear empty, loading, warning, and unavailable states for missing database, missing spec, missing roadmap, missing prompts, disabled QA, missing Linear API key, and unavailable export data.
+- A lightweight feedback entry point that does not require a support backend.
+- Analytics placeholders only; no tracking vendor or secret is wired in this roadmap.
+- Mobile-friendly layouts across landing, workspace, project detail, spec, roadmap, task detail, export, and Linear preview pages.
+
+The public prototype remains deterministic/mock-safe where real external AI provider integration has not been added.
+
 ## Deployment Guidance
 
 The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.

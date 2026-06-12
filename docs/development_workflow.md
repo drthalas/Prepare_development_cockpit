@@ -25,6 +25,13 @@ Phase 2 covers idea intake and questionnaire preparation:
 - PDC-007 AI Project Type Classifier owns project classification.
 - PDC-008 Adaptive Questionnaire Engine owns question sessions and answers.
 
+Phase 7 covers prototype packaging and public review readiness:
+
+- PDC-021 owns downloadable artifact bundle files and ZIP download.
+- PDC-022 owns prototype polish, onboarding, status indicators, feedback entry, mobile checks, and end-to-end verification.
+
+Do not use Phase 7 as a place to add auth, billing, real AI provider wiring, production deployment, Railway service creation, or real Linear entity creation.
+
 ## Task Workflow
 
 1. Read the current Linear task and its Codex Prompt.
@@ -58,6 +65,17 @@ The generated Prisma client is written to `src/generated/prisma` and is intentio
 DB-backed workspace routes should fail clearly when `DATABASE_URL` is missing. Do not add permanent mock persistence in place of the Prisma data layer.
 
 Run additional tests when a task adds testable behavior.
+
+For public prototype review, verify the core route path and a representative PostgreSQL-backed project:
+
+```bash
+curl http://localhost:3100/
+curl http://localhost:3100/app
+curl http://localhost:3100/app/projects
+curl http://localhost:3100/api/health
+```
+
+Then open a project through the browser or HTTP smoke checks and confirm spec, execution settings, roadmap, task detail, export, and Linear preview routes render without exposing secrets.
 
 ## Git Workflow
 

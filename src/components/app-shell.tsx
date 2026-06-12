@@ -7,15 +7,15 @@ import { StatusCard } from "@/components/status-card";
 const navItems = ["Projects", "Spec", "Roadmap", "Tasks", "QA", "Exports"];
 
 const workspaceCards = [
-  { label: "Active projects", metric: "0", tone: "planned" as const },
-  { label: "Specs approved", metric: "0", tone: "ready" as const },
-  { label: "Tasks queued", metric: "0", tone: "blocked" as const },
+  { label: "Prototype flow", metric: "E2E", tone: "ready" as const },
+  { label: "Export bundle", metric: "ZIP", tone: "ready" as const },
+  { label: "Linear create", metric: "Guarded", tone: "planned" as const },
 ];
 
 const placeholderRows = [
-  "Product idea intake",
-  "Editable specification workspace",
-  "Roadmap and implementation tasks",
+  "Create project intake",
+  "Generate and edit specification",
+  "Roadmap, prompts, QA, and export",
 ];
 
 export function AppShell() {
@@ -47,9 +47,12 @@ export function AppShell() {
           </nav>
 
           <div className="mt-8 hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4 text-sm text-[var(--muted)] lg:block">
-            <p className="font-semibold text-[var(--foreground)]">Phase 0</p>
+            <p className="font-semibold text-[var(--foreground)]">
+              Public prototype
+            </p>
             <p className="mt-2 leading-6">
-              Visual SaaS shell only. Product workflows remain placeholders.
+              Prototype review mode. Auth, billing, and production deployment
+              are intentionally deferred.
             </p>
           </div>
         </aside>
@@ -64,9 +67,9 @@ export function AppShell() {
                 Development preparation cockpit
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                A static shell for future project intake, editable specs,
-                roadmap planning, Codex prompts, QA options, and Linear-ready
-                exports.
+                Start from project intake, then move through questionnaire,
+                spec, roadmap, task prompts, QA checkpoints, Linear preview,
+                and artifact export.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-sm">
@@ -74,7 +77,7 @@ export function AppShell() {
                 Foundation ready
               </span>
               <span className="rounded-full bg-[var(--soft-blue)] px-3 py-1 font-medium text-blue-700">
-                No data model
+                DB-backed
               </span>
             </div>
           </header>
@@ -94,7 +97,7 @@ export function AppShell() {
                 <div>
                   <h2 className="text-lg font-semibold">Projects</h2>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Future project list placeholder
+                    Start or resume a project
                   </p>
                 </div>
                 <span className="rounded-full bg-[var(--soft-warning)] px-3 py-1 text-xs font-semibold text-amber-800">
@@ -104,7 +107,7 @@ export function AppShell() {
               <div className="mt-5">
                 <EmptyState
                   actionLabel="Open projects"
-                  description="Project creation and persistence now live in the DB-backed projects workspace. Artifact generation remains future work."
+                  description="Create the first workspace, then follow the project detail next-step indicators through spec, roadmap, prompts, QA, and export."
                   title="No projects yet"
                 />
                 <div className="mt-5 text-center">
@@ -122,10 +125,10 @@ export function AppShell() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-lg font-semibold">
-                    Spec, roadmap, and tasks workspace
+                    Prototype flow
                   </h2>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Future artifact panels
+                    Working artifact path
                   </p>
                 </div>
                 <div className="h-2 w-32 overflow-hidden rounded-full bg-[var(--line-soft)]">
@@ -143,7 +146,7 @@ export function AppShell() {
                       <div>
                         <p className="text-sm font-semibold">{row}</p>
                         <p className="mt-1 text-sm text-[var(--muted)]">
-                          Placeholder module {index + 1}
+                          Step {index + 1}
                         </p>
                       </div>
                       <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
@@ -153,7 +156,11 @@ export function AppShell() {
               </div>
 
               <div className="mt-6 rounded-lg bg-[var(--section-surface)] p-5">
-                <p className="text-sm font-semibold">Loading placeholder</p>
+                <p className="text-sm font-semibold">Prototype note</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Generation paths are deterministic/mock-safe unless external
+                  provider credentials are configured.
+                </p>
                 <div className="mt-4 grid gap-3">
                   <div className="h-3 rounded bg-[var(--line-soft)]" />
                   <div className="h-3 rounded bg-[var(--line-soft)]" />

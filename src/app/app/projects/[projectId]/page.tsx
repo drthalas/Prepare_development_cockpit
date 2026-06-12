@@ -37,34 +37,42 @@ const placeholderSections = [
     description:
       "Generate and open the first editable specification for this project.",
     href: "spec",
+    state: "Implemented",
   },
   {
     title: "Questionnaire",
     description:
       "Adaptive question sessions collect requirements before spec generation.",
     href: "questionnaire",
+    state: "Implemented",
   },
   {
     title: "Roadmap",
     description:
       "Generate and review the structured roadmap for this project.",
     href: "roadmap",
+    state: "Implemented",
   },
   {
     title: "Tasks",
     description:
-      "Implementation task generation and task detail workflows are not part of PDC-005.",
+      "Open roadmap tasks for implementation detail, prompts, and QA notes.",
+    href: "roadmap",
+    state: "Implemented",
   },
   {
     title: "Prompts",
     description:
-      "Codex prompt generation will be attached to scoped tasks in a later phase.",
+      "Generate scoped Codex Prompts from individual task detail pages.",
+    href: "roadmap",
+    state: "Implemented",
   },
   {
     title: "Exports",
     description:
       "Copy or download Linear-ready export bundles for manual transfer.",
     href: "export",
+    state: "Implemented",
   },
 ];
 
@@ -116,11 +124,66 @@ export default async function ProjectDetailPage({
     specResult.databaseReady && specResult.data?.spec
       ? specResult.data.spec.qualityCheck
       : null;
+  const spec = specResult.databaseReady ? specResult.data?.spec ?? null : null;
+  const questionnaireCompleted =
+    specResult.databaseReady && specResult.data
+      ? specResult.data.project.questionnaireCompleted
+      : false;
   const roadmapResult = await getRoadmapWorkspace(project.id);
   const latestRoadmap =
     roadmapResult.databaseReady && roadmapResult.data
       ? roadmapResult.data.latestRoadmap
       : null;
+  const taskCount = latestRoadmap?.taskCount ?? 0;
+  const qaCheckpointCount =
+    latestRoadmap?.phases.reduce(
+      (count, phase) =>
+        count +
+        phase.tasks.filter((task) => task.category === "qa_checkpoint").length,
+      0,
+    ) ?? 0;
+  const progressSteps = [
+    {
+      href: `/app/projects/${project.id}`,
+      label: "Intake",
+      state: "done",
+    },
+    {
+      href: `/app/projects/${project.id}`,
+      label: "Classification",
+      state: project.classification ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/questionnaire`,
+      label: "Questionnaire",
+      state: questionnaireCompleted ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/spec`,
+      label: "Spec",
+      state: spec ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/execution`,
+      label: "Execution",
+      state: executionSettings ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/roadmap`,
+      label: "Roadmap",
+      state: latestRoadmap ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/roadmap`,
+      label: "Prompts/QA",
+      state: taskCount > 0 && qaCheckpointCount > 0 ? "done" : "next",
+    },
+    {
+      href: `/app/projects/${project.id}/export`,
+      label: "Export",
+      state: latestRoadmap ? "done" : "next",
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -204,6 +267,47 @@ export default async function ProjectDetailPage({
               : getClassificationErrorMessage(classificationState)}
           </div>
         ) : null}
+
+        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+                Prototype progress
+              </p>
+              <h2 className="mt-2 text-xl font-semibold">
+                End-to-end preparation flow
+              </h2>
+            </div>
+            <p className="text-sm text-[var(--muted)]">
+              {progressSteps.filter((step) => step.state === "done").length}/
+              {progressSteps.length} steps complete
+            </p>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {progressSteps.map((step) => (
+              <Link
+                className="rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-3 transition hover:border-[var(--accent)]"
+                href={step.href}
+                key={step.label}
+              >
+                <span
+                  className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                    step.state === "done"
+                      ? "bg-[var(--soft-accent)] text-[var(--accent-strong)]"
+                      : "bg-[var(--soft-warning)] text-amber-800"
+                  }`}
+                >
+                  {step.state === "done" ? "Ready" : "Next"}
+                </span>
+                <p className="mt-3 text-sm font-semibold">{step.label}</p>
+              </Link>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+            The prototype keeps each step explicit so reviewers can see what is
+            deterministic, what is mock-safe, and what requires manual setup.
+          </p>
+        </section>
 
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -399,7 +503,7 @@ export default async function ProjectDetailPage({
                 {section.description}
               </p>
               <div className="mt-5 rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-                Future phase placeholder
+                {section.state}
               </div>
               {section.href ? (
                 <Link
@@ -412,7 +516,9 @@ export default async function ProjectDetailPage({
                       ? "Open roadmap"
                       : section.title === "Questionnaire"
                         ? "Open questionnaire"
-                        : "Open export"}
+                        : section.title === "Exports"
+                          ? "Open export"
+                          : "Open roadmap"}
                 </Link>
               ) : null}
               {section.title === "Specification" && specQuality ? (
