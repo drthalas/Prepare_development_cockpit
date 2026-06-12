@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   addRoadmapTaskAction,
   deleteRoadmapTaskAction,
+  generateQACheckpointsAction,
   generateRoadmapAction,
   moveRoadmapTaskAction,
   regenerateSpecForRoadmapAction,
@@ -12,6 +13,7 @@ import {
 } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapView } from "@/lib/roadmap/types";
+import { executionSettingLabels } from "@/lib/execution/execution-options";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,7 @@ type RoadmapPageProps = {
   params: Promise<{ projectId: string }>;
   searchParams: Promise<{
     phase?: string | string[];
+    qa?: string | string[];
     roadmap?: string | string[];
     spec?: string | string[];
     task?: string | string[];
@@ -32,6 +35,7 @@ export default async function RoadmapPage({
   const { projectId } = await params;
   const query = await searchParams;
   const phaseState = firstQueryValue(query.phase);
+  const qaState = firstQueryValue(query.qa);
   const roadmapState = firstQueryValue(query.roadmap);
   const specState = firstQueryValue(query.spec);
   const taskState = firstQueryValue(query.task);
@@ -57,8 +61,10 @@ export default async function RoadmapPage({
     notFound();
   }
 
-  const { latestRoadmap, precheck, project, specAvailable } = result.data;
+  const { latestRoadmap, precheck, project, qaStatus, specAvailable } =
+    result.data;
   const generateAction = generateRoadmapAction.bind(null, project.id);
+  const generateQAAction = generateQACheckpointsAction.bind(null, project.id);
   const regenerateSpecAction = regenerateSpecForRoadmapAction.bind(
     null,
     project.id,
@@ -131,6 +137,17 @@ export default async function RoadmapPage({
           />
         ) : null}
 
+        {qaState ? (
+          <StatusMessage
+            ok={qaState === "generated"}
+            text={
+              qaState === "generated"
+                ? "QA checkpoints updated from execution settings."
+                : getQAErrorMessage(qaState)
+            }
+          />
+        ) : null}
+
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -189,6 +206,48 @@ export default async function RoadmapPage({
               Generate roadmap
             </button>
           </form>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+                QA checkpoints
+              </p>
+              <h2 className="mt-2 text-xl font-semibold">
+                Optional QA mode behavior
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                {qaStatus.summary}
+              </p>
+              <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+                <Meta
+                  label="QA mode"
+                  value={executionSettingLabels.qaModeLabels[qaStatus.mode]}
+                />
+                <Meta
+                  label="Frequency"
+                  value={
+                    executionSettingLabels.qaCheckpointFrequencyLabels[
+                      qaStatus.frequency
+                    ]
+                  }
+                />
+                <Meta
+                  label="Checkpoints"
+                  value={String(qaStatus.checkpointCount)}
+                />
+              </dl>
+            </div>
+            <form action={generateQAAction}>
+              <button
+                className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
+                type="submit"
+              >
+                Generate QA checkpoints
+              </button>
+            </form>
+          </div>
         </section>
 
         {latestRoadmap ? (
@@ -570,6 +629,16 @@ function getTaskStateMessage(state: string) {
   };
 
   return messages[state] ?? getMutationErrorMessage(state);
+}
+
+function getQAErrorMessage(state: string) {
+  const messages: Record<string, string> = {
+    database: "QA checkpoint persistence is not reachable.",
+    not_found: "Project was not found.",
+    roadmap_required: "Generate a roadmap before QA checkpoints.",
+  };
+
+  return messages[state] ?? "QA checkpoint generation failed.";
 }
 
 function getMutationErrorMessage(state: string) {

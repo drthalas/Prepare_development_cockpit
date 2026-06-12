@@ -4,6 +4,8 @@ import {
   type ExecutionSettingsInput,
 } from "@/lib/execution/execution-store";
 import { isDatabaseConfigured } from "@/lib/projects/project-store";
+import { getQACheckpointStatus } from "@/lib/qa/qa-store";
+import type { QACheckpointStatus } from "@/lib/qa/types";
 import { generateRoadmap } from "@/lib/roadmap/roadmap-generator";
 import type {
   RoadmapPrecheck,
@@ -21,6 +23,7 @@ export type RoadmapWorkspace = {
     id: string;
     title: string;
   };
+  qaStatus: QACheckpointStatus;
   specAvailable: boolean;
 };
 
@@ -74,6 +77,13 @@ export async function getRoadmapWorkspace(
       where: { id: projectId },
       select: {
         id: true,
+        deploymentMode: true,
+        deploymentOwner: true,
+        deploymentTarget: true,
+        executionSettings: true,
+        executionTarget: true,
+        qaPreference: true,
+        repositoryMode: true,
         roadmaps: {
           include: roadmapInclude,
           orderBy: { updatedAt: "desc" },
@@ -114,6 +124,31 @@ export async function getRoadmapWorkspace(
           id: project.id,
           title: project.title,
         },
+        qaStatus: getQACheckpointStatus({
+          checkpointCount: project.roadmaps[0]
+            ? countQACheckpoints(project.roadmaps[0])
+            : 0,
+          frequency: project.executionSettings
+            ? project.executionSettings.qaCheckpointFrequency
+            : getDefaultExecutionSettings({
+                deploymentMode: project.deploymentMode,
+                deploymentOwner: project.deploymentOwner,
+                deploymentTarget: project.deploymentTarget,
+                executionTarget: project.executionTarget,
+                qaPreference: project.qaPreference,
+                repositoryMode: project.repositoryMode,
+              }).qaCheckpointFrequency,
+          mode: project.executionSettings
+            ? project.executionSettings.qaMode
+            : getDefaultExecutionSettings({
+                deploymentMode: project.deploymentMode,
+                deploymentOwner: project.deploymentOwner,
+                deploymentTarget: project.deploymentTarget,
+                executionTarget: project.executionTarget,
+                qaPreference: project.qaPreference,
+                repositoryMode: project.repositoryMode,
+              }).qaMode,
+        }),
         specAvailable: Boolean(project.spec),
       },
       databaseReady: true,
@@ -856,4 +891,21 @@ function parseStringArray(value: unknown) {
 function normalizeOptionalString(value: string) {
   const normalized = value.trim();
   return normalized ? normalized : null;
+}
+
+function countQACheckpoints(roadmap: {
+  phases: Array<{
+    tasks: Array<{ category: StoredRoadmapTaskView["category"]; title: string }>;
+  }>;
+}) {
+  return roadmap.phases.reduce(
+    (count, phase) =>
+      count +
+      phase.tasks.filter(
+        (task) =>
+          task.category === "qa_checkpoint" &&
+          task.title.startsWith("QA Checkpoint - "),
+      ).length,
+    0,
+  );
 }

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { generateAndSaveTaskPrompt } from "@/lib/prompts/prompt-store";
+import { generateQACheckpoints } from "@/lib/qa/qa-store";
 import {
   addRoadmapTask,
   deleteRoadmapTask,
@@ -129,6 +130,16 @@ export async function generateTaskPromptAction(projectId: string, taskId: string
 
   redirect(
     `/app/projects/${projectId}/roadmap/tasks/${taskId}?prompt=${
+      result.ok ? "generated" : result.reason
+    }`,
+  );
+}
+
+export async function generateQACheckpointsAction(projectId: string) {
+  const result = await generateQACheckpoints(projectId);
+
+  redirect(
+    `/app/projects/${projectId}/roadmap?qa=${
       result.ok ? "generated" : result.reason
     }`,
   );

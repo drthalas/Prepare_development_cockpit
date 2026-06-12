@@ -174,6 +174,16 @@ PDC-016 adds per-task Codex Prompt generation:
 
 Prompts include task scope, requirements, acceptance criteria, dependencies, implementation notes, checks, Git expectations, final report format, and guardrails against future roadmap work. PDC-016 does not create Master Project Prompts, QA checkpoints, Linear exports/API calls, auth, or billing.
 
+PDC-017 adds optional QA mode and checkpoint generation:
+
+- `src/lib/qa/qa-store.ts`: rule-based QA checkpoint task generation from execution settings.
+- The roadmap page shows QA mode, checkpoint frequency, checkpoint count, and a generate action.
+- Generated checkpoint tasks use `Task.category=qa_checkpoint` and are grouped in the structured roadmap.
+- Reruns update existing generated checkpoint tasks and remove duplicates instead of creating endless copies.
+- `QA mode = off` removes generated checkpoint tasks and does not add new ones.
+
+Strict mode also attaches task-level QA instruction placeholders to implementation tasks. This remains a planning artifact only; PDC-017 does not run external test tools, export to Linear, call Linear APIs, add auth, or add billing.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.

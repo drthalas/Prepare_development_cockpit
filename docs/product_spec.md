@@ -188,6 +188,18 @@ After task detail is clear, the user can generate a scoped Codex Prompt for a si
 
 The prompt is stored in PostgreSQL as `Prompt(target=codex)` and can be viewed, copied, or regenerated. This step does not generate QA checkpoints, Master Project Prompts, Linear exports, or Linear API calls.
 
+## QA Mode And Checkpoints
+
+QA remains optional and follows execution settings:
+
+- `Off`: remove generated QA checkpoint tasks and do not add new ones.
+- `Minimal`: create a release-oriented checkpoint near the end of the roadmap.
+- `Standard`: create phase-level checkpoint tasks according to the configured frequency.
+- `Strict`: create phase-level checkpoints and attach task-level QA instruction placeholders.
+- `Custom`: follow the selected checkpoint frequency.
+
+Generated QA checkpoint tasks are structured roadmap tasks with `qa_checkpoint` category. Rerunning generation updates existing generated checkpoints and removes duplicates. QA output is a manual checklist/planning artifact; the product does not run external test tools or export QA results in this phase.
+
 ## Linear Export
 
 Initial Linear support should produce Linear-ready content without requiring API access. Later phases may add Linear API integration after the data model and product flow are stable.
