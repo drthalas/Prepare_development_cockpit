@@ -29,7 +29,7 @@ export default async function QuestionnairePage({
         <div className="mx-auto max-w-5xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -57,19 +57,19 @@ export default async function QuestionnairePage({
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-            Questionnaire
+            Анкета
           </p>
           <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h1 className="text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Adaptive questions are selected from saved intake context and
-                classification results. Answers are stored structurally for
-                later spec generation.
+                Вопросы подбираются из intake-контекста и результата
+                классификации. Ответы сохраняются структурно для будущей
+                генерации спецификации.
               </p>
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
-              {session.status === "completed" ? "Completed" : "In progress"}
+              {session.status === "completed" ? "Завершена" : "В процессе"}
             </span>
           </div>
         </header>
@@ -83,7 +83,7 @@ export default async function QuestionnairePage({
             }`}
           >
             {state === "completed"
-              ? "Questionnaire completed and answers saved."
+              ? "Анкета завершена, ответы сохранены."
               : getQuestionnaireErrorMessage(state)}
           </div>
         ) : null}
@@ -94,7 +94,7 @@ export default async function QuestionnairePage({
 
         {session.status === "completed" ? (
           <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-            <h2 className="text-xl font-semibold">Saved answer summary</h2>
+            <h2 className="text-xl font-semibold">Сохранённые ответы</h2>
             <div className="mt-5 grid gap-4">
               {session.questions.map((question) => (
                 <article
@@ -126,31 +126,31 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Back to project
+      Назад к проекту
     </Link>
   );
 }
 
 function formatAnswer(answer: boolean | string | string[] | null) {
   if (Array.isArray(answer)) {
-    return answer.length > 0 ? answer.join(", ") : "No answer saved";
+    return answer.length > 0 ? answer.join(", ") : "Ответ не сохранён";
   }
 
   if (typeof answer === "boolean") {
-    return answer ? "Yes" : "No";
+    return answer ? "Да" : "Нет";
   }
 
-  return answer || "No answer saved";
+  return answer || "Ответ не сохранён";
 }
 
 function getQuestionnaireErrorMessage(reason: string) {
   if (reason === "database") {
-    return "Questionnaire could not be saved because the database is not configured or reachable.";
+    return "Анкету не удалось сохранить: база данных не настроена или недоступна.";
   }
 
   if (reason === "not_found") {
-    return "Questionnaire session was not found.";
+    return "Сессия анкеты не найдена.";
   }
 
-  return "Questionnaire answers could not be saved. Check required context and try again.";
+  return "Ответы анкеты не удалось сохранить. Проверьте контекст и повторите попытку.";
 }

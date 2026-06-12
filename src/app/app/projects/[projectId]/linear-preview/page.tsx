@@ -33,7 +33,7 @@ export default async function LinearPreviewPage({
         <div className="mx-auto max-w-6xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -66,22 +66,22 @@ export default async function LinearPreviewPage({
                 {structure.project.name}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Preview the internal Linear Project Structure that future API
-                integration can create. Manual export and dry run stay API-safe;
-                real creation is isolated behind an advanced confirmation.
+                Проверьте внутреннюю Linear Project Structure для будущего API.
+                Ручной экспорт и dry run безопасны; реальное создание спрятано
+                за advanced confirmation.
               </p>
             </div>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
               href={`/app/projects/${projectId}/export`}
             >
-              Open export bundle
+              Открыть export bundle
             </Link>
           </div>
         </header>
 
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">Structure summary</h2>
+          <h2 className="text-xl font-semibold">Сводка структуры</h2>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Meta label="Milestones" value={String(structure.milestones.length)} />
             <Meta label="Issues" value={String(structure.issues.length)} />
@@ -124,23 +124,24 @@ export default async function LinearPreviewPage({
                 Linear API
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                {apiStatus.configured ? "Configured" : "Setup required"}
+                {apiStatus.configured ? "Настроен" : "Нужно настроить"}
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {apiStatus.message}
               </p>
               <div className="mt-4 rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
-                <h3 className="font-semibold">Manual export</h3>
+                <h3 className="font-semibold">Ручной экспорт</h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  The safest prototype path is still manual export. Use the
-                  export bundle to copy milestones, issues, Codex prompts, and
-                  QA checkpoints without creating Linear entities.
+                  Самый безопасный путь для прототипа — ручной экспорт.
+                  Используйте export bundle, чтобы скопировать milestones,
+                  issues, Codex prompts и QA checkpoints без создания сущностей
+                  в Linear.
                 </p>
                 <Link
                   className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
                   href={`/app/projects/${projectId}/export`}
                 >
-                  Open manual exports
+                  Открыть ручной export
                 </Link>
               </div>
             </div>
@@ -150,14 +151,14 @@ export default async function LinearPreviewPage({
             >
               <h3 className="font-semibold">Dry run</h3>
               <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--muted)]">
-                Records a preview result only. No Linear API creation calls are
-                made.
+                Записывает только preview result. Реальные Linear API create
+                calls не выполняются.
               </p>
               <button
                 className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
                 type="submit"
               >
-                Run dry run
+                Запустить dry run
               </button>
             </form>
           </div>
@@ -165,17 +166,17 @@ export default async function LinearPreviewPage({
           {apiStatus.configured ? (
             <details className="mt-5 rounded-md border border-red-300 bg-red-50 p-4 text-red-950">
               <summary className="cursor-pointer text-sm font-semibold">
-                Advanced / dangerous action: real Linear creation
+                Advanced / dangerous action: реальное создание в Linear
               </summary>
               <form action={createAction} className="mt-4 grid gap-3">
-                <h3 className="font-semibold">Real Linear creation</h3>
+                <h3 className="font-semibold">Реальное создание в Linear</h3>
                 <p className="text-sm leading-6 text-red-900">
-                  This can create a real Linear project and issues in the
-                  connected workspace. Do not use this during prototype review
-                  unless you intentionally want real Linear entities.
+                  Это может создать реальный Linear project и issues в
+                  подключённом workspace. Не используйте во время review, если
+                  не хотите реальные Linear entities.
                 </p>
                 <label className="grid gap-2 text-sm font-semibold">
-                  Confirmation
+                  Подтверждение
                   <input
                     className="min-h-10 rounded-md border border-red-300 bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none"
                     name="confirmCreate"
@@ -186,15 +187,15 @@ export default async function LinearPreviewPage({
                   className="w-fit min-h-10 rounded-md border border-red-400 bg-red-100 px-4 py-2 text-sm font-semibold text-red-950 transition hover:bg-red-200"
                   type="submit"
                 >
-                  Create real Linear project and issues
+                  Создать реальные Linear project и issues
                 </button>
               </form>
             </details>
           ) : (
             <div className="mt-5 rounded-md border border-dashed border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
               <p className="text-sm leading-6 text-[var(--muted)]">
-                Add LINEAR_API_KEY to the runtime environment to enable real API
-                actions. Manual export and preview remain available without it.
+                Добавьте LINEAR_API_KEY в runtime environment, чтобы включить
+                real API actions. Ручной export и preview доступны без ключа.
               </p>
             </div>
           )}
@@ -233,7 +234,7 @@ export default async function LinearPreviewPage({
               </p>
               <h2 className="mt-2 text-xl font-semibold">{milestone.title}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                {milestone.description ?? "No milestone description recorded."}
+                {milestone.description ?? "Описание milestone не заполнено."}
               </p>
               <div className="mt-4 grid gap-3">
                 {structure.issues
@@ -269,12 +270,12 @@ export default async function LinearPreviewPage({
                         </span>
                         {issue.codexPromptSection ? (
                           <span className="rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-                            Codex Prompt included
+                            Codex Prompt включён
                           </span>
                         ) : null}
                         {issue.qaSection ? (
                           <span className="rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-                            QA included
+                            QA включён
                           </span>
                         ) : null}
                       </div>
@@ -295,7 +296,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Back to project
+      Назад к проекту
     </Link>
   );
 }
@@ -316,15 +317,15 @@ function Meta({ label, value }: { label: string; value: string }) {
 function getLinearStateMessage(state: string) {
   const messages: Record<string, string> = {
     confirmation_required:
-      "Real Linear creation was blocked because the confirmation phrase did not match.",
-    created: "Linear project creation completed and the result was recorded.",
-    database: "Linear action could not load or persist project data.",
-    dry_run: "Dry run completed and was recorded without calling Linear APIs.",
-    linear_api: "Linear API returned an error. No secrets were logged.",
-    not_found: "Project was not found.",
+      "Реальное создание в Linear заблокировано: confirmation phrase не совпала.",
+    created: "Создание Linear project завершено, результат сохранён.",
+    database: "Linear action не смог загрузить или сохранить данные проекта.",
+    dry_run: "Dry run завершён и записан без вызова Linear APIs.",
+    linear_api: "Linear API вернул ошибку. Секреты не логировались.",
+    not_found: "Проект не найден.",
     setup_required:
-      "LINEAR_API_KEY is not configured. Manual export remains available.",
+      "LINEAR_API_KEY не настроен. Ручной export остаётся доступен.",
   };
 
-  return messages[state] ?? "Linear action did not complete.";
+  return messages[state] ?? "Linear action не завершился.";
 }

@@ -34,7 +34,7 @@ export default async function ExecutionSettingsPage({
         <div className="mx-auto max-w-6xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -58,12 +58,12 @@ export default async function ExecutionSettingsPage({
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-            Execution settings
+            Настройки исполнения
           </p>
           <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Configure how roadmap, future tasks, prompts, QA, and exports should
-            be shaped. These settings are saved before roadmap generation.
+            Настройте, как будут формироваться roadmap, будущие tasks,
+            prompts, QA и export. Эти значения сохраняются до генерации roadmap.
           </p>
         </header>
 
@@ -76,7 +76,7 @@ export default async function ExecutionSettingsPage({
             }`}
           >
             {state === "saved"
-              ? "Execution settings saved."
+              ? "Настройки исполнения сохранены."
               : getSettingsErrorMessage(state)}
           </div>
         ) : null}
@@ -84,8 +84,8 @@ export default async function ExecutionSettingsPage({
         <form action={saveAction} className="mt-6 grid gap-6">
           <div className="grid gap-6 lg:grid-cols-2">
             <SettingsSection
-              description="Choose the primary tool or team that will execute generated implementation tasks."
-              title="Implementation target"
+              description="Выберите основной инструмент или команду, которая будет выполнять задачи."
+              title="Кто будет реализовывать"
             >
               <SelectField
                 defaultValue={settings.executionTarget}
@@ -97,12 +97,12 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Choose where generated tasks should be prepared later. This does not export anything yet."
-              title="Task system"
+              description="Выберите, куда позже готовить задачи. Здесь ещё ничего не экспортируется."
+              title="Task-система"
             >
               <SelectField
                 defaultValue={settings.taskSystem}
-                label="Task system"
+                label="Task-система"
                 labels={executionSettingLabels.taskSystemLabels}
                 name="taskSystem"
                 values={executionSettingSelectOptions.taskSystems}
@@ -110,8 +110,8 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Set the QA strictness and checkpoint cadence that future roadmap and task outputs should respect."
-              title="QA settings"
+              description="Укажите строгость QA и частоту checkpoint для будущих roadmap/tasks."
+              title="QA-настройки"
             >
               <SelectField
                 defaultValue={settings.qaMode}
@@ -122,7 +122,7 @@ export default async function ExecutionSettingsPage({
               />
               <SelectField
                 defaultValue={settings.qaCheckpointFrequency}
-                label="Checkpoint frequency"
+                label="Частота checkpoint"
                 labels={executionSettingLabels.qaCheckpointFrequencyLabels}
                 name="qaCheckpointFrequency"
                 values={executionSettingSelectOptions.qaCheckpointFrequencies}
@@ -130,12 +130,12 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Set whether the roadmap should start from a new foundation or an audit of an existing codebase."
-              title="Project mode"
+              description="Укажите, roadmap начинается с нового проекта или аудита существующего кода."
+              title="Режим проекта"
             >
               <SelectField
                 defaultValue={settings.projectMode}
-                label="Project mode"
+                label="Режим проекта"
                 labels={executionSettingLabels.projectModeLabels}
                 name="projectMode"
                 values={executionSettingSelectOptions.projectModes}
@@ -143,12 +143,12 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Select the planning density and delivery posture for future roadmap generation."
-              title="Roadmap style"
+              description="Выберите плотность планирования и стиль будущего roadmap."
+              title="Стиль roadmap"
             >
               <SelectField
                 defaultValue={settings.roadmapStyle}
-                label="Roadmap style"
+                label="Стиль roadmap"
                 labels={executionSettingLabels.roadmapStyleLabels}
                 name="roadmapStyle"
                 values={executionSettingSelectOptions.roadmapStyles}
@@ -156,8 +156,8 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Capture manual infrastructure responsibility. This does not create deployment resources."
-              title="Deployment planning"
+              description="Зафиксируйте, кто отвечает за инфраструктуру. Здесь deployment resources не создаются."
+              title="Планирование деплоя"
             >
               <SelectField
                 defaultValue={settings.deploymentTarget}
@@ -168,14 +168,14 @@ export default async function ExecutionSettingsPage({
               />
               <SelectField
                 defaultValue={settings.deploymentMode}
-                label="Deployment mode"
+                label="Режим деплоя"
                 labels={executionSettingLabels.deploymentModeLabels}
                 name="deploymentMode"
                 values={executionSettingSelectOptions.deploymentModes}
               />
               <SelectField
                 defaultValue={settings.deploymentOwner}
-                label="Configured by"
+                label="Кто настраивает"
                 labels={executionSettingLabels.deploymentOwnerLabels}
                 name="deploymentOwner"
                 values={executionSettingSelectOptions.deploymentOwners}
@@ -186,17 +186,17 @@ export default async function ExecutionSettingsPage({
           <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <h2 className="text-xl font-semibold">Settings summary</h2>
+                <h2 className="text-xl font-semibold">Сводка настроек</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                  These values will be read by future roadmap, task, prompt,
-                  QA, and export workflows.
+                  Эти значения будут использоваться в roadmap, task, prompt,
+                  QA и export workflows.
                 </p>
               </div>
               <button
                 className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 type="submit"
               >
-                Save settings
+                Сохранить настройки
               </button>
             </div>
             <SettingsSummary settings={settings} />
@@ -213,7 +213,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Back to project
+      Назад к проекту
     </Link>
   );
 }
@@ -274,11 +274,11 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
   return (
     <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <SummaryItem
-        label="Execution"
+        label="Исполнение"
         value={executionSettingLabels.executionTargetLabels[settings.executionTarget]}
       />
       <SummaryItem
-        label="Task system"
+        label="Task-система"
         value={executionSettingLabels.taskSystemLabels[settings.taskSystem]}
       />
       <SummaryItem
@@ -286,7 +286,7 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
         value={executionSettingLabels.qaModeLabels[settings.qaMode]}
       />
       <SummaryItem
-        label="QA frequency"
+        label="Частота QA"
         value={
           executionSettingLabels.qaCheckpointFrequencyLabels[
             settings.qaCheckpointFrequency
@@ -294,15 +294,15 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
         }
       />
       <SummaryItem
-        label="Project mode"
+        label="Режим проекта"
         value={executionSettingLabels.projectModeLabels[settings.projectMode]}
       />
       <SummaryItem
-        label="Roadmap style"
+        label="Стиль roadmap"
         value={executionSettingLabels.roadmapStyleLabels[settings.roadmapStyle]}
       />
       <SummaryItem
-        label="Deployment"
+        label="Деплой"
         value={
           executionSettingLabels.deploymentTargetLabels[
             settings.deploymentTarget
@@ -310,11 +310,11 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
         }
       />
       <SummaryItem
-        label="Deployment mode"
+        label="Режим деплоя"
         value={executionSettingLabels.deploymentModeLabels[settings.deploymentMode]}
       />
       <SummaryItem
-        label="Configured by"
+        label="Кто настраивает"
         value={executionSettingLabels.deploymentOwnerLabels[settings.deploymentOwner]}
       />
     </dl>
@@ -336,12 +336,12 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
 
 function getSettingsErrorMessage(reason: string) {
   if (reason === "database") {
-    return "Execution settings could not be saved because the database is not configured or reachable.";
+    return "Настройки не удалось сохранить: база данных не настроена или недоступна.";
   }
 
   if (reason === "not_found") {
-    return "Project was not found.";
+    return "Проект не найден.";
   }
 
-  return "Execution settings are incomplete or invalid.";
+  return "Настройки исполнения неполные или некорректные.";
 }

@@ -30,27 +30,48 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
             href="/app"
           >
-            Back to workspace
+            Назад в рабочую область
           </Link>
           <div className="mt-6">
             <p className="text-sm font-semibold text-[var(--accent-strong)]">
-              Projects
+              Проекты
             </p>
             <h1 className="mt-2 text-3xl font-semibold">
-              Project intake workspace
+              Создание проекта из идеи
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Create DB-backed project workspaces with product idea,
-              repository, deployment, execution, and QA context. Continue each
-              project through questionnaire, spec, roadmap, prompts, QA, and
-              export from the detail page.
+              Опишите продукт, аудиторию, GitHub, деплой, инструмент
+              разработки и QA. После создания проекта страница проекта покажет,
+              какую кнопку нажать дальше.
             </p>
           </div>
+
+          <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+            <h2 className="text-lg font-semibold">Как пользоваться сервисом</h2>
+            <ol className="mt-4 grid gap-2 text-sm leading-6 text-[var(--muted)]">
+              {[
+                "Создайте проект и опишите идею.",
+                "Укажите GitHub, деплой, Codex/Claude/Cursor и QA-настройки.",
+                "Запустите классификацию.",
+                "Ответьте на уточняющие вопросы.",
+                "Сгенерируйте и отредактируйте спецификацию.",
+                "Настройте исполнение и сгенерируйте roadmap.",
+                "Откройте задачу, сгенерируйте Codex Prompt и скачайте ZIP/Linear export.",
+              ].map((step, index) => (
+                <li key={step}>
+                  <span className="font-semibold text-[var(--foreground)]">
+                    {index + 1}.
+                  </span>{" "}
+                  {step}
+                </li>
+              ))}
+            </ol>
+          </section>
 
           {!projectsResult.databaseReady ? (
             <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 text-sm text-[var(--muted)]">
               <p className="font-semibold text-[var(--foreground)]">
-                Database setup required
+                Нужно настроить базу данных
               </p>
               <p className="mt-2 leading-6">{projectsResult.message}</p>
             </div>
@@ -59,23 +80,23 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           {error ? (
             <div className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm font-medium text-amber-900">
               {error === "validation"
-                ? "Title and initial idea are required."
-                : "Project could not be saved because the database is not configured or reachable."}
+                ? "Название и описание идеи обязательны."
+                : "Проект не удалось сохранить: база данных не настроена или недоступна."}
             </div>
           ) : null}
 
           {deleted ? (
             <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--soft-accent)] p-4 text-sm font-medium text-[var(--accent-strong)]">
-              Review/test project deleted.
+              Review/test проект удалён.
             </div>
           ) : null}
 
           <div className="mt-6 grid gap-4">
             {projectsResult.data.length === 0 ? (
               <EmptyState
-                actionLabel="Create your first project"
-                description="Start with the intake wizard. The prototype will then guide you through classification, questionnaire, editable spec, roadmap, task prompts, QA checkpoints, and exports."
-                title="No projects yet"
+                actionLabel="Создайте первый проект"
+                description="Пока нет проектов. Создайте первый проект из идеи, затем следуйте подсказкам на странице проекта."
+                title="Пока нет проектов"
               />
             ) : (
               projectsResult.data.map((project) => (
@@ -96,7 +117,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                       </p>
                       {project.targetUser ? (
                         <p className="mt-2 line-clamp-1 text-xs font-medium text-[var(--muted)]">
-                          Audience: {project.targetUser}
+                          Аудитория: {project.targetUser}
                         </p>
                       ) : null}
                     </div>
@@ -105,12 +126,12 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                     </span>
                   </div>
                   <div className="mt-5 flex flex-col gap-3 border-t border-[var(--panel-border)] pt-4 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
-                    <p>Updated {formatDate(project.updatedAt)}</p>
+                    <p>Обновлено {formatDate(project.updatedAt)}</p>
                     <Link
                       className="font-semibold text-[var(--accent-strong)] hover:text-[var(--accent)]"
                       href={`/app/projects/${project.id}`}
                     >
-                      Open project
+                      Открыть проект
                     </Link>
                   </div>
                 </article>
@@ -120,11 +141,11 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         </section>
 
         <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">Idea intake wizard</h2>
+          <h2 className="text-xl font-semibold">Мастер создания проекта</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            Capture the first product context. This is the start of the
-            end-to-end prototype flow; generation and export steps remain
-            explicit actions after the project is created.
+            Заполните основные данные. Это первый шаг основного сценария;
+            генерация spec, roadmap, prompts и export запускаются отдельно
+            после создания проекта.
           </p>
 
           <div className="mt-6">
@@ -137,7 +158,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
 }
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ru", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);

@@ -7,52 +7,52 @@ import { FlowStep } from "@/components/flow-step";
 import { SectionHeader } from "@/components/section-header";
 
 const flow = [
-  "Idea",
-  "Smart Questions",
-  "Editable Spec",
+  "Идея",
+  "Уточняющие вопросы",
+  "Редактируемая спецификация",
   "Roadmap",
-  "Tasks",
+  "Задачи",
   "Codex Prompts",
-  "QA Options",
-  "Linear Export",
+  "QA-настройки",
+  "Linear / ZIP export",
 ];
 
 const features = [
   {
     accent: "#0f766e",
-    title: "Editable spec as source of truth",
+    title: "Спецификация как источник правды",
     description:
-      "Generate, edit, version, and check a product specification before roadmap work begins.",
+      "Сгенерируйте, отредактируйте, сохраните версию и проверьте спецификацию до планирования roadmap.",
   },
   {
     accent: "#2563eb",
-    title: "Task prompts for AI execution",
+    title: "Промпты для AI-разработки",
     description:
-      "Turn roadmap tasks into scoped Codex prompts with guardrails, checks, and final report format.",
+      "Превратите roadmap-задачи в узкие Codex prompts с границами scope, проверками и форматом отчета.",
   },
   {
     accent: "#c2410c",
-    title: "Export-ready delivery package",
+    title: "Готовый пакет артефактов",
     description:
-      "Package roadmap, prompts, QA plan, Linear-ready export, and artifact files for handoff.",
+      "Соберите roadmap, промпты, QA-план, Linear-ready export и ZIP-файлы для передачи в работу.",
   },
 ];
 
 const howItWorks = [
   {
-    title: "Clarify the idea",
+    title: "Опишите идею",
     description:
-      "Start with a plain-language product idea, repository context, deployment expectations, and execution target.",
+      "Начните с идеи продукта, аудитории, GitHub-контекста, деплоя и инструмента разработки.",
   },
   {
-    title: "Review the spec",
+    title: "Проверьте спецификацию",
     description:
-      "Generate the spec from saved answers, edit it, run quality checks, and add clarifications.",
+      "Сгенерируйте spec из ответов, отредактируйте, проверьте полноту и добавьте уточнения.",
   },
   {
-    title: "Package the work",
+    title: "Соберите пакет для разработки",
     description:
-      "Generate roadmap tasks, Codex prompts, QA checkpoints, Linear preview, and downloadable artifacts.",
+      "Сгенерируйте roadmap, задачи, Codex prompts, QA checkpoints, Linear preview и downloadable bundle.",
   },
 ];
 
@@ -68,12 +68,12 @@ export function LandingPage() {
             <span className="text-sm font-semibold">{appConfig.name}</span>
           </Link>
           <div className="hidden items-center gap-6 text-sm font-medium text-[var(--muted)] md:flex">
-            <a href="#flow">Flow</a>
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How it works</a>
+            <a href="#flow">Сценарий</a>
+            <a href="#features">Возможности</a>
+            <a href="#how-it-works">Как это работает</a>
           </div>
           <Button href="/app" variant="secondary">
-            Open workspace
+            Открыть рабочую область
           </Button>
         </nav>
       </header>
@@ -85,7 +85,7 @@ export function LandingPage() {
             <aside className="border-r border-[var(--panel-border)] bg-[var(--workspace-rail)] p-5">
               <div className="h-9 w-28 rounded-md bg-[var(--foreground)]" />
               <div className="mt-8 grid gap-3">
-                {["Workspace", "Spec", "Roadmap", "Tasks", "QA"].map((item) => (
+                    {["Проекты", "Spec", "Roadmap", "Задачи", "QA"].map((item) => (
                   <div
                     className="flex items-center gap-3 rounded-md bg-[var(--panel)] px-3 py-2 text-sm text-[var(--muted)]"
                     key={item}
@@ -150,19 +150,19 @@ export function LandingPage() {
         <div className="relative mx-auto flex min-h-[760px] max-w-7xl items-center px-5 py-20 sm:px-8">
           <div className="max-w-4xl pt-12">
             <p className="w-fit rounded-full border border-[var(--panel-border)] bg-[var(--panel)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
-              Public prototype
+              Публичный прототип
             </p>
             <h1 className="mt-7 max-w-4xl text-5xl font-semibold leading-tight tracking-normal sm:text-6xl lg:text-7xl">
               Prepare Development Cockpit
             </h1>
             <p className="mt-6 max-w-2xl text-xl leading-8 text-[var(--muted)]">
-              From idea to editable spec, roadmap, tasks, Codex prompts and
-              Linear-ready exports.
+              Из идеи в редактируемую спецификацию, roadmap, задачи, Codex
+              prompts и Linear-ready exports.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="/app/projects">Start a project</Button>
+              <Button href="/app/projects">Начать новый проект</Button>
               <Button href="#flow" variant="secondary">
-                Explore product flow
+                Посмотреть сценарий
               </Button>
             </div>
           </div>
@@ -171,9 +171,9 @@ export function LandingPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8" id="flow">
         <SectionHeader
-          description="The planned experience keeps each artifact connected to the previous decision, so implementation work starts from reviewed context."
-          eyebrow="Product flow"
-          title="One connected path from idea to execution"
+          description="Каждый артефакт строится из предыдущих решений, поэтому разработка начинается с понятного и проверенного контекста."
+          eyebrow="Основной сценарий"
+          title="Один путь от идеи до разработки"
         />
         <div className="mt-10 grid gap-3 md:grid-cols-4">
           {flow.map((item, index) => (
@@ -198,9 +198,9 @@ export function LandingPage() {
       >
         <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
           <SectionHeader
-            description="The prototype now carries the core workflow from idea intake through exportable implementation artifacts."
-            eyebrow="Key features"
-            title="Built for development preparation, not generic documents"
+            description="Прототип проводит пользователя от intake до экспортируемых артефактов для разработки."
+            eyebrow="Возможности"
+            title="Не PRD-генератор, а подготовка проекта к реализации"
           />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {features.map((feature) => (
@@ -212,9 +212,9 @@ export function LandingPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8" id="how-it-works">
         <SectionHeader
-          description="Each step produces structured data that feeds the next artifact instead of disconnected documents."
-          eyebrow="How it works"
-          title="Clarify, approve, then package the work"
+          description="Каждый шаг сохраняет структурированные данные для следующего артефакта, а не отдельный несвязанный документ."
+          eyebrow="Как пользоваться"
+          title="Уточните, проверьте, затем отдайте в работу"
         />
         <ol className="mt-10 grid gap-4 lg:grid-cols-3">
           {howItWorks.map((step, index) => (
@@ -233,18 +233,18 @@ export function LandingPage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase text-[var(--cta-muted)]">
-                Ready for manual review
+                Готово для ручного ревью
               </p>
               <h2 className="mt-3 max-w-2xl text-3xl font-semibold sm:text-4xl">
-                Create a project, generate the spec and roadmap, then export a
-                complete handoff bundle.
+                Создайте проект, получите spec и roadmap, затем скачайте полный
+                пакет для передачи в Codex, Linear или разработчику.
               </h2>
             </div>
             <Button
               className="bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--panel-border)]"
               href="/app"
             >
-              Open workspace
+              Открыть рабочую область
             </Button>
           </div>
         </div>
@@ -253,7 +253,7 @@ export function LandingPage() {
       <footer className="border-t border-[var(--panel-border)]">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-8 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p>{appConfig.name}</p>
-          <p>Railway-first SaaS prototype with mock-safe generation paths.</p>
+          <p>Railway-first SaaS-прототип с безопасными mock/deterministic генераторами.</p>
         </div>
       </footer>
     </main>

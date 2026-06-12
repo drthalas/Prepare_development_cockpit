@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 export function CopyButton({
-  copiedLabel = "Copied",
-  label = "Copy prompt",
+  copiedLabel = "Скопировано",
+  label = "Скопировать",
   text,
 }: {
   copiedLabel?: string;

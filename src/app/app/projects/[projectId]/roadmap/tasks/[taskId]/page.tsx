@@ -33,7 +33,7 @@ export default async function TaskDetailPage({
         <div className="mx-auto max-w-5xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -62,7 +62,7 @@ export default async function TaskDetailPage({
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-            Task detail
+            Детали задачи
           </p>
           <h1 className="mt-2 text-3xl font-semibold">{task.title}</h1>
           <p className="mt-3 text-sm text-[var(--muted)]">
@@ -84,8 +84,8 @@ export default async function TaskDetailPage({
             }`}
           >
             {taskState === "saved"
-              ? "Task detail saved."
-              : "Task detail was not saved. Check required fields and database connectivity."}
+              ? "Детали задачи сохранены."
+              : "Детали задачи не сохранены. Проверьте обязательные поля и базу данных."}
           </div>
         ) : null}
 
@@ -98,8 +98,8 @@ export default async function TaskDetailPage({
             }`}
           >
             {promptState === "generated"
-              ? "Codex Prompt generated and saved."
-              : "Codex Prompt generation failed. Check database connectivity and task scope."}
+              ? "Codex Prompt сгенерирован и сохранён."
+              : "Codex Prompt не удалось сгенерировать. Проверьте базу данных и scope задачи."}
           </div>
         ) : null}
 
@@ -109,14 +109,14 @@ export default async function TaskDetailPage({
         >
           <input name="returnToTaskDetail" type="hidden" value="on" />
           <div>
-            <h2 className="text-xl font-semibold">Implementation unit</h2>
+            <h2 className="text-xl font-semibold">Рабочая единица для разработки</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Keep this task scoped enough for a future Codex prompt, QA pass,
-              and Linear-ready export.
+              Держите задачу достаточно узкой для Codex prompt, QA pass и
+              Linear-ready export.
             </p>
           </div>
           <label className="grid gap-2 text-sm font-semibold">
-            Title
+            Название
             <input
               className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
               defaultValue={task.title}
@@ -126,7 +126,7 @@ export default async function TaskDetailPage({
           </label>
           <TextArea
             defaultValue={task.description}
-            label="Description"
+            label="Описание"
             minHeight="min-h-40"
             name="description"
             required
@@ -134,48 +134,48 @@ export default async function TaskDetailPage({
           <div className="grid gap-4 sm:grid-cols-3">
             <Select
               defaultValue={task.category}
-              label="Category"
+              label="Категория"
               name="category"
               options={[
                 ["coding", "Coding"],
-                ["manual_infrastructure", "Manual infrastructure"],
-                ["documentation_recommendation", "Documentation/recommendation"],
+                ["manual_infrastructure", "Ручная инфраструктура"],
+                ["documentation_recommendation", "Документация/рекомендация"],
                 ["qa_checkpoint", "QA checkpoint"],
               ]}
             />
             <Select
               defaultValue={task.priority ?? "medium"}
-              label="Priority"
+              label="Приоритет"
               name="priority"
               options={[
-                ["low", "Low"],
-                ["medium", "Medium"],
-                ["high", "High"],
-                ["urgent", "Urgent"],
+                ["low", "Низкий"],
+                ["medium", "Средний"],
+                ["high", "Высокий"],
+                ["urgent", "Срочный"],
               ]}
             />
             <Select
               defaultValue={task.status}
-              label="Status"
+              label="Статус"
               name="status"
               options={[
-                ["todo", "Todo"],
-                ["in_progress", "In progress"],
-                ["blocked", "Blocked"],
-                ["done", "Done"],
+                ["todo", "To do"],
+                ["in_progress", "В работе"],
+                ["blocked", "Заблокировано"],
+                ["done", "Готово"],
               ]}
             />
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             <TextArea
               defaultValue={task.context ?? ""}
-              help="Product, spec, repository, or implementation context that a future coding agent needs."
-              label="Context"
+              help="Контекст продукта, spec, репозитория или реализации, который нужен coding agent."
+              label="Контекст"
               name="context"
             />
             <TextArea
               defaultValue={task.implementationNotes ?? ""}
-              help="Implementation guidance, constraints, and edge notes for the task."
+              help="Подсказки по реализации, ограничения и edge notes для задачи."
               label="Implementation notes"
               name="implementationNotes"
             />
@@ -183,40 +183,40 @@ export default async function TaskDetailPage({
           <div className="grid gap-5 lg:grid-cols-3">
             <TextArea
               defaultValue={linesToTextarea(task.requirements)}
-              help="One requirement per line."
-              label="Requirements"
+              help="Одно требование на строку."
+              label="Требования"
               name="requirements"
             />
             <TextArea
               defaultValue={linesToTextarea(task.acceptanceCriteria)}
-              help="One acceptance criterion per line."
+              help="Один критерий приемки на строку."
               label="Acceptance criteria"
               name="acceptanceCriteria"
             />
             <TextArea
               defaultValue={linesToTextarea(task.dependencies)}
-              help="One dependency per line. Leave blank if none."
-              label="Dependencies"
+              help="Одна зависимость на строку. Оставьте пустым, если зависимостей нет."
+              label="Зависимости"
               name="dependencies"
             />
           </div>
           <div className="grid gap-5 lg:grid-cols-3">
             <TextArea
               defaultValue={linesToTextarea(task.qaInstructions)}
-              help="Placeholder for PDC-017 QA instructions. No QA generator runs here."
-              label="QA instructions placeholder"
+              help="QA instructions можно редактировать вручную. Генератор QA запускается на roadmap page."
+              label="QA instructions"
               name="qaInstructions"
             />
             <TextArea
               defaultValue={linesToTextarea(task.promptBlocks)}
-              help="Placeholder for PDC-016 prompt blocks. No prompt generator runs here."
-              label="Codex Prompt placeholder"
+              help="Черновые prompt blocks. Полный Codex Prompt генерируется кнопкой ниже."
+              label="Prompt blocks"
               name="promptBlocks"
             />
             <TextArea
               defaultValue={linesToTextarea(task.linearMetadata)}
-              help="Placeholder for future Linear export metadata."
-              label="Linear metadata placeholder"
+              help="Metadata для будущего Linear export."
+              label="Linear metadata"
               name="linearMetadata"
             />
           </div>
@@ -224,33 +224,33 @@ export default async function TaskDetailPage({
             className="w-fit min-h-10 rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
             type="submit"
           >
-            Save task
+            Сохранить задачу
           </button>
         </form>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-2">
-          <DetailList items={task.requirements} title="Requirements" />
+          <DetailList items={task.requirements} title="Требования" />
           <DetailList
             items={task.acceptanceCriteria}
             title="Acceptance criteria"
           />
-          <DetailList items={task.dependencies} title="Dependencies" />
-          <DetailText title="Context" value={task.context} />
+          <DetailList items={task.dependencies} title="Зависимости" />
+          <DetailText title="Контекст" value={task.context} />
           <DetailText
             title="Implementation notes"
             value={task.implementationNotes}
           />
           <DetailList
             items={task.qaInstructions}
-            title="QA instructions placeholder"
+            title="QA instructions"
           />
           <DetailList
             items={task.promptBlocks}
-            title="Codex Prompt placeholder"
+            title="Prompt blocks"
           />
           <DetailList
             items={task.linearMetadata}
-            title="Linear metadata placeholder"
+            title="Linear metadata"
           />
         </section>
 
@@ -261,12 +261,12 @@ export default async function TaskDetailPage({
                 Codex Prompt
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Scoped task prompt
+                Scoped prompt для задачи
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Generates a plain-text prompt for this task only. It includes
-                project context, task requirements, acceptance criteria, checks,
-                and guardrails against future-scope work.
+                Генерирует plain-text prompt только для этой задачи. Внутри:
+                контекст проекта, требования, acceptance criteria, checks и
+                guardrails против выхода за scope.
               </p>
             </div>
             <form action={generatePromptAction}>
@@ -274,7 +274,7 @@ export default async function TaskDetailPage({
                 className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 type="submit"
               >
-                {task.codexPrompt ? "Regenerate prompt" : "Generate prompt"}
+                {task.codexPrompt ? "Перегенерировать prompt" : "Сгенерировать prompt"}
               </button>
             </form>
           </div>
@@ -283,7 +283,7 @@ export default async function TaskDetailPage({
             <div className="mt-5 grid gap-3">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-[var(--muted)]">
-                  Last generated {formatDate(task.codexPrompt.updatedAt)}
+                  Сгенерирован {formatDate(task.codexPrompt.updatedAt)}
                 </p>
                 <CopyButton text={task.codexPrompt.content} />
               </div>
@@ -295,11 +295,10 @@ export default async function TaskDetailPage({
             </div>
           ) : (
             <div className="mt-5 rounded-md border border-dashed border-[var(--panel-border)] bg-[var(--section-surface)] p-5">
-              <h3 className="font-semibold">No prompt generated yet</h3>
+              <h3 className="font-semibold">Prompt ещё не сгенерирован</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Generate a scoped Codex Prompt after the task detail is clear.
-                QA checkpoint generation and Linear export are separate future
-                steps.
+                Сначала уточните детали задачи, затем нажмите “Сгенерировать
+                prompt”. QA checkpoints и Linear export запускаются отдельно.
               </p>
             </div>
           )}
@@ -315,7 +314,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}/roadmap`}
     >
-      Back to roadmap
+      Назад к roadmap
     </Link>
   );
 }
@@ -404,17 +403,29 @@ function DetailList({ items, title }: { items: string[]; title: string }) {
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-[var(--muted)]">None recorded.</p>
+        <p className="mt-3 text-sm text-[var(--muted)]">Пока не заполнено.</p>
       )}
     </article>
   );
 }
 
 function formatLabel(value: string) {
-  return value
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  const labels: Record<string, string> = {
+    blocked: "Заблокировано",
+    coding: "Coding",
+    documentation_recommendation: "Документация",
+    done: "Готово",
+    high: "Высокий",
+    in_progress: "В работе",
+    low: "Низкий",
+    manual_infrastructure: "Ручная инфраструктура",
+    medium: "Средний",
+    qa_checkpoint: "QA checkpoint",
+    todo: "To do",
+    urgent: "Срочный",
+  };
+
+  return labels[value] ?? value;
 }
 
 function linesToTextarea(items: string[]) {
@@ -422,7 +433,7 @@ function linesToTextarea(items: string[]) {
 }
 
 function formatDate(value: Date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ru", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
@@ -439,7 +450,7 @@ function DetailText({
     <article className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-        {value ?? "None recorded."}
+        {value ?? "Пока не заполнено."}
       </p>
     </article>
   );

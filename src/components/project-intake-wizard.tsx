@@ -28,23 +28,23 @@ import {
 const steps = [
   {
     id: "idea",
-    title: "Product Idea",
-    helper: "Capture the product, audience, and starting intent.",
+    title: "Идея продукта",
+    helper: "Опишите продукт, аудиторию и первый полезный результат.",
   },
   {
     id: "repository",
-    title: "Repository",
-    helper: "Record GitHub readiness before future Codex prompts are built.",
+    title: "GitHub",
+    helper: "Укажите готовность репозитория до будущих Codex prompts.",
   },
   {
     id: "deployment",
-    title: "Deployment",
-    helper: "Set deployment expectations without creating infrastructure.",
+    title: "Деплой",
+    helper: "Зафиксируйте ожидания по деплою без создания инфраструктуры.",
   },
   {
     id: "execution",
-    title: "Execution",
-    helper: "Choose the implementation target and initial QA preference.",
+    title: "Исполнение",
+    helper: "Выберите инструмент разработки и начальные QA-настройки.",
   },
 ] as const;
 
@@ -75,7 +75,7 @@ export function ProjectIntakeWizard() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-              Step {activeIndex + 1} of {steps.length}
+              Шаг {activeIndex + 1} из {steps.length}
             </p>
             <h3 className="mt-1 text-lg font-semibold">{currentStep.title}</h3>
             <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
@@ -83,7 +83,7 @@ export function ProjectIntakeWizard() {
             </p>
           </div>
           <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-            {progress}% complete
+            {progress}% готово
           </span>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--panel-border)]">
@@ -111,38 +111,38 @@ export function ProjectIntakeWizard() {
       </div>
 
       <WizardPanel isActive={activeStep === "idea"}>
-        <Field label="Project title">
+        <Field label="Название проекта">
           <input
             className={inputClassName}
             name="title"
-            placeholder="Customer onboarding cockpit"
+            placeholder="Cockpit для онбординга клиентов"
             required
           />
         </Field>
 
-        <Field label="Initial idea">
+        <Field label="Идея проекта">
           <textarea
             className={`${inputClassName} min-h-32 py-3`}
             name="initialIdea"
-            placeholder="Describe the product idea, target user, constraints, and first valuable outcome."
+            placeholder="Опишите идею продукта, пользователя, ограничения и первый ценный результат."
             required
           />
         </Field>
 
         <Field
-          helper="Who is this product for? This will shape future questionnaire blocks."
-          label="Target user / audience"
+          helper="Для кого продукт? Это повлияет на будущие вопросы анкеты."
+          label="Целевая аудитория"
         >
           <textarea
             className={`${inputClassName} min-h-24 py-3`}
             name="targetUser"
-            placeholder="Founders, internal operations teams, product managers..."
+            placeholder="Основатели, операционные команды, product managers..."
           />
         </Field>
 
         <Field
-          helper="Optional for now. PDC-007 can refine this with the classifier."
-          label="Project type"
+          helper="Можно оставить пустым. Классификатор уточнит тип проекта позже."
+          label="Тип проекта"
         >
           <input
             className={inputClassName}
@@ -154,8 +154,8 @@ export function ProjectIntakeWizard() {
 
       <WizardPanel isActive={activeStep === "repository"}>
         <Field
-          helper="Choose the closest current state, including unknown."
-          label="Repository mode"
+          helper="Выберите текущее состояние, включая неизвестно."
+          label="Состояние репозитория"
         >
           <select
             className={inputClassName}
@@ -171,7 +171,7 @@ export function ProjectIntakeWizard() {
           </select>
         </Field>
 
-        <Field helper="Required only when an existing repository is known." label="Repository URL">
+        <Field helper="Нужно только если репозиторий уже существует." label="URL репозитория">
           <input
             className={inputClassName}
             name="repositoryUrl"
@@ -181,7 +181,7 @@ export function ProjectIntakeWizard() {
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Repository visibility">
+          <Field label="Видимость репозитория">
             <select
               className={inputClassName}
               defaultValue="unknown"
@@ -196,7 +196,7 @@ export function ProjectIntakeWizard() {
             </select>
           </Field>
 
-          <Field label="Who creates the repository?">
+          <Field label="Кто создаёт репозиторий?">
             <select
               className={inputClassName}
               defaultValue="not_decided"
@@ -213,7 +213,7 @@ export function ProjectIntakeWizard() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Can the execution agent push to GitHub?">
+          <Field label="Может ли агент пушить в GitHub?">
             <select
               className={inputClassName}
               defaultValue="unknown"
@@ -239,7 +239,7 @@ export function ProjectIntakeWizard() {
       </WizardPanel>
 
       <WizardPanel isActive={activeStep === "deployment"}>
-        <Field label="Preferred deployment target">
+        <Field label="Предпочтительный деплой">
           <select
             className={inputClassName}
             defaultValue="railway"
@@ -255,8 +255,8 @@ export function ProjectIntakeWizard() {
         </Field>
 
         <Field
-          helper="Phase 2 records intent only. No Railway, Vercel, or Render resources are created."
-          label="Deployment mode"
+          helper="Здесь фиксируется только намерение. Railway, Vercel и Render resources не создаются."
+          label="Режим деплоя"
         >
           <select
             className={inputClassName}
@@ -272,7 +272,7 @@ export function ProjectIntakeWizard() {
           </select>
         </Field>
 
-        <Field label="Who configures deployment?">
+        <Field label="Кто настраивает деплой?">
           <select
             className={inputClassName}
             defaultValue="not_decided"
@@ -289,7 +289,7 @@ export function ProjectIntakeWizard() {
       </WizardPanel>
 
       <WizardPanel isActive={activeStep === "execution"}>
-        <Field label="Preferred AI coding tool / execution target">
+        <Field label="Инструмент разработки / execution target">
           <select
             className={inputClassName}
             defaultValue="codex"
@@ -304,7 +304,7 @@ export function ProjectIntakeWizard() {
           </select>
         </Field>
 
-        <Field helper="Initial preference only. QA generation is a future phase." label="QA preference">
+        <Field helper="Начальная настройка. QA checkpoint logic настраивается позже." label="QA-настройка">
           <select className={inputClassName} defaultValue="standard" name="qaPreference">
             {qaModes.map((mode) => (
               <option key={mode} value={mode}>
@@ -315,9 +315,9 @@ export function ProjectIntakeWizard() {
         </Field>
 
         <div className="rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4 text-sm leading-6 text-[var(--muted)]">
-          The next step after saving is questionnaire readiness. This task does
-          not classify the project, generate questions, specs, roadmaps, tasks,
-          prompts, QA content, or Linear exports.
+          После сохранения откроется страница проекта. Там будет показан
+          следующий шаг: классификация, анкета, spec, roadmap, prompts, QA и
+          export запускаются отдельными кнопками.
         </div>
       </WizardPanel>
 
@@ -328,7 +328,7 @@ export function ProjectIntakeWizard() {
           onClick={goToPreviousStep}
           type="button"
         >
-          Previous
+          Назад
         </button>
         {activeIndex < steps.length - 1 ? (
           <button
@@ -336,14 +336,14 @@ export function ProjectIntakeWizard() {
             onClick={goToNextStep}
             type="button"
           >
-            Continue
+            Продолжить
           </button>
         ) : (
           <button
             className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
             type="submit"
           >
-            Save intake and open project
+            Сохранить и открыть проект
           </button>
         )}
       </div>

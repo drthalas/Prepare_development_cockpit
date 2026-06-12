@@ -29,7 +29,7 @@ export function QuestionnaireWizard({
   if (!activeQuestion) {
     return (
       <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 text-sm text-[var(--muted)]">
-        No questions were generated for this project.
+        Вопросы для этого проекта не были сгенерированы.
       </div>
     );
   }
@@ -40,19 +40,19 @@ export function QuestionnaireWizard({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-              Question {activeIndex + 1} of {session.questions.length}
+              Вопрос {activeIndex + 1} из {session.questions.length}
             </p>
             <h2 className="mt-2 text-2xl font-semibold">
-              Adaptive questionnaire
+              Адаптивная анкета
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-              Answer requirements questions selected from the project type,
-              classification result, repository context, and missing
-              information areas. This does not generate a specification.
+              Ответьте на вопросы, выбранные по типу проекта, классификации,
+              GitHub-контексту и недостающей информации. Это ещё не генерирует
+              спецификацию.
             </p>
           </div>
           <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-            {session.status === "completed" ? "Completed" : `${progress}% complete`}
+            {session.status === "completed" ? "Завершена" : `${progress}% готово`}
           </span>
         </div>
 
@@ -107,8 +107,8 @@ export function QuestionnaireWizard({
 
       {session.status === "completed" ? (
         <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--soft-accent)] p-4 text-sm font-medium text-[var(--accent-strong)]">
-          Questionnaire is completed. You can still change answers and save
-          again before spec generation exists.
+          Анкета завершена. Вы всё ещё можете изменить ответы и сохранить их
+          заново до генерации спецификации.
         </div>
       ) : null}
 
@@ -119,7 +119,7 @@ export function QuestionnaireWizard({
           onClick={() => setActiveIndex((index) => Math.max(index - 1, 0))}
           type="button"
         >
-          Previous
+          Назад
         </button>
 
         {activeIndex < session.questions.length - 1 ? (
@@ -132,14 +132,14 @@ export function QuestionnaireWizard({
             }
             type="button"
           >
-            Next
+            Далее
           </button>
         ) : (
           <button
             className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
             type="submit"
           >
-            Finish questionnaire
+            Завершить анкету
           </button>
         )}
       </div>
@@ -156,7 +156,7 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
         className={`${inputClassName} min-h-36 py-3`}
         defaultValue={answerToString(question.answer)}
         name={name}
-        placeholder="Write a clear answer for future spec generation."
+        placeholder="Напишите понятный ответ для будущей генерации спецификации."
       />
     );
   }
@@ -168,7 +168,7 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
         defaultValue={answerToString(question.answer)}
         name={name}
       >
-        <option value="">Select one</option>
+        <option value="">Выберите один вариант</option>
         {question.options.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -210,9 +210,9 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
         defaultValue={answerToString(question.answer)}
         name={name}
       >
-        <option value="">Select one</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
+        <option value="">Выберите один вариант</option>
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
       </select>
     );
   }
@@ -222,7 +222,7 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
       className={inputClassName}
       defaultValue={answerToString(question.answer)}
       name={name}
-      placeholder="Answer"
+      placeholder="Ответ"
     />
   );
 }

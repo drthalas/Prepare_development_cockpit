@@ -47,7 +47,7 @@ export default async function RoadmapPage({
         <div className="mx-auto max-w-6xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -83,16 +83,16 @@ export default async function RoadmapPage({
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Generate a structured roadmap from the current editable spec and
-                saved execution settings. This does not generate Codex prompts
-                or Linear exports.
+                Сгенерируйте структурированный roadmap из текущей spec и
+                сохранённых настроек исполнения. Это не генерирует Codex prompts
+                и Linear exports.
               </p>
             </div>
             <Link
               className="inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--panel-border)] px-5 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
               href={`/app/projects/${project.id}/execution`}
             >
-              Execution settings
+              Настройки исполнения
             </Link>
           </div>
         </header>
@@ -102,7 +102,7 @@ export default async function RoadmapPage({
             ok={roadmapState === "generated"}
             text={
               roadmapState === "generated"
-                ? "Roadmap generated and saved."
+                ? "Roadmap сгенерирован и сохранён."
                 : getRoadmapErrorMessage(roadmapState)
             }
           />
@@ -113,8 +113,8 @@ export default async function RoadmapPage({
             ok={specState === "regenerated"}
             text={
               specState === "regenerated"
-                ? "Spec regenerated from saved project data. Review it before generating the roadmap."
-                : "Spec regeneration failed. Check saved project context and provider mode."
+                ? "Spec перегенерирована из сохранённых данных. Проверьте её перед roadmap."
+                : "Перегенерация spec не удалась. Проверьте контекст и provider mode."
             }
           />
         ) : null}
@@ -151,7 +151,7 @@ export default async function RoadmapPage({
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Generation precheck</h2>
+              <h2 className="text-xl font-semibold">Проверка перед генерацией</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {precheck.summary}
               </p>
@@ -163,7 +163,7 @@ export default async function RoadmapPage({
                   : "bg-[var(--soft-warning)] text-amber-900"
               }`}
             >
-              {precheck.canGenerate ? "Ready" : "Needs review"}
+              {precheck.canGenerate ? "Готово" : "Нужно проверить"}
             </span>
           </div>
 
@@ -185,7 +185,7 @@ export default async function RoadmapPage({
                     className="inline-flex min-h-10 w-fit items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
                     type="submit"
                   >
-                    Regenerate spec from saved data
+                    Перегенерировать spec из сохранённых данных
                   </button>
                 </form>
               ) : null}
@@ -196,14 +196,14 @@ export default async function RoadmapPage({
             {!precheck.canGenerate ? (
               <label className="flex min-h-10 items-center gap-2 rounded-md border border-[var(--panel-border)] px-3 text-sm font-semibold text-[var(--muted)]">
                 <input name="overrideIncompleteSpec" type="checkbox" />
-                Generate draft anyway
+                Всё равно сгенерировать draft
               </label>
             ) : null}
             <button
               className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
               type="submit"
             >
-              Generate roadmap
+              Сгенерировать roadmap
             </button>
           </form>
         </section>
@@ -215,7 +215,7 @@ export default async function RoadmapPage({
                 QA checkpoints
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Optional QA mode behavior
+                Поведение QA mode
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {qaStatus.summary}
@@ -226,7 +226,7 @@ export default async function RoadmapPage({
                   value={executionSettingLabels.qaModeLabels[qaStatus.mode]}
                 />
                 <Meta
-                  label="Frequency"
+                  label="Частота"
                   value={
                     executionSettingLabels.qaCheckpointFrequencyLabels[
                       qaStatus.frequency
@@ -244,7 +244,7 @@ export default async function RoadmapPage({
                 className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
                 type="submit"
               >
-                Generate QA checkpoints
+                Сгенерировать QA checkpoints
               </button>
             </form>
           </div>
@@ -254,10 +254,10 @@ export default async function RoadmapPage({
           <RoadmapView projectId={project.id} roadmap={latestRoadmap} />
         ) : (
           <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
-            <h2 className="text-xl font-semibold">No roadmap generated yet</h2>
+            <h2 className="text-xl font-semibold">Roadmap ещё не создан</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Generate the first roadmap after the spec and execution settings
-              are ready.
+              Проверьте spec и настройте параметры разработки, затем нажмите
+              “Сгенерировать roadmap”.
             </p>
           </section>
         )}
@@ -278,9 +278,9 @@ function RoadmapView({
       <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
         <h2 className="text-xl font-semibold">{roadmap.title}</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-3">
-          <Meta label="Phases" value={String(roadmap.phases.length)} />
-          <Meta label="Tasks" value={String(roadmap.taskCount)} />
-          <Meta label="Updated" value={formatDate(roadmap.updatedAt)} />
+          <Meta label="Фазы" value={String(roadmap.phases.length)} />
+          <Meta label="Задачи" value={String(roadmap.taskCount)} />
+          <Meta label="Обновлено" value={formatDate(roadmap.updatedAt)} />
         </dl>
       </div>
 
@@ -295,10 +295,10 @@ function RoadmapView({
               className="grid flex-1 gap-3"
             >
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Phase {phase.order}
+                Фаза {phase.order}
               </p>
               <label className="grid gap-2 text-sm font-semibold">
-                Phase title
+                Название фазы
                 <input
                   className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                   defaultValue={phase.title}
@@ -307,7 +307,7 @@ function RoadmapView({
                 />
               </label>
               <label className="grid gap-2 text-sm font-semibold">
-                Phase description
+                Описание фазы
                 <textarea
                   className="min-h-24 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                   defaultValue={phase.description ?? ""}
@@ -318,11 +318,11 @@ function RoadmapView({
                 className="w-fit min-h-10 rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)]"
                 type="submit"
               >
-                Save phase
+                Сохранить фазу
               </button>
             </form>
             <span className="w-fit rounded-full bg-[var(--section-surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
-              {phase.tasks.length} tasks
+              {phase.tasks.length} задач
             </span>
           </div>
           <div className="mt-4 grid gap-3">
@@ -337,7 +337,7 @@ function RoadmapView({
                 >
                   <div className="grid gap-3 lg:grid-cols-[1fr_180px_140px_180px]">
                     <label className="grid gap-2 text-sm font-semibold">
-                      Task title
+                      Название задачи
                       <input
                         className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                         defaultValue={task.title}
@@ -347,25 +347,25 @@ function RoadmapView({
                     </label>
                     <SelectField
                       defaultValue={task.category}
-                      label="Category"
+                      label="Категория"
                       name="category"
                       options={taskCategoryOptions}
                     />
                     <SelectField
                       defaultValue={task.priority ?? "medium"}
-                      label="Priority"
+                      label="Приоритет"
                       name="priority"
                       options={taskPriorityOptions}
                     />
                     <SelectField
                       defaultValue={task.status}
-                      label="Status"
+                      label="Статус"
                       name="status"
                       options={taskStatusOptions}
                     />
                   </div>
                   <label className="grid gap-2 text-sm font-semibold">
-                    Description
+                    Описание
                     <textarea
                       className="min-h-28 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                       defaultValue={task.description}
@@ -378,13 +378,13 @@ function RoadmapView({
                       className="min-h-10 rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
                       type="submit"
                     >
-                      Save task
+                      Сохранить задачу
                     </button>
                     <Link
                       className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)]"
                       href={`/app/projects/${projectId}/roadmap/tasks/${task.id}`}
                     >
-                      Open detail
+                      Открыть детали
                     </Link>
                   </div>
                 </form>
@@ -401,7 +401,7 @@ function RoadmapView({
                       className="min-h-9 rounded-md border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--muted)]"
                       type="submit"
                     >
-                      Move up
+                      Выше
                     </button>
                   </form>
                   <form
@@ -416,7 +416,7 @@ function RoadmapView({
                       className="min-h-9 rounded-md border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--muted)]"
                       type="submit"
                     >
-                      Move down
+                      Ниже
                     </button>
                   </form>
                   <form
@@ -429,13 +429,13 @@ function RoadmapView({
                   >
                     <label className="flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">
                       <input name="confirmDelete" type="checkbox" />
-                      Confirm delete
+                      Подтвердить удаление
                     </label>
                     <button
                       className="min-h-9 rounded-md border border-amber-300 px-3 text-xs font-semibold text-amber-900"
                       type="submit"
                     >
-                      Delete
+                      Удалить
                     </button>
                   </form>
                 </div>
@@ -446,10 +446,10 @@ function RoadmapView({
             action={addRoadmapTaskAction.bind(null, projectId, phase.id)}
             className="mt-4 grid gap-3 rounded-md border border-dashed border-[var(--panel-border)] p-4"
           >
-            <h4 className="font-semibold">Add task</h4>
+            <h4 className="font-semibold">Добавить задачу</h4>
             <div className="grid gap-3 lg:grid-cols-[1fr_180px_140px]">
               <label className="grid gap-2 text-sm font-semibold">
-                Task title
+                Название задачи
                 <input
                   className="min-h-10 rounded-md border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                   name="title"
@@ -458,19 +458,19 @@ function RoadmapView({
               </label>
               <SelectField
                 defaultValue="coding"
-                label="Category"
+                label="Категория"
                 name="category"
                 options={taskCategoryOptions}
               />
               <SelectField
                 defaultValue="medium"
-                label="Priority"
+                label="Приоритет"
                 name="priority"
                 options={taskPriorityOptions}
               />
             </div>
             <label className="grid gap-2 text-sm font-semibold">
-              Description
+              Описание
               <textarea
                 className="min-h-24 rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
                 name="description"
@@ -481,7 +481,7 @@ function RoadmapView({
               className="w-fit min-h-10 rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)]"
               type="submit"
             >
-              Add task
+              Добавить задачу
             </button>
           </form>
         </article>
@@ -492,23 +492,23 @@ function RoadmapView({
 
 const taskCategoryOptions = [
   ["coding", "Coding"],
-  ["manual_infrastructure", "Manual infrastructure"],
-  ["documentation_recommendation", "Documentation/recommendation"],
+  ["manual_infrastructure", "Ручная инфраструктура"],
+  ["documentation_recommendation", "Документация/рекомендация"],
   ["qa_checkpoint", "QA checkpoint"],
 ] as const;
 
 const taskPriorityOptions = [
-  ["low", "Low"],
-  ["medium", "Medium"],
-  ["high", "High"],
-  ["urgent", "Urgent"],
+  ["low", "Низкий"],
+  ["medium", "Средний"],
+  ["high", "Высокий"],
+  ["urgent", "Срочный"],
 ] as const;
 
 const taskStatusOptions = [
-  ["todo", "Todo"],
-  ["in_progress", "In progress"],
-  ["blocked", "Blocked"],
-  ["done", "Done"],
+  ["todo", "To do"],
+  ["in_progress", "В работе"],
+  ["blocked", "Заблокировано"],
+  ["done", "Готово"],
 ] as const;
 
 function SelectField<const T extends string>({
@@ -546,7 +546,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Back to project
+      Назад к проекту
     </Link>
   );
 }
@@ -583,7 +583,7 @@ function firstQueryValue(value?: string | string[]) {
 }
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ru", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
@@ -591,10 +591,10 @@ function formatDate(date: Date) {
 
 function formatPrecheckReason(reason: string) {
   const labels: Record<string, string> = {
-    low_readiness_score: "Latest readiness score is low.",
-    smoke_test_spec: "Current spec looks like a smoke-test placeholder.",
-    spec_required: "No spec exists yet.",
-    spec_too_short: "Current spec is short for production roadmap planning.",
+    low_readiness_score: "Последний readiness score слишком низкий.",
+    smoke_test_spec: "Текущая spec похожа на smoke-test placeholder.",
+    spec_required: "Spec ещё не создана.",
+    spec_too_short: "Текущая spec слишком короткая для production roadmap.",
   };
 
   return labels[reason] ?? reason;
@@ -602,30 +602,30 @@ function formatPrecheckReason(reason: string) {
 
 function getRoadmapErrorMessage(reason: string) {
   if (reason === "incomplete_spec") {
-    return "Spec may be incomplete. Regenerate or improve spec before roadmap generation, or generate a draft anyway.";
+    return "Spec может быть неполной. Перегенерируйте или улучшите её перед roadmap либо создайте draft.";
   }
 
   if (reason === "spec_required") {
-    return "Generate a spec before roadmap generation.";
+    return "Сначала сгенерируйте spec.";
   }
 
   if (reason === "database") {
-    return "Roadmap could not be saved because the database is not configured or reachable.";
+    return "Roadmap не удалось сохранить: база данных не настроена или недоступна.";
   }
 
-  return "Roadmap generation failed.";
+  return "Генерация roadmap не удалась.";
 }
 
 function getTaskStateMessage(state: string) {
   const messages: Record<string, string> = {
-    added: "Task added.",
-    confirm_delete: "Check Confirm delete before deleting a task.",
-    database: "Task change could not be saved because the database is not reachable.",
-    deleted: "Task deleted.",
-    moved: "Task order updated.",
-    not_found: "Task or phase was not found.",
-    saved: "Task saved.",
-    validation: "Task title and description are required.",
+    added: "Задача добавлена.",
+    confirm_delete: "Отметьте подтверждение перед удалением задачи.",
+    database: "Изменение задачи не удалось сохранить: база данных недоступна.",
+    deleted: "Задача удалена.",
+    moved: "Порядок задач обновлён.",
+    not_found: "Задача или фаза не найдена.",
+    saved: "Задача сохранена.",
+    validation: "Название и описание задачи обязательны.",
   };
 
   return messages[state] ?? getMutationErrorMessage(state);
@@ -633,20 +633,20 @@ function getTaskStateMessage(state: string) {
 
 function getQAErrorMessage(state: string) {
   const messages: Record<string, string> = {
-    database: "QA checkpoint persistence is not reachable.",
-    not_found: "Project was not found.",
-    roadmap_required: "Generate a roadmap before QA checkpoints.",
+    database: "QA checkpoints не удалось сохранить: база данных недоступна.",
+    not_found: "Проект не найден.",
+    roadmap_required: "Сначала сгенерируйте roadmap.",
   };
 
-  return messages[state] ?? "QA checkpoint generation failed.";
+  return messages[state] ?? "Генерация QA checkpoints не удалась.";
 }
 
 function getMutationErrorMessage(state: string) {
   const messages: Record<string, string> = {
-    database: "Change could not be saved because the database is not reachable.",
-    not_found: "Roadmap item was not found.",
-    validation: "Required fields are missing.",
+    database: "Изменение не удалось сохранить: база данных недоступна.",
+    not_found: "Элемент roadmap не найден.",
+    validation: "Заполните обязательные поля.",
   };
 
-  return messages[state] ?? "Change could not be saved.";
+  return messages[state] ?? "Изменение не удалось сохранить.";
 }

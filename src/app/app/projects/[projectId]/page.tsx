@@ -11,6 +11,7 @@ import {
   type ExecutionSettingsView,
 } from "@/lib/execution/execution-options";
 import { getExecutionSettings } from "@/lib/execution/execution-store";
+import { getLinearReadyExportBundle } from "@/lib/export/export-service";
 import {
   agentPushAccessLabels,
   deploymentModeLabels,
@@ -42,46 +43,46 @@ type ProjectDetailPageProps = {
 
 const placeholderSections = [
   {
-    title: "Specification",
+    title: "Спецификация",
     description:
-      "Generate and open the first editable specification for this project.",
+      "Сгенерируйте и откройте первую редактируемую спецификацию проекта.",
     href: "spec",
-    state: "Implemented",
+    state: "Работает",
   },
   {
-    title: "Questionnaire",
+    title: "Анкета",
     description:
-      "Adaptive question sessions collect requirements before spec generation.",
+      "Ответы на уточняющие вопросы собирают требования перед генерацией spec.",
     href: "questionnaire",
-    state: "Implemented",
+    state: "Работает",
   },
   {
     title: "Roadmap",
     description:
-      "Generate and review the structured roadmap for this project.",
+      "Сгенерируйте и проверьте структурированный roadmap проекта.",
     href: "roadmap",
-    state: "Implemented",
+    state: "Работает",
   },
   {
-    title: "Tasks",
+    title: "Задачи",
     description:
-      "Open roadmap tasks for implementation detail, prompts, and QA notes.",
+      "Откройте roadmap-задачи для деталей реализации, prompts и QA notes.",
     href: "roadmap",
-    state: "Implemented",
+    state: "Работает",
   },
   {
     title: "Prompts",
     description:
-      "Generate scoped Codex Prompts from individual task detail pages.",
+      "Генерируйте scoped Codex Prompts на страницах отдельных задач.",
     href: "roadmap",
-    state: "Implemented",
+    state: "Работает",
   },
   {
-    title: "Exports",
+    title: "Экспорт",
     description:
-      "Copy or download Linear-ready export bundles for manual transfer.",
+      "Скопируйте или скачайте Linear-ready export и ZIP-пакет.",
     href: "export",
-    state: "Implemented",
+    state: "Работает",
   },
 ];
 
@@ -105,10 +106,10 @@ export default async function ProjectDetailPage({
             className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
             href="/app/projects"
           >
-            Back to projects
+            Назад к проектам
           </Link>
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -144,6 +145,11 @@ export default async function ProjectDetailPage({
     roadmapResult.databaseReady && roadmapResult.data
       ? roadmapResult.data.latestRoadmap
       : null;
+  const exportResult = await getLinearReadyExportBundle(project.id);
+  const exportSummary =
+    exportResult.databaseReady && exportResult.data
+      ? exportResult.data.exportSummary
+      : null;
   const taskCount = latestRoadmap?.taskCount ?? 0;
   const qaCheckpointCount =
     latestRoadmap?.phases.reduce(
@@ -160,12 +166,12 @@ export default async function ProjectDetailPage({
     },
     {
       href: `/app/projects/${project.id}`,
-      label: "Classification",
+      label: "Классификация",
       state: project.classification ? "done" : "next",
     },
     {
       href: `/app/projects/${project.id}/questionnaire`,
-      label: "Questionnaire",
+      label: "Анкета",
       state: questionnaireCompleted ? "done" : "next",
     },
     {
@@ -175,7 +181,7 @@ export default async function ProjectDetailPage({
     },
     {
       href: `/app/projects/${project.id}/execution`,
-      label: "Execution",
+      label: "Исполнение",
       state: executionSettings ? "done" : "next",
     },
     {
@@ -186,14 +192,32 @@ export default async function ProjectDetailPage({
     {
       href: `/app/projects/${project.id}/roadmap`,
       label: "Prompts/QA",
-      state: taskCount > 0 && qaCheckpointCount > 0 ? "done" : "next",
+      state:
+        taskCount > 0 &&
+        qaCheckpointCount > 0 &&
+        exportSummary?.missingPromptCount === 0
+          ? "done"
+          : "next",
     },
     {
       href: `/app/projects/${project.id}/export`,
-      label: "Export",
+      label: "Экспорт",
       state: latestRoadmap ? "done" : "next",
     },
   ];
+  const nextStep = getNextStep({
+    executionSettingsReady: Boolean(executionSettings),
+    exportReady:
+      Boolean(latestRoadmap) &&
+      Boolean(exportSummary) &&
+      exportSummary?.missingPromptCount === 0,
+    missingPromptCount: exportSummary?.missingPromptCount ?? taskCount,
+    projectId: project.id,
+    classificationReady: Boolean(project.classification),
+    questionnaireCompleted,
+    roadmapReady: Boolean(latestRoadmap),
+    specReady: Boolean(spec),
+  });
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
@@ -202,7 +226,7 @@ export default async function ProjectDetailPage({
           className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
           href="/app/projects"
         >
-          Back to projects
+          Назад к проектам
         </Link>
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -217,7 +241,7 @@ export default async function ProjectDetailPage({
               </p>
               {project.targetUser ? (
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                  Audience: {project.targetUser}
+                  Аудитория: {project.targetUser}
                 </p>
               ) : null}
             </div>
@@ -227,39 +251,39 @@ export default async function ProjectDetailPage({
           </div>
 
           <dl className="mt-6 grid gap-4 border-t border-[var(--panel-border)] pt-5 sm:grid-cols-2 lg:grid-cols-4">
-            <ProjectMeta label="Created" value={formatDate(project.createdAt)} />
-            <ProjectMeta label="Updated" value={formatDate(project.updatedAt)} />
+            <ProjectMeta label="Создан" value={formatDate(project.createdAt)} />
+            <ProjectMeta label="Обновлен" value={formatDate(project.updatedAt)} />
             <ProjectMeta
-              label="Project type"
-              value={project.projectType ?? "Not provided"}
+              label="Тип проекта"
+              value={project.projectType ?? "Не указано"}
             />
             <ProjectMeta
-              label="Repository"
+              label="Репозиторий"
               value={
                 project.repositoryMode
                   ? repositoryModeLabels[project.repositoryMode]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Deployment"
+              label="Деплой"
               value={
                 project.deploymentTarget
                   ? deploymentTargetLabels[project.deploymentTarget]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Execution"
+              label="Исполнение"
               value={
                 project.executionTarget
                   ? executionTargetLabels[project.executionTarget]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
               label="Repository URL"
-              value={project.repositoryUrl ?? "Not provided"}
+              value={project.repositoryUrl ?? "Не указан"}
             />
           </dl>
         </header>
@@ -273,7 +297,7 @@ export default async function ProjectDetailPage({
             }`}
           >
             {classificationState === "saved"
-              ? "Project classification saved."
+              ? "Классификация проекта сохранена."
               : getClassificationErrorMessage(classificationState)}
           </div>
         ) : null}
@@ -288,15 +312,15 @@ export default async function ProjectDetailPage({
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Prototype progress
+                Прогресс прототипа
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                End-to-end preparation flow
+                Основной сценарий подготовки
               </h2>
             </div>
             <p className="text-sm text-[var(--muted)]">
               {progressSteps.filter((step) => step.state === "done").length}/
-              {progressSteps.length} steps complete
+              {progressSteps.length} шагов готово
             </p>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -313,32 +337,50 @@ export default async function ProjectDetailPage({
                       : "bg-[var(--soft-warning)] text-amber-800"
                   }`}
                 >
-                  {step.state === "done" ? "Ready" : "Next"}
+                  {step.state === "done" ? "Готово" : "Далее"}
                 </span>
                 <p className="mt-3 text-sm font-semibold">{step.label}</p>
               </Link>
             ))}
           </div>
           <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
-            The prototype keeps each step explicit so reviewers can see what is
-            deterministic, what is mock-safe, and what requires manual setup.
+            Каждый шаг запускается отдельной кнопкой, чтобы было понятно, что
+            уже готово, что работает в mock/deterministic режиме и где нужны
+            ручные действия.
           </p>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-[var(--accent)] bg-[var(--soft-accent)] p-5 text-[var(--accent-strong)] shadow-sm">
+          <p className="text-xs font-semibold uppercase">Следующий шаг</p>
+          <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">{nextStep.title}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6">
+                {nextStep.description}
+              </p>
+            </div>
+            <Link
+              className="inline-flex min-h-11 w-fit items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+              href={nextStep.href}
+            >
+              {nextStep.actionLabel}
+            </Link>
+          </div>
         </section>
 
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                AI classifier
+                AI-классификатор
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Project type classification
+                Классификация типа проекта
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Analyze the intake context to identify project type,
-                complexity, suggested modules, missing information, and
-                recommended question blocks. Without an AI key, this runs in
-                deterministic mock mode.
+                Проанализируйте intake-контекст, чтобы определить тип проекта,
+                сложность, возможные модули, недостающую информацию и блоки
+                вопросов. Без AI key работает deterministic mock mode.
               </p>
             </div>
             <form action={classifyAction}>
@@ -346,7 +388,7 @@ export default async function ProjectDetailPage({
                 className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 type="submit"
               >
-                Analyze idea
+                Классифицировать проект
               </button>
             </form>
           </div>
@@ -355,46 +397,46 @@ export default async function ProjectDetailPage({
             <div className="mt-5 grid gap-4 border-t border-[var(--panel-border)] pt-5 lg:grid-cols-3">
               <div className="grid gap-4">
                 <ProjectMeta
-                  label="Project type"
+                  label="Тип проекта"
                   value={project.classification.projectType}
                 />
                 <ProjectMeta
-                  label="Complexity"
-                  value={capitalize(project.classification.complexity)}
+                  label="Сложность"
+                  value={formatComplexity(project.classification.complexity)}
                 />
                 <ProjectMeta
-                  label="Confidence"
+                  label="Уверенность"
                   value={`${Math.round(project.classification.confidence * 100)}%`}
                 />
                 <ProjectMeta
-                  label="Mode"
+                  label="Режим"
                   value={
                     project.classification.mode === "mock"
                       ? "Mock mode"
-                      : "Configured provider"
+                      : "Настроенный provider"
                   }
                 />
                 <ProjectMeta
-                  label="Updated"
+                  label="Обновлено"
                   value={
                     project.classificationUpdatedAt
                       ? formatDate(project.classificationUpdatedAt)
-                      : "Not recorded"
+                      : "Не записано"
                   }
                 />
               </div>
               <ClassificationList
                 items={project.classification.suggestedModules}
-                title="Suggested modules"
+                title="Предложенные модули"
               />
               <div className="grid gap-4">
                 <ClassificationList
                   items={project.classification.missingInformationAreas}
-                  title="Missing information"
+                  title="Недостающая информация"
                 />
                 <ClassificationList
                   items={project.classification.recommendedQuestionBlocks}
-                  title="Recommended question blocks"
+                  title="Рекомендуемые блоки вопросов"
                 />
               </div>
               <p className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm leading-6 text-[var(--muted)] lg:col-span-3">
@@ -403,74 +445,74 @@ export default async function ProjectDetailPage({
             </div>
           ) : (
             <div className="mt-5 rounded-md bg-[var(--section-surface)] px-3 py-3 text-sm text-[var(--muted)]">
-              No classification saved yet.
+              Классификация ещё не запускалась. Нажмите “Классифицировать проект”.
             </div>
           )}
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-3">
-          <ContextPanel title="Repository context">
+          <ContextPanel title="GitHub / repository context">
             <ProjectMeta
-              label="Mode"
+              label="Состояние"
               value={
                 project.repositoryMode
                   ? repositoryModeLabels[project.repositoryMode]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Visibility"
+              label="Видимость"
               value={
                 project.repositoryVisibility
                   ? repositoryVisibilityLabels[project.repositoryVisibility]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Repository creator"
+              label="Кто создаёт"
               value={
                 project.repositoryOwner
                   ? repositoryOwnerLabels[project.repositoryOwner]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Agent can push"
+              label="Агент может push"
               value={
                 project.agentCanPush
                   ? agentPushAccessLabels[project.agentCanPush]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
               label="Default branch"
-              value={project.defaultBranch ?? "Not provided"}
+              value={project.defaultBranch ?? "Не указана"}
             />
           </ContextPanel>
 
           <ContextPanel title="Deployment context">
             <ProjectMeta
-              label="Target"
+              label="Цель"
               value={
                 project.deploymentTarget
                   ? deploymentTargetLabels[project.deploymentTarget]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Mode"
+              label="Режим"
               value={
                 project.deploymentMode
                   ? deploymentModeLabels[project.deploymentMode]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="Configured by"
+              label="Кто настраивает"
               value={
                 project.deploymentOwner
                   ? deploymentOwnerLabels[project.deploymentOwner]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
           </ContextPanel>
@@ -481,25 +523,25 @@ export default async function ProjectDetailPage({
               value={
                 project.executionTarget
                   ? executionTargetLabels[project.executionTarget]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <ProjectMeta
-              label="QA preference"
+              label="QA-настройка"
               value={
                 project.qaPreference
                   ? qaModeLabels[project.qaPreference]
-                  : "Not set"
+                  : "Не выбрано"
               }
             />
             <div className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-              Execution settings now shape future roadmap and task planning.
+              Эти настройки влияют на roadmap, tasks, prompts, QA и export.
             </div>
             <Link
               className="inline-flex min-h-10 w-fit items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
               href={`/app/projects/${project.id}/execution`}
             >
-              Edit execution settings
+              Настроить исполнение
             </Link>
           </ContextPanel>
         </section>
@@ -526,29 +568,29 @@ export default async function ProjectDetailPage({
                   className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                   href={`/app/projects/${project.id}/${section.href}`}
                 >
-                  {section.title === "Specification"
-                    ? "Open spec"
+                  {section.title === "Спецификация"
+                    ? "Открыть spec"
                     : section.title === "Roadmap"
-                      ? "Open roadmap"
-                      : section.title === "Questionnaire"
-                        ? "Open questionnaire"
-                        : section.title === "Exports"
-                          ? "Open export"
-                          : "Open roadmap"}
+                      ? "Открыть roadmap"
+                      : section.title === "Анкета"
+                        ? "Ответить на вопросы"
+                        : section.title === "Экспорт"
+                          ? "Открыть export"
+                          : "Открыть roadmap"}
                 </Link>
               ) : null}
-              {section.title === "Specification" && specQuality ? (
+              {section.title === "Спецификация" && specQuality ? (
                 <div className="mt-4 rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]">
-                  Readiness:{" "}
+                  Готовность:{" "}
                   <span className="font-semibold text-[var(--foreground)]">
                     {specQuality.readinessScore}/100
                   </span>{" "}
-                  ({capitalize(specQuality.readinessLevel)})
+                  ({formatReadinessLevel(specQuality.readinessLevel)})
                 </div>
               ) : null}
               {section.title === "Roadmap" && latestRoadmap ? (
                 <div className="mt-4 rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]">
-                  Latest:{" "}
+                  Последний:{" "}
                   <span className="font-semibold text-[var(--foreground)]">
                     {latestRoadmap.phases.length} phases
                   </span>
@@ -582,15 +624,14 @@ function ReviewCleanupSection({
   return (
     <section className="mt-6 rounded-lg border border-red-200 bg-red-50 p-5 text-red-950 shadow-sm">
       <p className="text-xs font-semibold uppercase">Review cleanup</p>
-      <h2 className="mt-2 text-xl font-semibold">Delete test project</h2>
+      <h2 className="mt-2 text-xl font-semibold">Удалить тестовый проект</h2>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-red-900">
-        This action is only available for projects marked as review/test/checkpoint
-        workspaces. It deletes the project and related prototype data through
-        Prisma cascade rules.
+        Действие доступно только для проектов, помеченных как review/test/checkpoint.
+        Оно удаляет проект и связанные prototype data через Prisma cascade rules.
       </p>
       <form action={deleteAction} className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
         <label className="grid gap-2 text-sm font-semibold">
-          Type the exact project title to confirm
+          Введите точное название проекта для подтверждения
           <input
             className="min-h-10 rounded-md border border-red-300 bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none"
             name="confirmationTitle"
@@ -601,7 +642,7 @@ function ReviewCleanupSection({
           className="min-h-10 self-end rounded-md border border-red-400 bg-red-100 px-4 py-2 text-sm font-semibold text-red-950 transition hover:bg-red-200"
           type="submit"
         >
-          Delete test project
+          Удалить тестовый проект
         </button>
       </form>
     </section>
@@ -618,20 +659,20 @@ function ExecutionSettingsSummary({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-            Execution settings
+            Настройки исполнения
           </p>
           <h2 className="mt-2 text-xl font-semibold">
-            Roadmap planning defaults
+            Defaults для roadmap planning
           </h2>
         </div>
       </div>
       <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ProjectMeta
-          label="Task system"
+          label="Task-система"
           value={executionSettingLabels.taskSystemLabels[settings.taskSystem]}
         />
         <ProjectMeta
-          label="QA frequency"
+          label="Частота QA"
           value={
             executionSettingLabels.qaCheckpointFrequencyLabels[
               settings.qaCheckpointFrequency
@@ -639,11 +680,11 @@ function ExecutionSettingsSummary({
           }
         />
         <ProjectMeta
-          label="Project mode"
+          label="Режим проекта"
           value={executionSettingLabels.projectModeLabels[settings.projectMode]}
         />
         <ProjectMeta
-          label="Roadmap style"
+          label="Стиль roadmap"
           value={executionSettingLabels.roadmapStyleLabels[settings.roadmapStyle]}
         />
       </dl>
@@ -704,40 +745,146 @@ function ProjectMeta({ label, value }: { label: string; value: string }) {
 }
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ru", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
 }
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function formatComplexity(value: string) {
+  const labels: Record<string, string> = {
+    high: "Высокая",
+    low: "Низкая",
+    medium: "Средняя",
+    unknown: "Неизвестно",
+  };
+
+  return labels[value] ?? value;
+}
+
+function formatReadinessLevel(value: string) {
+  const labels: Record<string, string> = {
+    high: "высокая",
+    low: "низкая",
+    medium: "средняя",
+  };
+
+  return labels[value] ?? value;
+}
+
+function getNextStep(input: {
+  classificationReady: boolean;
+  executionSettingsReady: boolean;
+  exportReady: boolean;
+  missingPromptCount: number;
+  projectId: string;
+  questionnaireCompleted: boolean;
+  roadmapReady: boolean;
+  specReady: boolean;
+}) {
+  if (!input.classificationReady) {
+    return {
+      actionLabel: "Классифицировать проект",
+      description:
+        "Сначала определите тип и сложность проекта. Это поможет выбрать правильные вопросы анкеты.",
+      href: `/app/projects/${input.projectId}`,
+      title: "Запустите классификацию идеи",
+    };
+  }
+
+  if (!input.questionnaireCompleted) {
+    return {
+      actionLabel: "Ответить на вопросы",
+      description:
+        "Анкета собирает недостающие требования для будущей спецификации.",
+      href: `/app/projects/${input.projectId}/questionnaire`,
+      title: "Пройдите уточняющую анкету",
+    };
+  }
+
+  if (!input.specReady) {
+    return {
+      actionLabel: "Сгенерировать спецификацию",
+      description:
+        "Создайте первую spec из intake, классификации и ответов анкеты.",
+      href: `/app/projects/${input.projectId}/spec`,
+      title: "Сгенерируйте спецификацию",
+    };
+  }
+
+  if (!input.executionSettingsReady) {
+    return {
+      actionLabel: "Настроить параметры разработки",
+      description:
+        "Выберите execution target, QA mode, roadmap style и deployment planning перед генерацией roadmap.",
+      href: `/app/projects/${input.projectId}/execution`,
+      title: "Настройте параметры разработки",
+    };
+  }
+
+  if (!input.roadmapReady) {
+    return {
+      actionLabel: "Сгенерировать roadmap",
+      description:
+        "Roadmap строится из текущей spec и настроек исполнения.",
+      href: `/app/projects/${input.projectId}/roadmap`,
+      title: "Сгенерируйте roadmap",
+    };
+  }
+
+  if (input.missingPromptCount > 0) {
+    return {
+      actionLabel: "Открыть roadmap",
+      description:
+        "Откройте roadmap, выберите задачу и нажмите “Сгенерировать prompt”, чтобы закрыть missing prompts.",
+      href: `/app/projects/${input.projectId}/roadmap`,
+      title: "Сгенерируйте промпты для задач",
+    };
+  }
+
+  if (!input.exportReady) {
+    return {
+      actionLabel: "Открыть export",
+      description:
+        "Проверьте export warnings и подготовьте ZIP/Linear-ready bundle.",
+      href: `/app/projects/${input.projectId}/export`,
+      title: "Подготовьте export bundle",
+    };
+  }
+
+  return {
+    actionLabel: "Скачать пакет проекта",
+    description:
+      "Основной сценарий готов: можно скачать ZIP-пакет или открыть Linear preview.",
+    href: `/app/projects/${input.projectId}/export`,
+    title: "Скачайте пакет проекта",
+  };
 }
 
 function getClassificationErrorMessage(reason: string) {
   if (reason === "database") {
-    return "Classification could not run because the database is not configured or reachable.";
+    return "Классификацию не удалось запустить: база данных не настроена или недоступна.";
   }
 
   if (reason === "not_found") {
-    return "Project was not found.";
+    return "Проект не найден.";
   }
 
-  return "Classification provider failed. Check AI_PROVIDER settings or use mock mode.";
+  return "Классификатор не сработал. Проверьте AI_PROVIDER или используйте mock mode.";
 }
 
 function getDeleteErrorMessage(reason: string) {
   if (reason === "confirmation") {
-    return "Project was not deleted because the confirmation title did not match.";
+    return "Проект не удалён: название для подтверждения не совпало.";
   }
 
   if (reason === "not_review_test_project") {
-    return "Project was not deleted because cleanup is limited to review/test/checkpoint projects.";
+    return "Проект не удалён: cleanup доступен только для review/test/checkpoint проектов.";
   }
 
   if (reason === "not_found") {
-    return "Project was not found.";
+    return "Проект не найден.";
   }
 
-  return "Project could not be deleted because the database is not configured or reachable.";
+  return "Проект не удалось удалить: база данных не настроена или недоступна.";
 }

@@ -78,81 +78,81 @@ export type ExecutionTargetValue = (typeof executionTargets)[number];
 export type QAModeValue = (typeof qaModes)[number];
 
 export const projectStatusLabels: Record<ProjectStatusValue, string> = {
-  draft: "Draft",
-  questionnaire: "Questionnaire",
-  spec_ready: "Spec ready",
-  roadmap_ready: "Roadmap ready",
-  exported: "Exported",
+  draft: "Черновик",
+  questionnaire: "Анкета",
+  spec_ready: "Спецификация готова",
+  roadmap_ready: "Roadmap готов",
+  exported: "Экспортирован",
 };
 
 export const repositoryModeLabels: Record<RepositoryModeValue, string> = {
-  none: "No repository yet",
-  existing: "Existing repository",
-  new_repository: "New repository needed",
-  undecided: "Undecided",
+  none: "Репозитория пока нет",
+  existing: "Существующий репозиторий",
+  new_repository: "Нужно создать новый репозиторий",
+  undecided: "Пока не выбрано",
 };
 
 export const repositoryVisibilityLabels: Record<
   RepositoryVisibilityValue,
   string
 > = {
-  public: "Public",
-  private: "Private",
-  internal: "Internal",
-  unknown: "Unknown",
-  undecided: "Undecided",
+  public: "Публичный",
+  private: "Приватный",
+  internal: "Внутренний",
+  unknown: "Неизвестно",
+  undecided: "Пока не выбрано",
 };
 
 export const repositoryOwnerLabels: Record<RepositoryOwnerValue, string> = {
-  user: "User",
+  user: "Пользователь",
   hermes: "Hermes",
-  codex_authenticated: "Codex if authenticated",
-  not_decided: "Not decided",
+  codex_authenticated: "Codex, если есть доступ",
+  not_decided: "Пока не выбрано",
 };
 
 export const agentPushAccessLabels: Record<AgentPushAccessValue, string> = {
-  yes: "Yes",
-  no: "No",
-  unknown: "Unknown",
+  yes: "Да",
+  no: "Нет",
+  unknown: "Неизвестно",
 };
 
 export const deploymentTargetLabels: Record<DeploymentTargetValue, string> = {
   railway: "Railway",
   vercel: "Vercel",
   render: "Render",
-  other: "Other",
-  undecided: "Undecided",
+  other: "Другое",
+  undecided: "Пока не выбрано",
 };
 
 export const deploymentModeLabels: Record<DeploymentModeValue, string> = {
-  manual_instructions: "Manual instructions only",
-  prepare_config_files: "Prepare config files",
-  future_api_integration: "Future API integration",
+  manual_instructions: "Только ручные инструкции",
+  prepare_config_files: "Подготовить config-файлы",
+  future_api_integration: "Будущая API-интеграция",
 };
 
 export const deploymentOwnerLabels: Record<DeploymentOwnerValue, string> = {
-  user: "User",
+  user: "Пользователь",
   hermes: "Hermes",
-  codex_authenticated: "Codex if authenticated",
-  not_decided: "Not decided",
+  codex_authenticated: "Codex, если есть доступ",
+  not_decided: "Пока не выбрано",
 };
 
 export const executionTargetLabels: Record<ExecutionTargetValue, string> = {
   codex: "Codex",
   claude_code: "Claude Code",
   cursor: "Cursor",
-  human_developer: "Human developer",
-  multiple: "Multiple",
-  human_team: "Human team",
-  hybrid: "Hybrid",
-  unknown: "Unknown",
-  undecided: "Undecided",
+  human_developer: "Разработчик",
+  multiple: "Несколько вариантов",
+  human_team: "Команда разработчиков",
+  hybrid: "Гибридный режим",
+  unknown: "Пока не выбрано",
+  undecided: "Пока не выбрано",
 };
 
 export const qaModeLabels: Record<QAModeValue, string> = {
-  off: "Off",
-  minimal: "Minimal",
-  standard: "Standard",
-  strict: "Strict",
-  custom: "Custom",
+  off: "Без QA",
+  minimal: "Минимальный QA",
+  standard: "Стандартный QA",
+  strict: "Строгий QA",
+  custom: "Настраиваемый QA",
 };

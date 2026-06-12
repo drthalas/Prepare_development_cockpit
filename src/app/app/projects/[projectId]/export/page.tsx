@@ -23,7 +23,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
         <div className="mx-auto max-w-6xl">
           <BackLink projectId={projectId} />
           <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6">
-            <h1 className="text-2xl font-semibold">Database setup required</h1>
+            <h1 className="text-2xl font-semibold">Нужно настроить базу данных</h1>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               {result.message}
             </p>
@@ -69,15 +69,15 @@ export default async function ExportPage({ params }: ExportPageProps) {
                 {bundle.project.title}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Copy or download a structured package that can be moved into
-                Linear manually. This page does not call the Linear API.
+                Скопируйте или скачайте структурированный пакет, который можно
+                вручную перенести в Linear. Эта страница не вызывает Linear API.
               </p>
             </div>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
               href={`/app/projects/${bundle.project.id}/linear-preview`}
             >
-              Open Linear preview
+              Открыть Linear preview
             </Link>
           </div>
         </header>
@@ -85,10 +85,10 @@ export default async function ExportPage({ params }: ExportPageProps) {
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Export summary</h2>
+              <h2 className="text-xl font-semibold">Сводка экспорта</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Generated from the structured project, latest roadmap, tasks,
-                prompts, QA checkpoints, execution settings, and repository
+                Собрано из структурированного проекта, актуального roadmap,
+                задач, prompts, QA checkpoints, execution settings и GitHub
                 context.
               </p>
             </div>
@@ -97,34 +97,35 @@ export default async function ExportPage({ params }: ExportPageProps) {
             </span>
           </div>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <Meta label="Phases" value={String(bundle.exportSummary.phaseCount)} />
-            <Meta label="Tasks" value={String(bundle.exportSummary.taskCount)} />
+            <Meta label="Фазы" value={String(bundle.exportSummary.phaseCount)} />
+            <Meta label="Задачи" value={String(bundle.exportSummary.taskCount)} />
             <Meta
               label="QA checkpoints"
               value={String(bundle.exportSummary.qaCheckpointCount)}
             />
             <Meta
-              label="Missing prompts"
+              label="Нет prompts"
               value={String(bundle.exportSummary.missingPromptCount)}
             />
             <Meta
               label="Roadmap"
-              value={bundle.exportSummary.roadmapAvailable ? "Ready" : "Missing"}
+              value={bundle.exportSummary.roadmapAvailable ? "Готов" : "Не создан"}
             />
           </dl>
 
           {!bundle.exportSummary.roadmapAvailable ? (
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
-              text="No roadmap exists yet. Generate a roadmap before exporting Linear-ready tasks."
+              linkLabel="Открыть roadmap"
+              text="Roadmap ещё не создан. Сначала сгенерируйте roadmap, затем возвращайтесь к export."
             />
           ) : null}
 
           {bundle.exportSummary.missingPromptCount > 0 ? (
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
-              linkLabel="Open roadmap"
-              text="Some tasks do not have Codex prompts yet. Export is allowed, but those issue descriptions will mark prompts as missing. Open a task and use Generate Codex Prompt to close the gap."
+              linkLabel="Открыть roadmap"
+              text="У части задач нет Codex prompts. Export не блокируется, но в Linear descriptions будет отметка, что prompt отсутствует. Откройте задачу и нажмите “Сгенерировать prompt”."
             />
           ) : null}
 
@@ -138,22 +139,22 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase">
-                  Prompt coverage
+                  Покрытие prompts
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
-                  {missingPromptTasks.length} task(s) need Codex prompts
+                  {missingPromptTasks.length} задач без Codex prompts
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900">
-                  Export remains available. Generate prompts from task detail
-                  pages so Linear issues include scoped implementation
-                  instructions.
+                  Export доступен, но лучше сгенерировать prompts на страницах
+                  задач, чтобы Linear issues получили scoped инструкции для
+                  реализации.
                 </p>
               </div>
               <Link
                 className="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 transition hover:border-amber-500"
                 href={missingPromptTasks[0].href}
               >
-                Generate first missing prompt
+                Открыть первую задачу без prompt
               </Link>
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2">
@@ -172,8 +173,8 @@ export default async function ExportPage({ params }: ExportPageProps) {
             </div>
             {missingPromptTasks.length > 8 ? (
               <p className="mt-3 text-sm text-amber-900">
-                {missingPromptTasks.length - 8} more task(s) are available from
-                the roadmap page.
+                Ещё {missingPromptTasks.length - 8} задач доступны на странице
+                roadmap.
               </p>
             ) : null}
           </section>
@@ -187,18 +188,18 @@ export default async function ExportPage({ params }: ExportPageProps) {
                   Artifact bundle
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
-                  Download project files
+                  Скачать файлы проекта
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                  ZIP and individual files are generated from the structured
-                  model. Secrets and local env files are not included.
+                  ZIP и отдельные файлы генерируются из structured model.
+                  Секреты и локальные env-файлы не включаются.
                 </p>
               </div>
               <a
                 className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 href={`/api/projects/${bundle.project.id}/export/bundle`}
               >
-                Download ZIP artifact bundle
+                Скачать ZIP-пакет
               </a>
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -219,9 +220,9 @@ export default async function ExportPage({ params }: ExportPageProps) {
                         className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
                         href={`/api/projects/${bundle.project.id}/export/files/${file.filename}`}
                       >
-                        Download
+                        Скачать
                       </a>
-                      <CopyButton label="Copy" text={file.content} />
+                      <CopyButton label="Скопировать" text={file.content} />
                     </div>
                   </div>
                 </div>
@@ -235,7 +236,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             actions={
               <>
                 <CopyButton
-                  label="Copy Linear import prompt"
+                  label="Скопировать Linear import prompt"
                   text={bundle.linearImportPrompt}
                 />
               </>
@@ -248,7 +249,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               <DownloadButton
                 content={bundle.markdownRoadmap}
                 filename={`${slug}-linear-roadmap.md`}
-                label="Download Markdown"
+                label="Скачать Markdown"
                 mimeType="text/markdown;charset=utf-8"
               />
             }
@@ -260,7 +261,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               <DownloadButton
                 content={bundle.jsonTasksBundle}
                 filename={`${slug}-tasks.json`}
-                label="Download JSON"
+                label="Скачать JSON"
                 mimeType="application/json;charset=utf-8"
               />
             }
@@ -272,7 +273,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               <DownloadButton
                 content={bundle.csvIssues}
                 filename={`${slug}-linear-issues.csv`}
-                label="Download CSV"
+                label="Скачать CSV"
                 mimeType="text/csv;charset=utf-8"
               />
             }
@@ -281,10 +282,10 @@ export default async function ExportPage({ params }: ExportPageProps) {
           />
           <ExportPanel
             actions={
-              <CopyButton label="Copy all tasks" text={bundle.copyAllTasks} />
+              <CopyButton label="Скопировать все задачи" text={bundle.copyAllTasks} />
             }
             content={bundle.copyAllTasks}
-            title="Copy all tasks"
+            title="Все задачи одним текстом"
             wide
           />
         </section>
@@ -299,7 +300,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Back to project
+      Назад к проекту
     </Link>
   );
 }
@@ -349,7 +350,7 @@ function Meta({ label, value }: { label: string; value: string }) {
 
 function Warning({
   href,
-  linkLabel = "Open roadmap",
+  linkLabel = "Открыть roadmap",
   text,
 }: {
   href?: string;

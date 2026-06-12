@@ -56,11 +56,11 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
       <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Spec editor</h2>
+            <h2 className="text-xl font-semibold">Редактор spec</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-              Edit the generated Markdown directly. Draft changes autosave to
-              the current spec; use Save version when the edit should become a
-              tracked version.
+              Редактируйте Markdown напрямую. Черновик autosave обновляет
+              текущую spec; нажмите “Сохранить версию”, когда правка должна
+              стать отдельной версией.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -73,7 +73,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               onClick={() => setActiveTab("edit")}
               type="button"
             >
-              Edit
+              Редактировать
             </button>
             <button
               className={`min-h-10 rounded-md border px-4 text-sm font-semibold ${
@@ -91,20 +91,20 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               disabled={isPending}
               type="submit"
             >
-              {isPending ? "Saving..." : "Save version"}
+              {isPending ? "Сохранение..." : "Сохранить версию"}
             </button>
           </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
           <span className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-[var(--muted)]">
-            Current version: {spec.currentVersion ? `v${spec.currentVersion}` : "none"}
+            Текущая версия: {spec.currentVersion ? `v${spec.currentVersion}` : "нет"}
           </span>
           <span className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-[var(--muted)]">
             Autosave: {formatSaveState(saveState)}
           </span>
           <span className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-[var(--muted)]">
-            Last updated: {formatDate(spec.updatedAt)}
+            Обновлено: {formatDate(spec.updatedAt)}
           </span>
         </div>
       </section>
@@ -154,7 +154,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h3 className="text-lg font-semibold">Version history</h3>
+          <h3 className="text-lg font-semibold">История версий</h3>
           <div className="mt-4 grid gap-2">
             {spec.versions.length > 0 ? (
               spec.versions.map((version) => (
@@ -170,16 +170,16 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               ))
             ) : (
               <p className="text-sm text-[var(--muted)]">
-                No versions saved yet.
+                Версии ещё не сохранены.
               </p>
             )}
           </div>
         </div>
 
         <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h3 className="text-lg font-semibold">Section actions</h3>
+          <h3 className="text-lg font-semibold">Действия с секциями</h3>
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
-            {["Improve section", "Regenerate section", "Add missing details"].map(
+            {["Улучшить секцию", "Перегенерировать секцию", "Добавить детали"].map(
               (action) => (
                 <button
                   className="min-h-10 cursor-not-allowed rounded-md border border-[var(--panel-border)] px-3 text-sm font-semibold text-[var(--muted)] opacity-65"
@@ -219,22 +219,22 @@ function parseMarkdown(markdown: string) {
 
 function formatSaveState(state: SaveState) {
   if (state === "saving") {
-    return "saving";
+    return "сохраняется";
   }
 
   if (state === "saved") {
-    return "saved";
+    return "сохранено";
   }
 
   if (state === "error") {
-    return "error";
+    return "ошибка";
   }
 
-  return "idle";
+  return "ожидание";
 }
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("ru", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
