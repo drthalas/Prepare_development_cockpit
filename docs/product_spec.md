@@ -227,6 +227,20 @@ Before direct API integration, the product maps internal data into a previewable
 
 The preview shows project, milestones, issue count, labels, issue list, and warnings for missing roadmap/spec/prompt data. It does not call Linear APIs or create Linear entities.
 
+## Linear API Integration
+
+The first API integration is guarded:
+
+- If `LINEAR_API_KEY` is missing, the product shows setup state and keeps manual export/preview available.
+- Dry run records what would be sent without calling Linear APIs.
+- Real creation requires an explicit confirmation phrase.
+- Real creation uses the internal Linear Project Structure to create a Linear project and issues when permissions allow.
+- Codex Prompts are inserted into issue descriptions.
+- Labels, priorities, estimates, and milestone/grouping context are preserved as far as the API path supports.
+- Attempt metadata is saved for audit, including status, created project info, created issue count, warnings, and errors.
+
+The API key is never printed, committed, or stored in project records. Duplicate prevention is limited to warning and result persistence in this phase; users should review previous export attempts before rerunning real creation.
+
 ## Deployment Guidance
 
 The product should not automatically create deployments. It should generate deployment guides, environment checklists, and recommendations. Railway is the first deployment target for this repository, but Railway resources must be created manually.

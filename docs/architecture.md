@@ -203,6 +203,15 @@ PDC-019 adds an internal Linear Project Structure mapping layer:
 
 The mapper converts phases to milestones, tasks to issues, QA checkpoint tasks to QA-labeled issues, task categories to labels, task priorities to Linear priority values, task status to suggested Linear status, and Codex Prompts to issue description sections. PDC-019 does not call Linear APIs, require `LINEAR_API_KEY`, add auth, or add billing.
 
+PDC-020 adds the first guarded Linear API integration layer:
+
+- `src/lib/linear/linear-client.ts`: environment-based Linear GraphQL client and setup status.
+- `src/lib/linear/linear-api.ts`: dry-run and confirmed create orchestration using the internal Linear Project Structure.
+- `/api/projects/[projectId]/linear`: status, dry-run, and confirmed-create API route.
+- `/app/projects/[projectId]/linear-preview`: setup state, dry-run action, and explicit confirmation UI for real creation.
+
+`LINEAR_API_KEY` is read only from runtime env and is never printed or stored. Dry runs do not call the Linear API and persist an attempt record in `ExportBundle(type=linear_ready)`. Real creation requires the key and an exact confirmation phrase. Creation stores result metadata in `ExportBundle`, including created project data, issue count, warnings, and errors. Label creation is deferred; labels are preserved in issue descriptions and preview/export data.
+
 ## Linear Architecture
 
 Initial Linear support should generate Linear-ready exports without API access. Direct Linear API integration should come later, after generated task shape and approval flows are stable.
