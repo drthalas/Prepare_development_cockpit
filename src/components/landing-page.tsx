@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 
@@ -14,13 +15,20 @@ const infoSteps = [
 export function LandingPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="mx-auto grid h-12 w-full max-w-5xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:h-14 sm:px-6">
+      <header className="mx-auto grid h-14 w-full max-w-5xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:h-16 sm:px-6">
         <Link
-          className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-[var(--foreground)]"
+          aria-label="Nikolaev.AI"
+          className="flex min-w-0 items-center"
           href="/"
         >
-          <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-          <span>Nikolaev.AI</span>
+          <Image
+            alt="Nikolaev.AI"
+            className="h-8 w-auto sm:h-9"
+            height={40}
+            priority
+            src="/branding/nikolaev-ai-logo.svg"
+            width={178}
+          />
         </Link>
         <p className="min-w-0 truncate text-center text-[10px] font-medium leading-none text-[var(--muted)] sm:text-xs">
           Prepare Development Cockpit
@@ -33,7 +41,7 @@ export function LandingPage() {
         </Link>
       </header>
 
-      <section className="flex min-h-[calc(100vh-3rem)] items-start justify-center px-5 pt-10 pb-12 sm:min-h-[calc(100vh-3.5rem)] sm:px-8 sm:pt-16">
+      <section className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center px-5 py-8 sm:min-h-[calc(100svh-4rem)] sm:px-8">
         <div className="mx-auto w-full max-w-2xl text-center">
           <h1 className="mx-auto max-w-[16.5rem] text-[2.25rem] font-semibold leading-[1.06] tracking-normal text-[var(--foreground)] sm:max-w-2xl sm:text-5xl md:text-6xl">
             Prepare Development Cockpit
