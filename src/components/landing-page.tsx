@@ -15,7 +15,7 @@ const infoSteps = [
 export function LandingPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[var(--background)] text-[var(--foreground)]">
-      <header className="mx-auto grid h-[4.5rem] w-full max-w-5xl grid-cols-[8.5rem_1fr_auto] items-center gap-3 px-5 sm:h-20 sm:grid-cols-[10rem_1fr_auto] sm:px-8">
+      <header className="mx-auto grid h-[4.5rem] w-full max-w-5xl grid-cols-[8.5rem_1fr_8.5rem] items-center gap-3 px-5 sm:h-20 sm:grid-cols-[10rem_1fr_10rem] sm:px-8">
         <Link
           aria-label="Nikolaev Solutions AI Lab"
           className="flex min-w-0 items-center"
@@ -33,12 +33,7 @@ export function LandingPage() {
         <p className="min-w-0 truncate text-center text-[10px] font-medium leading-none text-[var(--muted)] sm:text-xs">
           Prepare Development Cockpit
         </p>
-        <Link
-          className="justify-self-end rounded-lg border border-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-strong)] transition hover:bg-[var(--soft-accent)]"
-          href="/app/projects"
-        >
-          Проекты
-        </Link>
+        <span aria-hidden="true" />
       </header>
 
       <section className="flex min-h-[calc(100svh-4.5rem)] items-center justify-center px-5 py-8 sm:min-h-[calc(100svh-5rem)] sm:px-8">
@@ -100,7 +95,7 @@ export function LandingPage() {
           <div className="mt-8 flex w-full max-w-[22.5rem] flex-col items-stretch justify-center gap-4">
             <Button
               className="min-h-14 w-full rounded-2xl px-7 text-lg shadow-lg shadow-emerald-900/15"
-              href="/app/projects"
+              href="/app/projects/new"
             >
               Создать проект
             </Button>

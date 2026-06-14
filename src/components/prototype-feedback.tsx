@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 export function PrototypeFeedback() {
   const pathname = usePathname();
 
-  if (pathname === "/") {
+  if (pathname === "/" || pathname === "/app/projects/new") {
     return null;
   }
 

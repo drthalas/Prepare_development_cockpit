@@ -49,7 +49,7 @@ export async function createProjectAction(formData: FormData) {
   });
 
   if (!result.ok) {
-    redirect(`/app/projects?error=${result.reason}`);
+    redirect(`/app/projects/new?error=${result.reason}`);
   }
 
   redirect(`/app/projects/${result.projectId}`);

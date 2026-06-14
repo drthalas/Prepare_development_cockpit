@@ -63,7 +63,7 @@ export function AppShell() {
 
         <section className="px-5 py-6 sm:px-8 lg:px-10">
           <PageHeader
-            actions={<ActionLink href="/app/projects">Создать проект</ActionLink>}
+            actions={<ActionLink href="/app/projects/new">Создать проект</ActionLink>}
             description="Начните с проекта. Дальше страница проекта покажет одну главную кнопку для следующего шага."
             eyebrow="Рабочая область"
             title="Cockpit подготовки разработки"
@@ -87,8 +87,8 @@ export function AppShell() {
               </div>
               <div className="mt-5">
                 <EmptyState
-                  actionHref="/app/projects"
-                  actionLabel="Открыть проекты"
+                  actionHref="/app/projects/new"
+                  actionLabel="Создать проект"
                   description="Создайте первый проект из идеи."
                   title="Пока нет проектов"
                 />
