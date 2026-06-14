@@ -20,22 +20,25 @@ const outcomes = [
 export function LandingPage() {
   return (
     <main className="bg-[var(--background)] text-[var(--foreground)]">
-      <section className="flex min-h-screen items-center justify-center px-5 py-16 sm:px-8">
-        <div className="mx-auto w-full max-w-3xl text-center">
-          <h1 className="text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
+      <section className="flex min-h-screen items-center justify-center px-5 py-20 sm:px-8">
+        <div className="mx-auto w-full max-w-2xl text-center">
+          <h1 className="mx-auto max-w-[18rem] text-4xl font-semibold leading-[1.04] tracking-normal text-[var(--foreground)] sm:max-w-2xl sm:text-5xl md:text-6xl">
             Prepare Development Cockpit
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-2xl leading-snug text-[var(--muted)] sm:text-3xl">
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-7 text-[var(--muted)] sm:mt-6 sm:text-xl sm:leading-8">
             Создайте проект из идеи
             <br />и получите структуру разработки.
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button className="w-full sm:w-auto" href="/app/projects">
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button
+              className="min-h-12 w-full rounded-lg px-6 shadow-md shadow-emerald-900/10 sm:w-auto"
+              href="/app/projects"
+            >
               Создать проект
             </Button>
             <details className="group w-full sm:w-auto">
-              <summary className="inline-flex h-11 w-full cursor-pointer list-none items-center justify-center rounded-md border border-[var(--panel-border)] bg-[var(--panel)] px-5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--section-surface)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:w-auto [&::-webkit-details-marker]:hidden">
+              <summary className="inline-flex h-12 w-full cursor-pointer list-none items-center justify-center rounded-lg border border-[var(--panel-border)] bg-transparent px-6 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--accent)] hover:bg-[var(--panel)] hover:text-[var(--accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:w-auto [&::-webkit-details-marker]:hidden">
                 Информация
               </summary>
               <div className="mx-auto mt-5 max-w-md rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 text-left shadow-sm">
