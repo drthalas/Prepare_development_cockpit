@@ -88,8 +88,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               <h2 className="text-xl font-semibold">Сводка экспорта</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 Собрано из структурированного проекта, актуального roadmap,
-                задач, prompts, QA checkpoints, execution settings и GitHub
-                context.
+                задач, prompts, QA-проверок, настроек исполнения и GitHub-контекста.
               </p>
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
@@ -100,7 +99,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <Meta label="Фазы" value={String(bundle.exportSummary.phaseCount)} />
             <Meta label="Задачи" value={String(bundle.exportSummary.taskCount)} />
             <Meta
-              label="QA checkpoints"
+              label="QA-проверки"
               value={String(bundle.exportSummary.qaCheckpointCount)}
             />
             <Meta
@@ -125,7 +124,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
               linkLabel="Открыть roadmap"
-              text="У части задач нет Codex prompts. Export не блокируется, но в Linear descriptions будет отметка, что prompt отсутствует. Откройте задачу и нажмите “Сгенерировать prompt”."
+              text="У части задач нет Codex Prompt. Экспорт не блокируется, но в описаниях Linear будет отметка, что prompt отсутствует. Откройте задачу и нажмите “Сгенерировать prompt”."
             />
           ) : null}
 
@@ -142,7 +141,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
                   Покрытие prompts
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
-                  {missingPromptTasks.length} задач без Codex prompts
+                  {missingPromptTasks.length} задач без Codex Prompt
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900">
                   Export доступен, но лучше сгенерировать prompts на страницах

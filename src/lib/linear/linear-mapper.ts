@@ -4,6 +4,7 @@ import type {
   LinearProjectStructure,
   LinearStructureIssue,
 } from "@/lib/linear/types";
+import { taskStatusLabels } from "@/lib/i18n/labels";
 
 export function mapExportBundleToLinearStructure(
   bundle: LinearReadyExportBundle,
@@ -40,12 +41,12 @@ export function mapExportBundleToLinearStructure(
   const warnings: string[] = [];
 
   if (!bundle.exportSummary.roadmapAvailable) {
-    warnings.push("No roadmap is available for Linear structure mapping.");
+    warnings.push("Roadmap недоступен для построения Linear-структуры.");
   }
 
   if (bundle.exportSummary.missingPromptCount > 0) {
     warnings.push(
-      `${bundle.exportSummary.missingPromptCount} task(s) do not have Codex prompts.`,
+      `${bundle.exportSummary.missingPromptCount} задач без Codex Prompt.`,
     );
   }
 
@@ -61,8 +62,8 @@ export function mapExportBundleToLinearStructure(
       description: [
         bundle.project.initialIdea,
         "",
-        `Repository: ${bundle.project.repositoryUrl ?? "not provided"}`,
-        `Deployment: ${bundle.project.deploymentTarget ?? "undecided"}`,
+        `Repository: ${bundle.project.repositoryUrl ?? "не указан"}`,
+        `Деплой: ${bundle.project.deploymentTarget ?? "пока не выбран"}`,
       ].join("\n"),
       name: bundle.project.title,
       summary: bundle.specSummary || bundle.project.initialIdea,
@@ -83,24 +84,24 @@ function buildIssueDescription(
   return [
     description,
     "",
-    "## Acceptance Criteria",
+    "## Критерии приемки",
     formatList(details.acceptanceCriteria),
     "",
     "## QA",
     formatList(details.qaInstructions),
     "",
-    "## Implementation Notes",
-    details.implementationNotes ?? "Not recorded.",
+    "## Заметки по реализации",
+    details.implementationNotes ?? "Не заполнено.",
     "",
     "## Codex Prompt",
-    details.codexPrompt ?? "Not generated.",
+    details.codexPrompt ?? "Не сгенерирован.",
   ].join("\n");
 }
 
 function formatList(items: string[]) {
   return items.length > 0
     ? items.map((item) => `- ${item}`).join("\n")
-    : "- Not recorded.";
+    : "- Не заполнено.";
 }
 
 function getSuggestedEstimate(category: string) {
@@ -133,11 +134,11 @@ function mapPriority(priority: string | null): LinearPriority {
 
 function mapStatus(status: string) {
   const statuses: Record<string, string> = {
-    blocked: "Blocked",
-    done: "Done",
-    in_progress: "In Progress",
-    todo: "Todo",
+    blocked: taskStatusLabels.blocked,
+    done: taskStatusLabels.done,
+    in_progress: taskStatusLabels.in_progress,
+    todo: taskStatusLabels.todo,
   };
 
-  return statuses[status] ?? "Todo";
+  return statuses[status] ?? taskStatusLabels.todo;
 }

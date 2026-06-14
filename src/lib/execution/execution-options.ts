@@ -50,7 +50,7 @@ export type RoadmapStyleValue = (typeof roadmapStyles)[number];
 
 export const taskSystemLabels: Record<TaskSystemValue, string> = {
   none: "Без task-системы",
-  linear_export: "Linear export",
+  linear_export: "Экспорт в Linear",
   linear_api_later: "Linear API позже",
   github_issues_later: "GitHub Issues позже",
   pdlc_later: "PDLC позже",

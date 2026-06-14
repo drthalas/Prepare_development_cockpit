@@ -10,7 +10,8 @@ export type GenerateQACheckpointsResult =
   | { ok: true; summary: QACheckpointGenerationSummary }
   | { ok: false; reason: "database" | "not_found" | "roadmap_required" };
 
-const generatedCheckpointPrefix = "QA Checkpoint - ";
+const generatedCheckpointPrefix = "QA-проверка - ";
+const legacyGeneratedCheckpointPrefix = "QA Checkpoint - ";
 
 export async function generateQACheckpoints(
   projectId: string,
@@ -178,9 +179,9 @@ export async function generateQACheckpoints(
             await tx.task.updateMany({
               data: {
                 qaInstructionsJson: [
-                  "Review task acceptance criteria before marking done.",
-                  "Run relevant lint/build/test checks for changed areas.",
-                  "Record regressions, blockers, and manual verification notes.",
+                  "Проверить критерии приемки задачи перед переводом в done.",
+                  "Запустить релевантные lint/build/test checks для изменённых областей.",
+                  "Записать regressions, blockers и manual verification notes.",
                 ],
               },
               where: { id: { in: implementationTaskIds } },
@@ -247,9 +248,14 @@ function getTargetPhaseIds(
 }
 
 function isQACheckpointTask(task: {
+  title: string;
   category: string;
 }) {
-  return task.category === "qa_checkpoint";
+  return (
+    task.category === "qa_checkpoint" &&
+    (task.title.startsWith(generatedCheckpointPrefix) ||
+      task.title.startsWith(legacyGeneratedCheckpointPrefix))
+  );
 }
 
 function buildCheckpointDetails(
@@ -258,23 +264,23 @@ function buildCheckpointDetails(
 ) {
   return {
     acceptanceCriteria: [
-      "Relevant acceptance criteria are reviewed.",
-      "Regression risks are noted before proceeding.",
-      "Manual verification result is recorded.",
+      "Релевантные критерии приемки проверены.",
+      "Риски регрессий отмечены до перехода дальше.",
+      "Результат ручной проверки записан.",
     ],
-    context: `Generated QA checkpoint for ${phaseTitle}. This is an optional review task controlled by QA mode.`,
-    dependencies: ["Complete or review the phase implementation tasks first."],
-    description: `Run a ${mode} QA checkpoint for ${phaseTitle} before moving forward.`,
+    context: `Сгенерированная QA-проверка для ${phaseTitle}. Это опциональная задача review, управляемая QA-режимом.`,
+    dependencies: ["Сначала завершить или проверить задачи реализации в фазе."],
+    description: `Провести ${mode} QA checkpoint для ${phaseTitle} перед переходом дальше.`,
     implementationNotes:
-      "This is a generated QA checkpoint task. It should remain manual and review-focused until a future QA automation phase exists.",
+      "Это сгенерированная QA checkpoint task. Она должна оставаться ручной и review-focused до будущей QA automation phase.",
     qaInstructions: [
-      "Review changed surfaces and acceptance criteria.",
-      "Run available automated checks for touched areas.",
-      "List pass/fail results and any follow-up tasks.",
+      "Проверить изменённые поверхности продукта и критерии приемки.",
+      "Запустить доступные automated checks для затронутых областей.",
+      "Записать pass/fail results и follow-up tasks.",
     ],
     requirements: [
-      "Check the phase output against the current spec and roadmap.",
-      "Document risks, regressions, and unresolved blockers.",
+      "Сверить результат фазы с текущей spec и roadmap.",
+      "Задокументировать risks, regressions и unresolved blockers.",
     ],
     title: `${generatedCheckpointPrefix}${phaseTitle}`,
   };
@@ -290,7 +296,7 @@ function getQACheckpointStatusFromValues(
       checkpointCount,
       frequency,
       mode,
-      summary: "QA is disabled. Generated checkpoint tasks are not required.",
+      summary: "QA отключён. Сгенерированные checkpoint tasks не нужны.",
     };
   }
 
@@ -300,7 +306,7 @@ function getQACheckpointStatusFromValues(
     mode,
     summary:
       checkpointCount > 0
-        ? `${checkpointCount} QA checkpoint task(s) are present for the latest roadmap.`
-        : "QA is enabled, but checkpoints have not been generated yet.",
+        ? `${checkpointCount} QA-проверок есть в последнем roadmap.`
+        : "QA включён, но проверки ещё не сгенерированы.",
   };
 }

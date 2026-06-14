@@ -3,6 +3,18 @@ import type {
   ExportTask,
   LinearReadyExportBundle,
 } from "@/lib/export/types";
+import {
+  displayLabel,
+  taskCategoryLabels,
+  taskPriorityLabels,
+  taskStatusLabels,
+} from "@/lib/i18n/labels";
+import {
+  deploymentModeLabels,
+  deploymentOwnerLabels,
+  deploymentTargetLabels,
+  repositoryModeLabels,
+} from "@/lib/projects/project-options";
 
 export function buildLinearReadyExports(input: {
   latestSpecVersion: number | null;
@@ -69,39 +81,39 @@ function buildLinearImportPrompt(input: {
   specSummary: string;
 }) {
   return [
-    `Create a Linear project for: ${input.project.title}`,
+    `Создать Linear project для: ${input.project.title}`,
     "",
-    "Project context",
+    "Контекст проекта",
     input.project.initialIdea,
     "",
-    "Spec summary",
-    input.specSummary || "No spec summary available.",
+    "Сводка spec",
+    input.specSummary || "Сводка spec недоступна.",
     "",
-    "Repository and deployment",
-    `- Repository mode: ${input.project.repositoryMode ?? "unknown"}`,
-    `- Repository URL: ${input.project.repositoryUrl ?? "not provided"}`,
-    `- Deployment target: ${input.project.deploymentTarget ?? "undecided"}`,
-    `- Deployment mode: ${input.project.deploymentMode ?? "manual_instructions"}`,
-    `- Deployment owner: ${input.project.deploymentOwner ?? "not_decided"}`,
+    "Repository и деплой",
+    `- Состояние репозитория: ${formatKnownValue(repositoryModeLabels, input.project.repositoryMode)}`,
+    `- Repository URL: ${input.project.repositoryUrl ?? "не указан"}`,
+    `- Цель деплоя: ${formatKnownValue(deploymentTargetLabels, input.project.deploymentTarget)}`,
+    `- Режим деплоя: ${formatKnownValue(deploymentModeLabels, input.project.deploymentMode)}`,
+    `- Кто настраивает деплой: ${formatKnownValue(deploymentOwnerLabels, input.project.deploymentOwner)}`,
     "",
-    "Instructions",
-    "- Create one Linear project using the project name above.",
-    "- Create one milestone or grouping label per phase.",
-    "- Create one issue per task.",
-    "- Preserve task priority, category labels, status suggestions, and phase order.",
-    "- Put the Codex Prompt into the issue description when present.",
-    "- Include QA checkpoint tasks as issues with a qa label.",
-    "- Include manual infrastructure/deployment tasks with manual-infra and deployment labels.",
-    "- Do not create external infrastructure from these issues; keep manual deployment tasks as manual instructions.",
+    "Инструкции",
+    "- Создать один Linear project с названием выше.",
+    "- Создать milestone или grouping label для каждой фазы.",
+    "- Создать issue для каждой задачи.",
+    "- Сохранить priority, category labels, status suggestions и порядок фаз.",
+    "- Вставить Codex Prompt в issue description, если он есть.",
+    "- Добавить QA-проверки как issues с label qa.",
+    "- Добавить manual infrastructure/deployment tasks с labels manual-infra и deployment.",
+    "- Не создавать внешнюю инфраструктуру из этих issues; manual deployment tasks должны оставаться ручными инструкциями.",
     "",
-    "Phases and tasks",
+    "Фазы и задачи",
     ...input.phases.flatMap((phase) => [
       "",
-      `Phase ${phase.order}: ${phase.title}`,
-      phase.description ?? "No phase description recorded.",
+      `Фаза ${phase.order}: ${phase.title}`,
+      phase.description ?? "Описание фазы не заполнено.",
       ...phase.tasks.map(
         (task) =>
-          `- [${task.priority ?? "medium"}] ${task.title} (${task.labels.join(", ")})`,
+          `- [${displayLabel(taskPriorityLabels, task.priority, "Средний")}] ${task.title} (${task.labels.join(", ")})`,
       ),
     ]),
   ].join("\n");
@@ -121,45 +133,45 @@ function buildMarkdown(input: {
   specSummary: string;
 }) {
   return [
-    `# ${input.project.title} Linear-Ready Roadmap Export`,
+    `# ${input.project.title} — Linear-ready roadmap export`,
     "",
-    "## Project Summary",
+    "## Сводка проекта",
     input.project.initialIdea,
     "",
-    "## Spec Summary",
-    input.specSummary || "No spec summary available.",
+    "## Сводка spec",
+    input.specSummary || "Сводка spec недоступна.",
     "",
-    "## Repository And Deployment",
-    `- Repository mode: ${input.project.repositoryMode ?? "unknown"}`,
-    `- Repository URL: ${input.project.repositoryUrl ?? "not provided"}`,
-    `- Deployment target: ${input.project.deploymentTarget ?? "undecided"}`,
-    `- Deployment mode: ${input.project.deploymentMode ?? "manual_instructions"}`,
-    `- Deployment owner: ${input.project.deploymentOwner ?? "not_decided"}`,
+    "## Repository и деплой",
+    `- Состояние репозитория: ${formatKnownValue(repositoryModeLabels, input.project.repositoryMode)}`,
+    `- Repository URL: ${input.project.repositoryUrl ?? "не указан"}`,
+    `- Цель деплоя: ${formatKnownValue(deploymentTargetLabels, input.project.deploymentTarget)}`,
+    `- Режим деплоя: ${formatKnownValue(deploymentModeLabels, input.project.deploymentMode)}`,
+    `- Кто настраивает деплой: ${formatKnownValue(deploymentOwnerLabels, input.project.deploymentOwner)}`,
     "",
     "## Roadmap",
     ...input.phases.flatMap((phase) => [
       "",
-      `### Phase ${phase.order}: ${phase.title}`,
-      phase.description ?? "No phase description recorded.",
+      `### Фаза ${phase.order}: ${phase.title}`,
+      phase.description ?? "Описание фазы не заполнено.",
       "",
       ...phase.tasks.flatMap((task) => [
         `#### ${task.title}`,
         "",
-        `- Priority: ${task.priority ?? "medium"}`,
-        `- Status: ${task.status}`,
-        `- Category: ${task.category}`,
+        `- Приоритет: ${displayLabel(taskPriorityLabels, task.priority, "Средний")}`,
+        `- Статус: ${displayLabel(taskStatusLabels, task.status)}`,
+        `- Категория: ${displayLabel(taskCategoryLabels, task.category)}`,
         `- Labels: ${task.labels.join(", ")}`,
         "",
         task.description,
         "",
-        "Acceptance criteria:",
+        "Критерии приемки:",
         formatMarkdownList(task.acceptanceCriteria),
         "",
-        "QA instructions:",
+        "QA-инструкции:",
         formatMarkdownList(task.qaInstructions),
         "",
         "Codex Prompt:",
-        task.codexPrompt ? fenced(task.codexPrompt) : "Not generated.",
+        task.codexPrompt ? fenced(task.codexPrompt) : "Не сгенерирован.",
         "",
       ]),
     ]),
@@ -171,19 +183,19 @@ function buildCopyAllTasks(phases: ExportPhase[]) {
     .flatMap((phase) =>
       phase.tasks.map((task) =>
         [
-          `Phase: ${phase.title}`,
-          `Task: ${task.title}`,
-          `Priority: ${task.priority ?? "medium"}`,
-          `Category: ${task.category}`,
+          `Фаза: ${phase.title}`,
+          `Задача: ${task.title}`,
+          `Приоритет: ${displayLabel(taskPriorityLabels, task.priority, "Средний")}`,
+          `Категория: ${displayLabel(taskCategoryLabels, task.category)}`,
           `Labels: ${task.labels.join(", ")}`,
           "",
           task.description,
           "",
-          "Acceptance criteria:",
+          "Критерии приемки:",
           formatPlainList(task.acceptanceCriteria),
           "",
           "Codex Prompt:",
-          task.codexPrompt ?? "Not generated.",
+          task.codexPrompt ?? "Не сгенерирован.",
         ].join("\n"),
       ),
     )
@@ -208,16 +220,16 @@ function buildCsv(tasks: ExportTask[]) {
       [
         task.description,
         "",
-        "Acceptance criteria:",
+        "Критерии приемки:",
         formatPlainList(task.acceptanceCriteria),
         "",
-        "QA instructions:",
+        "QA-инструкции:",
         formatPlainList(task.qaInstructions),
       ].join("\n"),
       task.phaseTitle,
-      task.priority ?? "medium",
-      task.category,
-      task.status,
+      displayLabel(taskPriorityLabels, task.priority, "Средний"),
+      displayLabel(taskCategoryLabels, task.category),
+      displayLabel(taskStatusLabels, task.status),
       task.labels.join(","),
       "",
       task.codexPrompt ?? "",
@@ -264,13 +276,24 @@ function fenced(value: string) {
 function formatMarkdownList(items: string[]) {
   return items.length > 0
     ? items.map((item) => `- ${item}`).join("\n")
-    : "- Not recorded.";
+    : "- Не заполнено.";
 }
 
 function formatPlainList(items: string[]) {
   return items.length > 0
     ? items.map((item) => `- ${item}`).join("\n")
-    : "- Not recorded.";
+    : "- Не заполнено.";
+}
+
+function formatKnownValue(
+  labels: Record<string, string>,
+  value?: string | null,
+) {
+  if (!value) {
+    return "пока не выбрано";
+  }
+
+  return labels[value] ?? value;
 }
 
 function summarize(value: string, length: number) {

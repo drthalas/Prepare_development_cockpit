@@ -133,14 +133,31 @@ function BackLink({ projectId }: { projectId: string }) {
 
 function formatAnswer(answer: boolean | string | string[] | null) {
   if (Array.isArray(answer)) {
-    return answer.length > 0 ? answer.join(", ") : "Ответ не сохранён";
+    return answer.length > 0
+      ? answer.map(localizeAnswerValue).join(", ")
+      : "Ответ не сохранён";
   }
 
   if (typeof answer === "boolean") {
     return answer ? "Да" : "Нет";
   }
 
-  return answer || "Ответ не сохранён";
+  return answer ? localizeAnswerValue(answer) : "Ответ не сохранён";
+}
+
+function localizeAnswerValue(value: string) {
+  const labels: Record<string, string> = {
+    Custom: "Настраиваемый QA",
+    Minimal: "Минимальный QA",
+    No: "Нет",
+    Off: "Без QA",
+    Standard: "Стандартный QA",
+    Strict: "Строгий QA",
+    Unknown: "Неизвестно",
+    Yes: "Да",
+  };
+
+  return labels[value] ?? value;
 }
 
 function getQuestionnaireErrorMessage(reason: string) {

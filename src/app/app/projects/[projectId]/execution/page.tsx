@@ -89,7 +89,7 @@ export default async function ExecutionSettingsPage({
             >
               <SelectField
                 defaultValue={settings.executionTarget}
-                label="Execution target"
+                label="Целевой инструмент разработки"
                 labels={executionSettingLabels.executionTargetLabels}
                 name="executionTarget"
                 values={executionSettingSelectOptions.executionTargets}
@@ -115,7 +115,7 @@ export default async function ExecutionSettingsPage({
             >
               <SelectField
                 defaultValue={settings.qaMode}
-                label="QA mode"
+                label="QA-режим"
                 labels={executionSettingLabels.qaModeLabels}
                 name="qaMode"
                 values={executionSettingSelectOptions.qaModes}
@@ -156,12 +156,12 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Зафиксируйте, кто отвечает за инфраструктуру. Здесь deployment resources не создаются."
+              description="Зафиксируйте, кто отвечает за инфраструктуру. Здесь ресурсы деплоя не создаются."
               title="Планирование деплоя"
             >
               <SelectField
                 defaultValue={settings.deploymentTarget}
-                label="Deployment target"
+                label="Цель деплоя"
                 labels={executionSettingLabels.deploymentTargetLabels}
                 name="deploymentTarget"
                 values={executionSettingSelectOptions.deploymentTargets}
@@ -282,7 +282,7 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
         value={executionSettingLabels.taskSystemLabels[settings.taskSystem]}
       />
       <SummaryItem
-        label="QA mode"
+        label="QA-режим"
         value={executionSettingLabels.qaModeLabels[settings.qaMode]}
       />
       <SummaryItem

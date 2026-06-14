@@ -4,6 +4,12 @@ import type {
   RoadmapPhaseDraft,
   RoadmapTaskDraft,
 } from "@/lib/roadmap/types";
+import { qaCheckpointFrequencyLabels } from "@/lib/execution/execution-options";
+import {
+  deploymentModeLabels,
+  deploymentTargetLabels,
+  qaModeLabels,
+} from "@/lib/projects/project-options";
 
 export function generateRoadmap(input: RoadmapGenerationInput): GeneratedRoadmap {
   const foundationTask = buildFoundationTask(input);
@@ -15,38 +21,38 @@ export function generateRoadmap(input: RoadmapGenerationInput): GeneratedRoadmap
   const phases: RoadmapPhaseDraft[] = [
     {
       description:
-        "Align project context, repository readiness, development assumptions, and delivery scope.",
+        "Выравнивание контекста проекта, готовности репозитория, предположений разработки и границ поставки.",
       tasks: [foundationTask, ...discoveryTasks],
-      title: "Phase 0 - Foundation and alignment",
+      title: "Фаза 0 - Фундамент и выравнивание контекста",
     },
     {
       description:
-        "Implement the core product workflow described by the approved specification.",
+        "Реализация основного продуктового сценария, описанного в утверждённой spec.",
       tasks: buildTasks,
-      title: "Phase 1 - Core product workflow",
+      title: "Фаза 1 - Основной продуктовый сценарий",
     },
     {
       description:
-        "Prepare manual deployment guidance, environment readiness, and operational checks.",
+        "Подготовка ручных инструкций по деплою, готовности окружения и операционных проверок.",
       tasks: deploymentTasks,
-      title: "Phase 2 - Deployment and operations readiness",
+      title: "Фаза 2 - Готовность деплоя и эксплуатации",
     },
   ];
 
   if (qaTasks.length > 0) {
     phases.push({
       description:
-        "Run QA checkpoints according to the configured QA mode before downstream export or execution.",
+        "Выполнить QA-проверки по выбранному QA-режиму перед последующим экспортом или запуском работ.",
       tasks: qaTasks,
-      title: "Phase 3 - QA and release readiness",
+      title: "Фаза 3 - QA и готовность к релизу",
     });
   }
 
   return {
     mode: "mock",
     phases,
-    summary: `Generated ${phases.length} phases from the current spec and execution settings.`,
-    title: `${input.project.title} Roadmap`,
+    summary: `Сгенерировано ${phases.length} фаз из текущей spec и настроек исполнения.`,
+    title: `Roadmap проекта ${input.project.title}`,
   };
 }
 
@@ -56,28 +62,28 @@ function buildFoundationTask(input: RoadmapGenerationInput): RoadmapTaskDraft {
 
   return {
     acceptanceCriteria: [
-      "Development context is documented.",
-      "Repository access and constraints are known.",
-      "Future tasks can be executed by the configured execution target.",
+      "Контекст разработки задокументирован.",
+      "Доступ к репозиторию и ограничения понятны.",
+      "Будущие задачи можно выполнять выбранным инструментом разработки.",
     ],
     category: "coding",
-    context: "First roadmap task rule from PDC-013.",
+    context: "Правило первой задачи roadmap из PDC-013.",
     dependencies: [],
     description: existingProject
-      ? "Audit the existing repository, confirm the current architecture, and align implementation context before changing product behavior."
-      : "Create the development foundation, repository context, app structure, and baseline checks before feature work starts.",
+      ? "Провести аудит существующего репозитория, подтвердить текущую архитектуру и выровнять контекст разработки до изменения поведения продукта."
+      : "Создать фундамент разработки, контекст репозитория, структуру приложения и базовые проверки до начала работ над функциональностью.",
     implementationNotes: existingProject
-      ? "Start with a read-only audit and avoid destructive refactors."
-      : "Keep the foundation small and deployment-ready.",
+      ? "Начать с аудита без изменений и избегать разрушительных рефакторингов."
+      : "Держать фундамент компактным и готовым к деплою.",
     priority: "high",
     requirements: [
-      "Confirm repository state.",
-      "Document development workflow.",
-      "Define verification commands.",
+      "Подтвердить состояние репозитория.",
+      "Задокументировать workflow разработки.",
+      "Определить команды проверки.",
     ],
     title: existingProject
-      ? "Audit Existing Project & Align Development Context"
-      : "Project Foundation / Development Context Setup",
+      ? "Аудит существующего проекта и выравнивание контекста разработки"
+      : "Фундамент проекта / настройка контекста разработки",
   };
 }
 
@@ -90,23 +96,23 @@ function buildDiscoveryTasks(input: RoadmapGenerationInput): RoadmapTaskDraft[] 
   ) {
     tasks.push({
       acceptanceCriteria: [
-        "Repository URL and default branch are known.",
-        "Execution agent access is explicitly documented.",
+        "Repository URL и default branch известны.",
+        "Доступ агента разработки явно задокументирован.",
       ],
       category: "manual_infrastructure",
-      context: "Repository readiness is required before implementation tasks.",
+      context: "Готовность репозитория нужна до задач реализации.",
       dependencies: [],
       description:
-        "Create or connect the GitHub repository and confirm who can push changes.",
+        "Создать или подключить GitHub-репозиторий и подтвердить, кто может пушить изменения.",
       implementationNotes:
-        "This is a manual prerequisite; no GitHub API automation is performed.",
+        "Это ручной предварительный шаг; автоматизация GitHub API не выполняется.",
       priority: "high",
       requirements: [
-        "Choose repository owner.",
-        "Confirm visibility.",
-        "Confirm execution agent push access.",
+        "Выбрать владельца репозитория.",
+        "Подтвердить видимость.",
+        "Подтвердить push-доступ для агента разработки.",
       ],
-      title: "Create or Connect GitHub Repository",
+      title: "Создать или подключить GitHub-репозиторий",
     });
   }
 
@@ -117,77 +123,88 @@ function buildBuildTasks(input: RoadmapGenerationInput): RoadmapTaskDraft[] {
   const sections = input.spec.sections.filter((section) =>
     [
       "Functional requirements",
+      "Функциональные требования",
       "User stories",
+      "Пользовательские сценарии",
       "Data/storage assumptions",
+      "Данные и хранение",
       "Integrations",
-      "MVP scope",
+      "Интеграции",
+      "MVP",
     ].some((title) => section.title.toLowerCase().includes(title.toLowerCase())),
   );
   const sourceSections = sections.length > 0 ? sections : input.spec.sections;
   const tasks = sourceSections.slice(0, 5).map((section, index) => ({
     acceptanceCriteria: [
-      `${section.title} behavior is implemented or explicitly deferred.`,
-      "Relevant lint/build checks pass.",
+      `Поведение из секции “${section.title}” реализовано или явно отложено.`,
+      "Соответствующие lint/build проверки проходят.",
     ],
     category: "coding" as const,
-    context: `Derived from spec section: ${section.title}.`,
-    dependencies: index === 0 ? [] : ["Previous core workflow task"],
+    context: `Выведено из секции spec: ${section.title}.`,
+    dependencies: index === 0 ? [] : ["Предыдущая задача основного workflow"],
     description: createTaskDescription(section.content, section.title),
     implementationNotes:
-      "Use the current SaaS shell and existing data model. Do not generate prompts or Linear exports in this phase.",
+      "Использовать текущую SaaS-оболочку и существующую модель данных. Не генерировать prompts или экспорт в Linear в этой фазе.",
     priority: index < 2 ? ("high" as const) : ("medium" as const),
     requirements: section.content
       .split("\n")
       .map((line) => line.replace(/^[-*]\s*/, "").trim())
       .filter(Boolean)
       .slice(0, 5),
-    title: `Implement ${section.title}`,
+    title: `Реализовать: ${section.title}`,
   }));
 
   return tasks.length > 0
     ? tasks
     : [
         {
-          acceptanceCriteria: ["Core MVP behavior is represented in the app."],
+          acceptanceCriteria: ["Core MVP behavior представлен в приложении."],
           category: "coding",
-          context: "Fallback task from spec markdown.",
+          context: "Fallback task из spec markdown.",
           dependencies: [],
           description:
-            "Implement the first useful product workflow described by the current spec.",
+            "Реализовать первый полезный продуктовый сценарий, описанный в текущей spec.",
           implementationNotes:
-            "Keep scope narrow and verify with lint/build checks.",
+            "Держать scope узким и проверять через lint/build проверки.",
           priority: "high",
-          requirements: ["Use current spec as source of truth."],
-          title: "Implement Core MVP Workflow",
+          requirements: ["Использовать текущую spec как source of truth."],
+          title: "Реализовать основной MVP workflow",
         },
       ];
 }
 
 function buildDeploymentTasks(input: RoadmapGenerationInput): RoadmapTaskDraft[] {
   const target = input.executionSettings.deploymentTarget;
-  const label = target === "undecided" ? "deployment target" : target;
+  const label =
+    target === "undecided"
+      ? "цель деплоя не выбрана"
+      : formatKnownValue(deploymentTargetLabels, target);
+  const deploymentMode = formatKnownValue(
+    deploymentModeLabels,
+    input.executionSettings.deploymentMode,
+  );
 
   return [
     {
       acceptanceCriteria: [
-        "Manual deployment steps are documented.",
-        "Environment variables are listed.",
-        "Health check path is included.",
+        "Ручные шаги деплоя задокументированы.",
+        "Environment variables перечислены.",
+        "Путь health check указан.",
       ],
       category: "documentation_recommendation",
-      context: `Deployment target: ${label}. Mode: ${input.executionSettings.deploymentMode}.`,
-      dependencies: ["Core product workflow is implemented"],
+      context: `Цель деплоя: ${label}. Режим: ${deploymentMode}.`,
+      dependencies: ["Основной продуктовый workflow реализован"],
       description:
-        "Prepare deployment guide and operational checklist without creating infrastructure through an API.",
+        "Подготовить руководство по деплою и операционный checklist без создания инфраструктуры через API.",
       implementationNotes:
-        "Railway/Vercel/Render resources remain manually configured by the configured owner.",
+        "Ресурсы Railway/Vercel/Render настраиваются вручную выбранным владельцем.",
       priority: "medium",
       requirements: [
-        "Document required env vars.",
-        "Document build and start commands.",
-        "Document /api/health verification.",
+        "Задокументировать обязательные env vars.",
+        "Задокументировать build/start команды.",
+        "Задокументировать проверку /api/health.",
       ],
-      title: `Prepare ${label} Deployment Guide`,
+      title: `Подготовить руководство по деплою для ${label}`,
     },
   ];
 }
@@ -200,25 +217,25 @@ function buildQATasks(input: RoadmapGenerationInput): RoadmapTaskDraft[] {
   return [
     {
       acceptanceCriteria: [
-        "Configured QA mode is represented.",
-        "Checkpoint frequency is documented.",
-        "Release blockers are captured before export.",
+        "Выбранный QA-режим учтён.",
+        "Частота checkpoint задокументирована.",
+        "Блокеры релиза зафиксированы до экспорта.",
       ],
       category: "qa_checkpoint",
-      context: `QA mode: ${input.executionSettings.qaMode}; frequency: ${input.executionSettings.qaCheckpointFrequency}.`,
-      dependencies: ["Core workflow and deployment guide tasks"],
+      context: `QA-режим: ${formatKnownValue(qaModeLabels, input.executionSettings.qaMode)}; частота: ${formatKnownValue(qaCheckpointFrequencyLabels, input.executionSettings.qaCheckpointFrequency)}.`,
+      dependencies: ["Основной workflow и задачи по руководству деплоя"],
       description:
-        "Run a roadmap-level QA checkpoint placeholder before future task prompts and export.",
+        "Провести QA-проверку на уровне roadmap перед будущими prompts для задач и экспортом.",
       implementationNotes:
-        "This is a placeholder task only; the full QA generator belongs to a future phase.",
+        "Это placeholder-задача; полноценный QA generator относится к будущей фазе.",
       priority:
         input.executionSettings.qaMode === "strict" ? "high" : "medium",
       requirements: [
-        "Review acceptance criteria.",
-        "Confirm smoke checks.",
-        "Confirm unresolved risks.",
+        "Проверить критерии приемки.",
+        "Подтвердить smoke checks.",
+        "Подтвердить нерешённые риски.",
       ],
-      title: "Run QA Checkpoint Before Roadmap Approval",
+      title: "QA-проверка перед утверждением roadmap",
     },
   ];
 }
@@ -227,10 +244,21 @@ function createTaskDescription(content: string, title: string) {
   const normalized = content.replace(/\s+/g, " ").trim();
 
   if (!normalized) {
-    return `Implement the ${title.toLowerCase()} scope from the current specification.`;
+    return `Реализовать scope секции “${title}” из текущей спецификации.`;
   }
 
   return normalized.length > 360
     ? `${normalized.slice(0, 357).trim()}...`
     : normalized;
+}
+
+function formatKnownValue(
+  labels: Record<string, string>,
+  value?: string | null,
+) {
+  if (!value) {
+    return "пока не выбрано";
+  }
+
+  return labels[value] ?? value;
 }

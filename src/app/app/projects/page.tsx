@@ -56,7 +56,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                 "Ответьте на уточняющие вопросы.",
                 "Сгенерируйте и отредактируйте спецификацию.",
                 "Настройте исполнение и сгенерируйте roadmap.",
-                "Откройте задачу, сгенерируйте Codex Prompt и скачайте ZIP/Linear export.",
+                "Откройте задачу, сгенерируйте Codex Prompt и скачайте ZIP или экспорт в Linear.",
               ].map((step, index) => (
                 <li key={step}>
                   <span className="font-semibold text-[var(--foreground)]">

@@ -66,16 +66,16 @@ export default async function LinearPreviewPage({
                 {structure.project.name}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Проверьте внутреннюю Linear Project Structure для будущего API.
+                Проверьте внутреннюю структуру Linear Project для будущего API.
                 Ручной экспорт и dry run безопасны; реальное создание спрятано
-                за advanced confirmation.
+                за расширенным подтверждением.
               </p>
             </div>
             <Link
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
               href={`/app/projects/${projectId}/export`}
             >
-              Открыть export bundle
+              Открыть пакет экспорта
             </Link>
           </div>
         </header>
@@ -87,7 +87,7 @@ export default async function LinearPreviewPage({
             <Meta label="Issues" value={String(structure.issues.length)} />
             <Meta label="Labels" value={String(structure.labels.length)} />
             <Meta
-              label="Warnings"
+              label="Предупреждения"
               value={String(structure.warnings.length)}
             />
           </dl>
@@ -133,8 +133,8 @@ export default async function LinearPreviewPage({
                 <h3 className="font-semibold">Ручной экспорт</h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                   Самый безопасный путь для прототипа — ручной экспорт.
-                  Используйте export bundle, чтобы скопировать milestones,
-                  issues, Codex prompts и QA checkpoints без создания сущностей
+                  Используйте пакет экспорта, чтобы скопировать milestones,
+                  issues, Codex Prompt и QA-проверки без создания сущностей
                   в Linear.
                 </p>
                 <Link
@@ -166,14 +166,14 @@ export default async function LinearPreviewPage({
           {apiStatus.configured ? (
             <details className="mt-5 rounded-md border border-red-300 bg-red-50 p-4 text-red-950">
               <summary className="cursor-pointer text-sm font-semibold">
-                Advanced / dangerous action: реальное создание в Linear
+                Advanced / опасное действие: реальное создание в Linear
               </summary>
               <form action={createAction} className="mt-4 grid gap-3">
                 <h3 className="font-semibold">Реальное создание в Linear</h3>
                 <p className="text-sm leading-6 text-red-900">
                   Это может создать реальный Linear project и issues в
                   подключённом workspace. Не используйте во время review, если
-                  не хотите реальные Linear entities.
+                  не хотите создавать реальные Linear entities.
                 </p>
                 <label className="grid gap-2 text-sm font-semibold">
                   Подтверждение

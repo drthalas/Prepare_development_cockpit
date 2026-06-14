@@ -433,7 +433,7 @@ export async function addRoadmapTask(
     });
     const task = await prisma.task.create({
       data: {
-        acceptanceCriteriaJson: ["New task acceptance criteria is defined."],
+        acceptanceCriteriaJson: ["Критерии приемки новой задачи описаны."],
         category: input.category,
         context: "Added manually in the roadmap editor.",
         dependenciesJson: [],
@@ -715,7 +715,7 @@ function checkSpecReadiness(
     reasons,
     summary:
       reasons.length === 0
-        ? "Spec looks sufficient for draft roadmap generation."
+        ? "Spec выглядит достаточной для генерации draft roadmap."
         : "Spec may be incomplete. Regenerate or improve spec before roadmap generation.",
   };
 }
@@ -922,7 +922,8 @@ function countQACheckpoints(roadmap: {
       phase.tasks.filter(
         (task) =>
           task.category === "qa_checkpoint" &&
-          task.title.startsWith("QA Checkpoint - "),
+          (task.title.startsWith("QA-проверка - ") ||
+            task.title.startsWith("QA Checkpoint - ")),
       ).length,
     0,
   );

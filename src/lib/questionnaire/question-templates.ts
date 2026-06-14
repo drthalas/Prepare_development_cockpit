@@ -25,27 +25,27 @@ export type QuestionnaireSelectionInput = {
 
 const sharedTemplates: QuestionTemplate[] = [
   {
-    block: "users and roles",
+    block: "Пользователи и роли",
     key: "primary_users",
-    label: "Who are the primary users and what roles do they have?",
+    label: "Кто основные пользователи продукта и какие у них роли?",
     type: "textarea",
   },
   {
-    block: "core workflow",
+    block: "Основной сценарий",
     key: "core_success_path",
-    label: "What is the main success path from start to valuable outcome?",
+    label: "Какой главный путь пользователя от старта до полезного результата?",
     type: "textarea",
   },
   {
-    block: "MVP features",
+    block: "MVP-функции",
     key: "must_have_features",
-    label: "Which MVP features are mandatory for the first usable version?",
+    label: "Какие MVP-функции обязательны для первой рабочей версии?",
     type: "textarea",
   },
   {
-    block: "out of scope",
+    block: "Вне scope",
     key: "out_of_scope",
-    label: "What should explicitly stay out of scope for the first version?",
+    label: "Что явно не входит в scope первой версии?",
     type: "textarea",
   },
 ];
@@ -53,123 +53,123 @@ const sharedTemplates: QuestionTemplate[] = [
 const projectTypeTemplates: Record<string, QuestionTemplate[]> = {
   "AI agent": [
     {
-      block: "core workflow",
+      block: "Основной сценарий",
       key: "agent_goal",
-      label: "What job should the AI agent complete autonomously?",
+      label: "Какую работу AI-агент должен выполнять автономно?",
       type: "textarea",
     },
     {
-      block: "integrations",
+      block: "Интеграции",
       key: "agent_tools",
-      label: "Which tools, files, APIs, or systems can the agent access?",
+      label: "К каким инструментам, файлам, API или системам агент может иметь доступ?",
       type: "textarea",
     },
     {
-      block: "QA preference",
+      block: "QA-настройки",
       key: "agent_safety_checks",
-      label: "Which safety checks must happen before the agent takes action?",
+      label: "Какие проверки безопасности нужны перед действиями агента?",
       type: "textarea",
     },
   ],
   "SaaS": [
     {
-      block: "users and roles",
+      block: "Пользователи и роли",
       key: "workspace_roles",
-      label: "What workspace roles and permissions should exist in the SaaS?",
+      label: "Какие роли и права доступа нужны в рабочей области SaaS?",
       type: "textarea",
     },
     {
-      block: "data/storage",
+      block: "Данные и хранение",
       key: "core_entities",
-      label: "What core entities should the product store and display?",
+      label: "Какие основные сущности продукт должен хранить и показывать?",
       type: "textarea",
     },
     {
-      block: "MVP features",
+      block: "MVP-функции",
       key: "activation_event",
-      label: "What user action proves the SaaS delivered value?",
+      label: "Какое действие пользователя доказывает, что SaaS дал ценность?",
       type: "textarea",
     },
   ],
   "Telegram bot": [
     {
-      block: "core workflow",
+      block: "Основной сценарий",
       key: "bot_commands",
-      label: "Which commands or conversation paths should the bot support?",
+      label: "Какие команды или сценарии диалога должен поддерживать бот?",
       type: "textarea",
     },
     {
-      block: "integrations",
+      block: "Интеграции",
       key: "bot_integrations",
-      label: "Which external services should the bot read from or write to?",
+      label: "Из каких внешних сервисов бот должен читать данные или куда писать?",
       type: "textarea",
     },
     {
-      block: "constraints and risks",
+      block: "Ограничения и риски",
       key: "bot_admin_controls",
-      label: "What admin controls or abuse prevention does the bot need?",
+      label: "Какие admin controls или защита от злоупотреблений нужны боту?",
       type: "textarea",
     },
   ],
   "existing project improvement": [
     {
-      block: "repository readiness",
+      block: "Готовность репозитория",
       key: "current_project_state",
-      label: "What is the current state of the existing repository or product?",
+      label: "В каком состоянии сейчас существующий репозиторий или продукт?",
       type: "textarea",
     },
     {
-      block: "constraints and risks",
+      block: "Ограничения и риски",
       key: "change_constraints",
-      label: "Which parts of the existing project must not be broken?",
+      label: "Какие части существующего проекта нельзя сломать?",
       type: "textarea",
     },
     {
-      block: "QA preference",
+      block: "QA-настройки",
       key: "regression_checks",
-      label: "Which regression checks should be required after changes?",
+      label: "Какие regression checks обязательны после изменений?",
       type: "textarea",
     },
   ],
   "internal tool": [
     {
-      block: "users and roles",
+      block: "Пользователи и роли",
       key: "internal_operators",
-      label: "Who operates this internal tool and how often?",
+      label: "Кто будет пользоваться внутренним инструментом и как часто?",
       type: "textarea",
     },
     {
-      block: "data/storage",
+      block: "Данные и хранение",
       key: "operational_data",
-      label: "What operational data should be created, updated, or reviewed?",
+      label: "Какие операционные данные нужно создавать, обновлять или проверять?",
       type: "textarea",
     },
     {
-      block: "constraints and risks",
+      block: "Ограничения и риски",
       key: "internal_risks",
-      label: "What operational risks should the tool reduce?",
+      label: "Какие операционные риски должен снизить инструмент?",
       type: "textarea",
     },
   ],
   "other/unknown": [
     {
-      block: "core workflow",
+      block: "Основной сценарий",
       key: "product_category",
-      label: "Which product category best describes this idea?",
+      label: "Какая категория продукта лучше всего описывает эту идею?",
       options: [
         "SaaS",
-        "Telegram bot",
-        "internal tool",
-        "AI agent",
-        "existing project improvement",
-        "other",
+        "Telegram-бот",
+        "Внутренний инструмент",
+        "AI-агент",
+        "Улучшение существующего проекта",
+        "Другое",
       ],
       type: "single_select",
     },
     {
-      block: "MVP features",
+      block: "MVP-функции",
       key: "first_release_shape",
-      label: "What would make the first release useful enough to test?",
+      label: "Что сделает первый релиз достаточно полезным для тестирования?",
       type: "textarea",
     },
   ],
@@ -177,71 +177,84 @@ const projectTypeTemplates: Record<string, QuestionTemplate[]> = {
 
 const missingAreaTemplates: Record<string, QuestionTemplate> = {
   "default branch": {
-    block: "repository readiness",
+    block: "Готовность репозитория",
     key: "default_branch",
-    label: "What default branch should implementation prompts target?",
+    label: "На какую default branch должны ориентироваться промпты реализации?",
     type: "text",
   },
   "deployment target": {
-    block: "deployment planning",
+    block: "План деплоя",
     key: "deployment_target_clarification",
-    label: "Which deployment target should the project plan around?",
-    options: ["Railway", "Vercel", "Render", "Other", "Not decided"],
+    label: "Под какую платформу деплоя нужно планировать проект?",
+    options: ["Railway", "Vercel", "Render", "Другое", "Пока не выбрано"],
     type: "single_select",
   },
   "execution target": {
-    block: "execution/Codex target",
+    block: "Целевой инструмент разработки",
     key: "execution_target_clarification",
-    label: "Who or what should execute generated implementation tasks?",
-    options: ["Codex", "Claude Code", "Cursor", "human developer", "multiple"],
+    label: "Кто или что будет выполнять сгенерированные задачи реализации?",
+    options: ["Codex", "Claude Code", "Cursor", "Разработчик", "Несколько вариантов"],
     type: "single_select",
   },
   "existing repository URL": {
-    block: "repository readiness",
+    block: "Готовность репозитория",
     key: "existing_repository_url",
-    label: "What is the GitHub URL for the existing repository?",
+    label: "Какой GitHub URL у существующего репозитория?",
     type: "text",
   },
   "more detailed product idea": {
-    block: "core workflow",
+    block: "Основной сценарий",
     key: "idea_detail_expansion",
-    label: "Add more detail about the product idea, constraints, and outcome.",
+    label: "Добавьте больше деталей об идее продукта, ограничениях и ожидаемом результате.",
     type: "textarea",
   },
   "target audience": {
-    block: "users and roles",
+    block: "Пользователи и роли",
     key: "target_audience_detail",
-    label: "Describe the target audience in more detail.",
+    label: "Опишите целевую аудиторию подробнее.",
     type: "textarea",
   },
 };
 
+missingAreaTemplates["default branch не указана"] =
+  missingAreaTemplates["default branch"];
+missingAreaTemplates["не хватает deployment target"] =
+  missingAreaTemplates["deployment target"];
+missingAreaTemplates["не выбран execution target"] =
+  missingAreaTemplates["execution target"];
+missingAreaTemplates["не указан URL существующего репозитория"] =
+  missingAreaTemplates["existing repository URL"];
+missingAreaTemplates["нужно подробнее описать идею продукта"] =
+  missingAreaTemplates["more detailed product idea"];
+missingAreaTemplates["не описана целевая аудитория"] =
+  missingAreaTemplates["target audience"];
+
 const infrastructureTemplates: QuestionTemplate[] = [
   {
-    block: "repository readiness",
+    block: "Готовность репозитория",
     key: "github_repo_exists",
-    label: "Does the GitHub repository already exist?",
-    options: ["Yes", "No", "Unknown"],
+    label: "У вас уже есть GitHub-репозиторий?",
+    options: ["Да", "Нет", "Неизвестно"],
     type: "single_select",
   },
   {
-    block: "repository readiness",
-    key: "codex_push_access",
-    label: "Can the execution agent push changes to the repository?",
-    options: ["Yes", "No", "Unknown"],
+      block: "Готовность репозитория",
+      key: "codex_push_access",
+      label: "Может ли агент разработки пушить изменения в репозиторий?",
+    options: ["Да", "Нет", "Неизвестно"],
     type: "single_select",
   },
   {
-    block: "deployment planning",
+    block: "План деплоя",
     key: "manual_infrastructure_actions",
-    label: "Which infrastructure actions must remain manual?",
+    label: "Какие инфраструктурные действия должны остаться ручными?",
     type: "textarea",
   },
   {
-    block: "QA preference",
-    key: "qa_depth",
-    label: "What QA depth should generated tasks assume?",
-    options: ["Off", "Minimal", "Standard", "Strict", "Custom"],
+      block: "QA-настройки",
+      key: "qa_depth",
+      label: "Какую глубину QA должны учитывать сгенерированные задачи?",
+    options: ["Без QA", "Минимальный QA", "Стандартный QA", "Строгий QA", "Настраиваемый QA"],
     type: "single_select",
   },
 ];

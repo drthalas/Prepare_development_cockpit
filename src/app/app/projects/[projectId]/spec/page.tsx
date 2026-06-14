@@ -245,7 +245,7 @@ function SpecQualityPanel({
               value={formatReadinessLevel(qualityCheck.readinessLevel)}
             />
             <SpecMeta
-              label="Roadmap readiness"
+              label="Готовность к roadmap"
               value={
                 qualityCheck.canProceedToRoadmap
                   ? "Можно продолжать"

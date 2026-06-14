@@ -171,7 +171,7 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
         <option value="">Выберите один вариант</option>
         {question.options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {localizeAnswerOption(option)}
           </option>
         ))}
       </select>
@@ -196,7 +196,7 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
               type="checkbox"
               value={option}
             />
-            {option}
+            {localizeAnswerOption(option)}
           </label>
         ))}
       </div>
@@ -225,6 +225,30 @@ function QuestionInput({ question }: { question: QuestionnaireQuestion }) {
       placeholder="Ответ"
     />
   );
+}
+
+function localizeAnswerOption(option: string) {
+  const labels: Record<string, string> = {
+    Custom: "Настраиваемый QA",
+    Minimal: "Минимальный QA",
+    "Manual instructions only": "Только ручные инструкции",
+    No: "Нет",
+    "Not decided": "Пока не выбрано",
+    Off: "Без QA",
+    Optional: "Опционально",
+    Other: "Другое",
+    Required: "Обязательно",
+    Standard: "Стандартный QA",
+    Strict: "Строгий QA",
+    Unknown: "Неизвестно",
+    Yes: "Да",
+    "future API integration": "Будущая API-интеграция",
+    "human developer": "Разработчик",
+    multiple: "Несколько вариантов",
+    other: "Другое",
+  };
+
+  return labels[option] ?? option;
 }
 
 function answerToString(answer: QuestionnaireAnswerValue | null) {

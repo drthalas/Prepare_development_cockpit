@@ -14,60 +14,60 @@ const typeRules: Array<{
 }> = [
   {
     keywords: ["telegram", "bot", "chatbot"],
-    modules: ["Bot commands", "Conversation flow", "Admin controls"],
-    questionBlocks: ["users and roles", "core workflow", "integrations"],
+    modules: ["Команды бота", "Сценарии диалога", "Админ-настройки"],
+    questionBlocks: ["Пользователи и роли", "Основной сценарий", "Интеграции"],
     type: "Telegram bot",
   },
   {
     keywords: ["mobile", "ios", "android", "react native", "app store"],
-    modules: ["Mobile onboarding", "Core screens", "Release checklist"],
-    questionBlocks: ["users and roles", "MVP features", "constraints and risks"],
+    modules: ["Мобильный onboarding", "Основные экраны", "Чеклист релиза"],
+    questionBlocks: ["Пользователи и роли", "MVP-функции", "Ограничения и риски"],
     type: "mobile app",
   },
   {
     keywords: ["agent", "ai agent", "assistant", "automation with ai"],
-    modules: ["Agent loop", "Tool access", "Safety checks"],
-    questionBlocks: ["core workflow", "integrations", "QA preference"],
+    modules: ["Цикл работы агента", "Доступ к инструментам", "Проверки безопасности"],
+    questionBlocks: ["Основной сценарий", "Интеграции", "QA-настройки"],
     type: "AI agent",
   },
   {
     keywords: ["marketplace", "buyers", "sellers", "vendor"],
-    modules: ["Listings", "Transactions", "Participant dashboards"],
-    questionBlocks: ["users and roles", "MVP features", "data/storage"],
+    modules: ["Каталог/listings", "Транзакции", "Дашборды участников"],
+    questionBlocks: ["Пользователи и роли", "MVP-функции", "Данные и хранение"],
     type: "marketplace",
   },
   {
     keywords: ["landing", "website", "product site", "marketing site"],
-    modules: ["Landing page", "Content sections", "Conversion tracking"],
-    questionBlocks: ["core workflow", "MVP features", "deployment planning"],
+    modules: ["Лендинг", "Контентные секции", "Отслеживание конверсии"],
+    questionBlocks: ["Основной сценарий", "MVP-функции", "План деплоя"],
     type: "landing/product site",
   },
   {
     keywords: ["script", "cron", "automation", "cli"],
-    modules: ["Automation runner", "Inputs and outputs", "Logging"],
-    questionBlocks: ["core workflow", "integrations", "constraints and risks"],
+    modules: ["Запуск автоматизации", "Входные и выходные данные", "Логирование"],
+    questionBlocks: ["Основной сценарий", "Интеграции", "Ограничения и риски"],
     type: "automation script",
   },
   {
     keywords: ["existing", "refactor", "improve", "migration", "legacy"],
-    modules: ["Current-state audit", "Change plan", "Regression checks"],
+    modules: ["Аудит текущего состояния", "План изменений", "Регрессионные проверки"],
     questionBlocks: [
-      "repository readiness",
-      "constraints and risks",
-      "QA preference",
+      "Готовность репозитория",
+      "Ограничения и риски",
+      "QA-настройки",
     ],
     type: "existing project improvement",
   },
   {
     keywords: ["internal", "dashboard", "admin", "backoffice", "ops"],
-    modules: ["Workspace shell", "Operational dashboard", "Data views"],
-    questionBlocks: ["users and roles", "core workflow", "data/storage"],
+    modules: ["Рабочая область", "Операционный дашборд", "Представления данных"],
+    questionBlocks: ["Пользователи и роли", "Основной сценарий", "Данные и хранение"],
     type: "internal tool",
   },
   {
     keywords: ["saas", "subscription", "workspace", "tenant", "b2b"],
-    modules: ["Workspace model", "Project dashboard", "Settings"],
-    questionBlocks: ["users and roles", "MVP features", "deployment planning"],
+    modules: ["Модель рабочих областей", "Дашборд проекта", "Настройки"],
+    questionBlocks: ["Пользователи и роли", "MVP-функции", "План деплоя"],
     type: "SaaS",
   },
 ];
@@ -103,13 +103,13 @@ function classifyWithRules(
   );
   const projectType = matchedRule?.type ?? "other/unknown";
   const suggestedModules =
-    matchedRule?.modules ?? ["Idea intake", "Workspace", "Manual planning"];
+    matchedRule?.modules ?? ["Сбор идеи", "Рабочая область", "Ручное планирование"];
   const recommendedQuestionBlocks = Array.from(
     new Set([
-      ...(matchedRule?.questionBlocks ?? ["users and roles", "core workflow"]),
-      "repository readiness",
-      "deployment planning",
-      "execution/Codex target",
+      ...(matchedRule?.questionBlocks ?? ["Пользователи и роли", "Основной сценарий"]),
+      "Готовность репозитория",
+      "План деплоя",
+      "Целевой инструмент разработки",
     ]),
   );
 
@@ -166,30 +166,30 @@ function findMissingInformation(input: ProjectClassificationInput) {
   const missing: string[] = [];
 
   if (!input.targetUser) {
-    missing.push("target audience");
+    missing.push("не описана целевая аудитория");
   }
 
   if (!input.repositoryUrl && input.repositoryMode === "existing") {
-    missing.push("existing repository URL");
+    missing.push("не указан URL существующего репозитория");
   }
 
   if (!input.defaultBranch) {
-    missing.push("default branch");
+    missing.push("default branch не указана");
   }
 
   if (!input.deploymentTarget || input.deploymentTarget === "undecided") {
-    missing.push("deployment target");
+    missing.push("не хватает deployment target");
   }
 
   if (!input.executionTarget || input.executionTarget === "unknown") {
-    missing.push("execution target");
+    missing.push("не выбран execution target");
   }
 
   if (!input.initialIdea || input.initialIdea.length < 80) {
-    missing.push("more detailed product idea");
+    missing.push("нужно подробнее описать идею продукта");
   }
 
-  return missing.length > 0 ? missing : ["none detected in intake"];
+  return missing.length > 0 ? missing : ["критичных пробелов в intake не найдено"];
 }
 
 function buildSummary(
@@ -197,8 +197,8 @@ function buildSummary(
   input: ProjectClassificationInput,
 ) {
   const audience = input.targetUser
-    ? ` for ${input.targetUser}`
-    : " with the audience still to clarify";
+    ? ` для аудитории: ${input.targetUser}`
+    : ", но аудиторию ещё нужно уточнить";
 
-  return `${input.title} is currently classified as ${projectType}${audience}.`;
+  return `${input.title} классифицирован как ${projectType}${audience}.`;
 }

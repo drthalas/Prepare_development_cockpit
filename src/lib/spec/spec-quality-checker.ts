@@ -20,24 +20,24 @@ export type SpecQualityCheckInput = {
 };
 
 const requiredSections = [
-  "Overview",
-  "Problem",
-  "Target users",
-  "Goals",
-  "Non-goals",
-  "User stories",
-  "Functional requirements",
-  "Non-functional requirements",
-  "Integrations",
-  "Data/storage assumptions",
-  "Repository and GitHub readiness",
-  "Deployment planning",
-  "Execution target",
-  "QA preference",
-  "Edge cases",
-  "MVP scope",
-  "Out of scope",
-  "Open questions",
+  "Обзор",
+  "Проблема",
+  "Целевые пользователи",
+  "Цели",
+  "Что не входит в scope",
+  "Пользовательские сценарии",
+  "Функциональные требования",
+  "Нефункциональные требования",
+  "Интеграции",
+  "Данные и хранение",
+  "Готовность GitHub-репозитория",
+  "План деплоя",
+  "Предположения по разработке",
+  "QA-настройки",
+  "Граничные случаи",
+  "MVP",
+  "Вне scope",
+  "Открытые вопросы",
 ];
 
 export async function checkSpecQuality(
@@ -81,7 +81,7 @@ function runMockQualityCheck(
     readinessScore,
     recommendedFollowUpQuestions,
     riskAreas,
-    summary: `${input.projectTitle} spec readiness is ${readinessLevel} at ${readinessScore}/100.`,
+    summary: `Готовность spec для ${input.projectTitle}: ${formatReadinessLevel(readinessLevel)}, ${readinessScore}/100.`,
     vagueRequirements,
   };
 }
@@ -92,16 +92,21 @@ function findMissingInformation(markdown: string) {
 
   for (const section of requiredSections) {
     if (!lower.includes(`## ${section.toLowerCase()}`)) {
-      missing.push(`${section} section`);
+      missing.push(`Не найдена секция: ${section}`);
     }
   }
 
-  if (!lower.includes("acceptance")) {
-    missing.push("acceptance criteria");
+  if (!lower.includes("acceptance") && !lower.includes("критер")) {
+    missing.push("Не описаны критерии приемки");
   }
 
-  if (!lower.includes("role") && !lower.includes("user")) {
-    missing.push("user roles");
+  if (
+    !lower.includes("role") &&
+    !lower.includes("user") &&
+    !lower.includes("роль") &&
+    !lower.includes("польз")
+  ) {
+    missing.push("Не описаны роли пользователей");
   }
 
   return missing;
@@ -110,16 +115,16 @@ function findMissingInformation(markdown: string) {
 function findVagueRequirements(markdown: string) {
   const vague: string[] = [];
   const lower = markdown.toLowerCase();
-  const vagueTerms = ["tbd", "to be decided", "not provided", "clarify"];
+  const vagueTerms = ["tbd", "to be decided", "not provided", "clarify", "не указано", "уточнить"];
 
   for (const term of vagueTerms) {
     if (lower.includes(term)) {
-      vague.push(`Contains "${term}"`);
+      vague.push(`Есть неопределённость: "${term}"`);
     }
   }
 
   if (markdown.length < 1800) {
-    vague.push("Spec is short for roadmap-ready planning");
+    vague.push("Spec слишком короткая для полноценного roadmap planning");
   }
 
   return vague;
@@ -129,32 +134,32 @@ function findRiskAreas(input: SpecQualityCheckInput) {
   const risks: string[] = [];
   const lower = input.markdown.toLowerCase();
 
-  if (!lower.includes("edge case")) {
-    risks.push("edge cases are not explicit");
+  if (!lower.includes("edge case") && !lower.includes("гранич")) {
+    risks.push("Граничные случаи не описаны явно");
   }
 
-  if (!lower.includes("integration")) {
-    risks.push("integrations are not explicit");
+  if (!lower.includes("integration") && !lower.includes("интеграц")) {
+    risks.push("Интеграции не описаны явно");
   }
 
-  if (!lower.includes("deployment")) {
-    risks.push("deployment plan is missing");
+  if (!lower.includes("deployment") && !lower.includes("депло")) {
+    risks.push("План деплоя отсутствует");
   }
 
   if (input.questionnaireAnswers.length < 6) {
-    risks.push("questionnaire answers are sparse");
+    risks.push("Ответов анкеты слишком мало");
   }
 
   if (input.structuredSections.length < 10) {
-    risks.push("structured spec sections are sparse");
+    risks.push("Структурных секций spec слишком мало");
   }
 
   if (!input.projectContext.repositoryMode) {
-    risks.push("repository readiness context is missing");
+    risks.push("Не хватает контекста готовности репозитория");
   }
 
   if (!input.projectContext.deploymentTarget) {
-    risks.push("deployment target context is missing");
+    risks.push("Не выбран deployment target");
   }
 
   return risks;
@@ -162,28 +167,38 @@ function findRiskAreas(input: SpecQualityCheckInput) {
 
 function buildFollowUpQuestions(findings: string[]) {
   if (findings.length === 0) {
-    return ["Confirm whether this spec can move to roadmap planning."];
+    return ["Подтвердите, можно ли переходить от spec к roadmap planning."];
   }
 
   return findings.slice(0, 8).map((finding) => {
-    if (finding.includes("acceptance")) {
-      return "What acceptance criteria must be true before this project is considered ready?";
+    if (finding.toLowerCase().includes("acceptance")) {
+      return "Какие критерии приемки должны быть выполнены, чтобы проект считался готовым?";
     }
 
-    if (finding.includes("user roles")) {
-      return "Which roles should be represented in the roadmap and future tasks?";
+    if (finding.includes("роли")) {
+      return "Какие роли нужно явно учесть в roadmap и будущих tasks?";
     }
 
-    if (finding.includes("edge")) {
-      return "Which edge cases should implementation tasks explicitly cover?";
+    if (finding.includes("Граничные")) {
+      return "Какие граничные случаи должны явно покрывать задачи реализации?";
     }
 
-    if (finding.includes("integration")) {
-      return "Which integrations are required for MVP and which are optional?";
+    if (finding.includes("Интеграции")) {
+      return "Какие интеграции обязательны для MVP, а какие опциональны?";
     }
 
-    return `Please clarify: ${finding}.`;
+    return `Пожалуйста, уточните: ${finding}.`;
   });
+}
+
+function formatReadinessLevel(level: "high" | "medium" | "low") {
+  const labels = {
+    high: "высокая",
+    low: "низкая",
+    medium: "средняя",
+  };
+
+  return labels[level];
 }
 
 function calculateScore(

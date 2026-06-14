@@ -451,7 +451,7 @@ export default async function ProjectDetailPage({
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-3">
-          <ContextPanel title="GitHub / repository context">
+          <ContextPanel title="GitHub и репозиторий">
             <ProjectMeta
               label="Состояние"
               value={
@@ -490,7 +490,7 @@ export default async function ProjectDetailPage({
             />
           </ContextPanel>
 
-          <ContextPanel title="Deployment context">
+          <ContextPanel title="Контекст деплоя">
             <ProjectMeta
               label="Цель"
               value={
@@ -517,9 +517,9 @@ export default async function ProjectDetailPage({
             />
           </ContextPanel>
 
-          <ContextPanel title="Execution context">
+          <ContextPanel title="Контекст разработки">
             <ProjectMeta
-              label="Execution target"
+              label="Целевой инструмент разработки"
               value={
                 project.executionTarget
                   ? executionTargetLabels[project.executionTarget]
@@ -816,7 +816,7 @@ function getNextStep(input: {
     return {
       actionLabel: "Настроить параметры разработки",
       description:
-        "Выберите execution target, QA mode, roadmap style и deployment planning перед генерацией roadmap.",
+        "Выберите инструмент разработки, QA-режим, стиль roadmap и план деплоя перед генерацией roadmap.",
       href: `/app/projects/${input.projectId}/execution`,
       title: "Настройте параметры разработки",
     };
@@ -836,7 +836,7 @@ function getNextStep(input: {
     return {
       actionLabel: "Открыть roadmap",
       description:
-        "Откройте roadmap, выберите задачу и нажмите “Сгенерировать prompt”, чтобы закрыть missing prompts.",
+        "Откройте roadmap, выберите задачу и нажмите “Сгенерировать prompt”, чтобы закрыть задачи без промптов.",
       href: `/app/projects/${input.projectId}/roadmap`,
       title: "Сгенерируйте промпты для задач",
     };
@@ -846,9 +846,9 @@ function getNextStep(input: {
     return {
       actionLabel: "Открыть export",
       description:
-        "Проверьте export warnings и подготовьте ZIP/Linear-ready bundle.",
+        "Проверьте предупреждения экспорта и подготовьте ZIP/Linear-ready пакет.",
       href: `/app/projects/${input.projectId}/export`,
-      title: "Подготовьте export bundle",
+      title: "Подготовьте пакет экспорта",
     };
   }
 

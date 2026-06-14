@@ -6,6 +6,11 @@ import {
   updateRoadmapTaskAction,
 } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { CopyButton } from "@/components/copy-button";
+import {
+  taskCategoryLabels,
+  taskPriorityLabels,
+  taskStatusLabels,
+} from "@/lib/i18n/labels";
 import { getRoadmapTaskDetail } from "@/lib/roadmap/roadmap-store";
 
 export const dynamic = "force-dynamic";
@@ -137,10 +142,10 @@ export default async function TaskDetailPage({
               label="Категория"
               name="category"
               options={[
-                ["coding", "Coding"],
-                ["manual_infrastructure", "Ручная инфраструктура"],
-                ["documentation_recommendation", "Документация/рекомендация"],
-                ["qa_checkpoint", "QA checkpoint"],
+                ["coding", taskCategoryLabels.coding],
+                ["manual_infrastructure", taskCategoryLabels.manual_infrastructure],
+                ["documentation_recommendation", taskCategoryLabels.documentation_recommendation],
+                ["qa_checkpoint", taskCategoryLabels.qa_checkpoint],
               ]}
             />
             <Select
@@ -159,7 +164,7 @@ export default async function TaskDetailPage({
               label="Статус"
               name="status"
               options={[
-                ["todo", "To do"],
+                ["todo", "К выполнению"],
                 ["in_progress", "В работе"],
                 ["blocked", "Заблокировано"],
                 ["done", "Готово"],
@@ -176,7 +181,7 @@ export default async function TaskDetailPage({
             <TextArea
               defaultValue={task.implementationNotes ?? ""}
               help="Подсказки по реализации, ограничения и edge notes для задачи."
-              label="Implementation notes"
+              label="Заметки по реализации"
               name="implementationNotes"
             />
           </div>
@@ -190,7 +195,7 @@ export default async function TaskDetailPage({
             <TextArea
               defaultValue={linesToTextarea(task.acceptanceCriteria)}
               help="Один критерий приемки на строку."
-              label="Acceptance criteria"
+              label="Критерии приемки"
               name="acceptanceCriteria"
             />
             <TextArea
@@ -203,19 +208,19 @@ export default async function TaskDetailPage({
           <div className="grid gap-5 lg:grid-cols-3">
             <TextArea
               defaultValue={linesToTextarea(task.qaInstructions)}
-              help="QA instructions можно редактировать вручную. Генератор QA запускается на roadmap page."
-              label="QA instructions"
+              help="QA-инструкции можно редактировать вручную. Генератор QA запускается на странице roadmap."
+              label="QA-инструкции"
               name="qaInstructions"
             />
             <TextArea
               defaultValue={linesToTextarea(task.promptBlocks)}
               help="Черновые prompt blocks. Полный Codex Prompt генерируется кнопкой ниже."
-              label="Prompt blocks"
+              label="Блоки prompt"
               name="promptBlocks"
             />
             <TextArea
               defaultValue={linesToTextarea(task.linearMetadata)}
-              help="Metadata для будущего Linear export."
+              help="Метаданные для будущего экспорта в Linear."
               label="Linear metadata"
               name="linearMetadata"
             />
@@ -232,21 +237,21 @@ export default async function TaskDetailPage({
           <DetailList items={task.requirements} title="Требования" />
           <DetailList
             items={task.acceptanceCriteria}
-            title="Acceptance criteria"
+            title="Критерии приемки"
           />
           <DetailList items={task.dependencies} title="Зависимости" />
           <DetailText title="Контекст" value={task.context} />
           <DetailText
-            title="Implementation notes"
+            title="Заметки по реализации"
             value={task.implementationNotes}
           />
           <DetailList
             items={task.qaInstructions}
-            title="QA instructions"
+            title="QA-инструкции"
           />
           <DetailList
             items={task.promptBlocks}
-            title="Prompt blocks"
+            title="Блоки prompt"
           />
           <DetailList
             items={task.linearMetadata}
@@ -265,8 +270,13 @@ export default async function TaskDetailPage({
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 Генерирует plain-text prompt только для этой задачи. Внутри:
-                контекст проекта, требования, acceptance criteria, checks и
+                контекст проекта, требования, критерии приемки, checks и
                 guardrails против выхода за scope.
+              </p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                Сам prompt для Codex может оставаться на английском, чтобы
+                повысить совместимость с coding tools. UI вокруг него
+                локализован на русский.
               </p>
             </div>
             <form action={generatePromptAction}>
@@ -298,7 +308,7 @@ export default async function TaskDetailPage({
               <h3 className="font-semibold">Prompt ещё не сгенерирован</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                 Сначала уточните детали задачи, затем нажмите “Сгенерировать
-                prompt”. QA checkpoints и Linear export запускаются отдельно.
+                prompt”. QA-проверки и экспорт в Linear запускаются отдельно.
               </p>
             </div>
           )}
@@ -410,22 +420,12 @@ function DetailList({ items, title }: { items: string[]; title: string }) {
 }
 
 function formatLabel(value: string) {
-  const labels: Record<string, string> = {
-    blocked: "Заблокировано",
-    coding: "Coding",
-    documentation_recommendation: "Документация",
-    done: "Готово",
-    high: "Высокий",
-    in_progress: "В работе",
-    low: "Низкий",
-    manual_infrastructure: "Ручная инфраструктура",
-    medium: "Средний",
-    qa_checkpoint: "QA checkpoint",
-    todo: "To do",
-    urgent: "Срочный",
-  };
-
-  return labels[value] ?? value;
+  return (
+    taskCategoryLabels[value] ??
+    taskPriorityLabels[value] ??
+    taskStatusLabels[value] ??
+    value
+  );
 }
 
 function linesToTextarea(items: string[]) {

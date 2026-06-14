@@ -52,7 +52,7 @@ const howItWorks = [
   {
     title: "Соберите пакет для разработки",
     description:
-      "Сгенерируйте roadmap, задачи, Codex prompts, QA checkpoints, Linear preview и downloadable bundle.",
+      "Сгенерируйте roadmap, задачи, Codex prompts, QA-проверки, Linear preview и downloadable bundle.",
   },
 ];
 

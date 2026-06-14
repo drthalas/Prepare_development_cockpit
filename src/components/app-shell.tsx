@@ -80,7 +80,7 @@ export function AppShell() {
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
                 Начните с описания проекта, затем пройдите анкету, spec,
-                roadmap, task prompts, QA checkpoints, Linear preview и export.
+                roadmap, prompts для задач, QA-проверки, Linear preview и export.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-sm">

@@ -14,6 +14,7 @@ import {
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapView } from "@/lib/roadmap/types";
 import { executionSettingLabels } from "@/lib/execution/execution-options";
+import { taskCategoryLabels } from "@/lib/i18n/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -84,8 +85,8 @@ export default async function RoadmapPage({
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 Сгенерируйте структурированный roadmap из текущей spec и
-                сохранённых настроек исполнения. Это не генерирует Codex prompts
-                и Linear exports.
+                сохранённых настроек исполнения. Это не генерирует Codex Prompts
+                и экспорт в Linear.
               </p>
             </div>
             <Link
@@ -142,7 +143,7 @@ export default async function RoadmapPage({
             ok={qaState === "generated"}
             text={
               qaState === "generated"
-                ? "QA checkpoints updated from execution settings."
+                ? "QA-проверки обновлены из настроек исполнения."
                 : getQAErrorMessage(qaState)
             }
           />
@@ -212,17 +213,17 @@ export default async function RoadmapPage({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                QA checkpoints
+                QA-проверки
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Поведение QA mode
+                Поведение QA-режима
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
                 {qaStatus.summary}
               </p>
               <dl className="mt-4 grid gap-3 sm:grid-cols-3">
                 <Meta
-                  label="QA mode"
+                  label="QA-режим"
                   value={executionSettingLabels.qaModeLabels[qaStatus.mode]}
                 />
                 <Meta
@@ -234,7 +235,7 @@ export default async function RoadmapPage({
                   }
                 />
                 <Meta
-                  label="Checkpoints"
+                  label="Проверки"
                   value={String(qaStatus.checkpointCount)}
                 />
               </dl>
@@ -244,7 +245,7 @@ export default async function RoadmapPage({
                 className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
                 type="submit"
               >
-                Сгенерировать QA checkpoints
+                Сгенерировать QA-проверки
               </button>
             </form>
           </div>
@@ -491,10 +492,10 @@ function RoadmapView({
 }
 
 const taskCategoryOptions = [
-  ["coding", "Coding"],
-  ["manual_infrastructure", "Ручная инфраструктура"],
-  ["documentation_recommendation", "Документация/рекомендация"],
-  ["qa_checkpoint", "QA checkpoint"],
+  ["coding", taskCategoryLabels.coding],
+  ["manual_infrastructure", taskCategoryLabels.manual_infrastructure],
+  ["documentation_recommendation", taskCategoryLabels.documentation_recommendation],
+  ["qa_checkpoint", taskCategoryLabels.qa_checkpoint],
 ] as const;
 
 const taskPriorityOptions = [
@@ -505,7 +506,7 @@ const taskPriorityOptions = [
 ] as const;
 
 const taskStatusOptions = [
-  ["todo", "To do"],
+  ["todo", "К выполнению"],
   ["in_progress", "В работе"],
   ["blocked", "Заблокировано"],
   ["done", "Готово"],
@@ -633,12 +634,12 @@ function getTaskStateMessage(state: string) {
 
 function getQAErrorMessage(state: string) {
   const messages: Record<string, string> = {
-    database: "QA checkpoints не удалось сохранить: база данных недоступна.",
+    database: "QA-проверки не удалось сохранить: база данных недоступна.",
     not_found: "Проект не найден.",
     roadmap_required: "Сначала сгенерируйте roadmap.",
   };
 
-  return messages[state] ?? "Генерация QA checkpoints не удалась.";
+  return messages[state] ?? "Генерация QA-проверок не удалась.";
 }
 
 function getMutationErrorMessage(state: string) {

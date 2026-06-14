@@ -4,6 +4,17 @@ import { getLinearReadyExportBundle } from "@/lib/export/export-service";
 import type { ExportPhase, LinearReadyExportBundle } from "@/lib/export/types";
 import { buildStoredZip } from "@/lib/export/zip-builder";
 import { getDefaultExecutionSettings } from "@/lib/execution/execution-store";
+import {
+  displayLabel,
+  taskCategoryLabels,
+  taskPriorityLabels,
+  taskStatusLabels,
+} from "@/lib/i18n/labels";
+import {
+  deploymentModeLabels,
+  deploymentOwnerLabels,
+  deploymentTargetLabels,
+} from "@/lib/projects/project-options";
 import { isDatabaseConfigured } from "@/lib/projects/project-store";
 
 export type ArtifactFile = {
@@ -58,7 +69,7 @@ export async function getProjectArtifactBundle(
       data: null,
       databaseReady: false,
       message:
-        "DATABASE_URL is not configured. Artifact export requires PostgreSQL.",
+        "DATABASE_URL не настроен. Для artifact export нужен PostgreSQL.",
     };
   }
 
@@ -160,7 +171,7 @@ export async function getProjectArtifactBundle(
     return {
       data: null,
       databaseReady: false,
-      message: "Artifact export database is not reachable.",
+      message: "База данных artifact export недоступна.",
     };
   }
 }
@@ -207,21 +218,21 @@ function file(
 
 function buildReadme(bundle: LinearReadyExportBundle, warnings: string[]) {
   return [
-    `# ${bundle.project.title} Export Bundle`,
+    `# ${bundle.project.title} — пакет экспорта`,
     "",
-    "This bundle contains generated project artifacts from Prepare Development Cockpit.",
+    "Этот пакет содержит сгенерированные проектные артефакты из Prepare Development Cockpit.",
     "",
-    "Read first:",
+    "Что читать сначала:",
     "1. project_metadata.json",
     "2. spec.md",
     "3. roadmap.md",
     "4. tasks.json",
     "5. codex_prompts.md",
     "",
-    "Use with Codex, Claude Code, Cursor, or a human developer by copying the relevant task prompt and task context.",
-    "Use linear_export.md or the CSV/JSON exports in the app to transfer work into Linear manually.",
+    "Используйте пакет с Codex, Claude Code, Cursor или разработчиком: копируйте нужный промпт задачи и контекст задачи.",
+    "Для ручного переноса в Linear используйте linear_export.md или CSV/JSON-экспорт в приложении.",
     "",
-    warnings.length > 0 ? "## Warnings" : "",
+    warnings.length > 0 ? "## Предупреждения" : "",
     ...warnings.map((warning) => `- ${warning}`),
   ]
     .filter(Boolean)
@@ -230,25 +241,25 @@ function buildReadme(bundle: LinearReadyExportBundle, warnings: string[]) {
 
 function buildRoadmap(phases: ExportPhase[]) {
   if (phases.length === 0) {
-    return "# Roadmap\n\nNo roadmap has been generated yet.";
+    return "# Roadmap\n\nRoadmap ещё не сгенерирован.";
   }
 
   return [
     "# Roadmap",
     ...phases.flatMap((phase) => [
       "",
-      `## Phase ${phase.order}: ${phase.title}`,
-      phase.description ?? "No phase description recorded.",
+      `## Фаза ${phase.order}: ${phase.title}`,
+      phase.description ?? "Описание фазы не заполнено.",
       ...phase.tasks.flatMap((task) => [
         "",
         `### ${task.title}`,
-        `- Category: ${task.category}`,
-        `- Priority: ${task.priority ?? "medium"}`,
-        `- Status: ${task.status}`,
+        `- Категория: ${displayLabel(taskCategoryLabels, task.category)}`,
+        `- Приоритет: ${displayLabel(taskPriorityLabels, task.priority, "Средний")}`,
+        `- Статус: ${displayLabel(taskStatusLabels, task.status)}`,
         "",
         task.description,
         "",
-        "Acceptance criteria:",
+        "Критерии приемки:",
         formatList(task.acceptanceCriteria),
       ]),
     ]),
@@ -266,7 +277,7 @@ function buildCodexPrompts(phases: ExportPhase[]) {
       return [
         `## ${phase.title} / ${task.title}`,
         "",
-        task.codexPrompt ?? "No Codex Prompt generated for this task.",
+        task.codexPrompt ?? "Codex Prompt для этой задачи ещё не сгенерирован.",
       ].join("\n");
     }),
   );
@@ -274,7 +285,7 @@ function buildCodexPrompts(phases: ExportPhase[]) {
   return [
     "# Codex Prompts",
     "",
-    missing.length > 0 ? "## Missing Prompts" : "",
+    missing.length > 0 ? "## Нет prompt для задач" : "",
     ...missing.map((item) => `- ${item}`),
     missing.length > 0 ? "" : "",
     ...sections,
@@ -291,26 +302,26 @@ function buildQAPlan(phases: ExportPhase[], qaMode: string) {
   );
 
   if (qaMode === "off") {
-    return "# QA Plan\n\nQA is disabled for this project.";
+    return "# QA-план\n\nQA отключён для этого проекта.";
   }
 
   return [
-    "# QA Plan",
+    "# QA-план",
     "",
-    `QA mode: ${qaMode}`,
+    `QA-режим: ${qaMode}`,
     "",
     qaTasks.length === 0
-      ? "No QA checkpoint tasks or instructions have been generated yet."
+      ? "QA-проверки или инструкции ещё не сгенерированы."
       : "",
     ...qaTasks.flatMap(({ phase, task }) => [
       `## ${phase} / ${task.title}`,
       "",
       task.description,
       "",
-      "QA instructions:",
+      "QA-инструкции:",
       formatList(task.qaInstructions),
       "",
-      "Pass/fail criteria:",
+      "Критерии pass/fail:",
       formatList(task.acceptanceCriteria),
     ]),
   ]
@@ -323,18 +334,18 @@ function buildDeploymentGuide(metadata: {
   repository: { url: string | null };
 }) {
   return [
-    "# Deployment Guide",
+    "# Руководство по деплою",
     "",
-    `Deployment target: ${metadata.deployment.target ?? "undecided"}`,
-    `Deployment mode: ${metadata.deployment.mode ?? "manual_instructions"}`,
-    `Configured by: ${metadata.deployment.owner ?? "not_decided"}`,
-    `Repository: ${metadata.repository.url ?? "not provided"}`,
+    `Цель деплоя: ${displayLabel(deploymentTargetLabels, metadata.deployment.target)}`,
+    `Режим деплоя: ${displayLabel(deploymentModeLabels, metadata.deployment.mode, "Только ручные инструкции")}`,
+    `Кто настраивает: ${displayLabel(deploymentOwnerLabels, metadata.deployment.owner)}`,
+    `Repository: ${metadata.repository.url ?? "не указан"}`,
     "",
-    "## Manual Infrastructure Steps",
-    "- Create or connect hosting resources manually.",
-    "- Connect the GitHub repository manually if required.",
-    "- Add environment variables manually; do not paste secrets into this bundle.",
-    "- Run the health check after deployment.",
+    "## Ручные инфраструктурные шаги",
+    "- Создать или подключить ресурсы хостинга вручную.",
+    "- Подключить GitHub-репозиторий вручную, если это требуется.",
+    "- Добавить переменные окружения вручную; не вставлять секреты в этот пакет.",
+    "- Запустить health check после деплоя.",
     "",
     "## Env Vars Checklist",
     "- NEXT_PUBLIC_APP_URL",
@@ -344,7 +355,7 @@ function buildDeploymentGuide(metadata: {
     "- LINEAR_API_KEY",
     "- NODE_ENV",
     "",
-    "## Commands",
+    "## Команды",
     "- npm run build",
     "- npm run start",
     "",
@@ -356,16 +367,16 @@ function buildDeploymentGuide(metadata: {
 function getArtifactWarnings(bundle: LinearReadyExportBundle, specMarkdown?: string) {
   const warnings: string[] = [];
 
-  if (!specMarkdown) warnings.push("No spec exists yet.");
-  if (!bundle.exportSummary.roadmapAvailable) warnings.push("No roadmap exists yet.");
+  if (!specMarkdown) warnings.push("Spec ещё не создана.");
+  if (!bundle.exportSummary.roadmapAvailable) warnings.push("Roadmap ещё не создан.");
   if (bundle.exportSummary.missingPromptCount > 0) {
-    warnings.push(`${bundle.exportSummary.missingPromptCount} task(s) are missing Codex prompts.`);
+    warnings.push(`${bundle.exportSummary.missingPromptCount} задач без Codex Prompt.`);
   }
   if (bundle.exportSummary.qaCheckpointCount === 0) {
-    warnings.push("No QA checkpoint tasks are present.");
+    warnings.push("QA-проверки отсутствуют.");
   }
   if (!bundle.project.deploymentTarget || bundle.project.deploymentTarget === "undecided") {
-    warnings.push("Deployment target is not decided.");
+    warnings.push("Цель деплоя пока не выбрана.");
   }
 
   return warnings;
@@ -374,11 +385,11 @@ function getArtifactWarnings(bundle: LinearReadyExportBundle, specMarkdown?: str
 function formatList(items: string[]) {
   return items.length > 0
     ? items.map((item) => `- ${item}`).join("\n")
-    : "- Not recorded.";
+    : "- Не заполнено.";
 }
 
 function missingSpec() {
-  return "# Spec\n\nNo specification has been generated yet.";
+  return "# Spec\n\nСпецификация ещё не сгенерирована.";
 }
 
 function scrubSecrets(content: string) {
