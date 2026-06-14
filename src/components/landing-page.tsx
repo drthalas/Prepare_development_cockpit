@@ -23,11 +23,11 @@ export function LandingPage() {
         >
           <Image
             alt="Nikolaev.AI"
-            className="h-8 w-auto sm:h-9"
-            height={40}
+            className="h-6 w-auto object-contain sm:h-7 md:h-8"
+            height={150}
             priority
-            src="/branding/nikolaev-ai-logo.svg"
-            width={178}
+            src="/brand/nikolaev-ai-logo.png"
+            width={900}
           />
         </Link>
         <p className="min-w-0 truncate text-center text-[10px] font-medium leading-none text-[var(--muted)] sm:text-xs">
