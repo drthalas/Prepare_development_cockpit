@@ -3,6 +3,11 @@ import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
 import { ProjectIntakeWizard } from "@/components/project-intake-wizard";
 import {
+  ActionLink,
+  DetailsDisclosure,
+  PageHeader,
+} from "@/components/ui/patterns";
+import {
   projectStatusLabels,
 } from "@/lib/projects/project-options";
 import { listProjects } from "@/lib/projects/project-store";
@@ -24,39 +29,31 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] text-[var(--foreground)]">
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-5 py-6 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
-        <section>
-          <Link
-            className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
-            href="/app"
-          >
-            Назад в рабочую область
-          </Link>
-          <div className="mt-6">
-            <p className="text-sm font-semibold text-[var(--accent-strong)]">
-              Проекты
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold">
-              Создание проекта из идеи
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Опишите продукт, аудиторию, GitHub, деплой, инструмент
-              разработки и QA. После создания проекта страница проекта покажет,
-              какую кнопку нажать дальше.
-            </p>
-          </div>
+      <div className="mx-auto w-full max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
+        <Link
+          className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
+          href="/app"
+        >
+          Назад в рабочую область
+        </Link>
 
-          <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-            <h2 className="text-lg font-semibold">Как пользоваться сервисом</h2>
-            <ol className="mt-4 grid gap-2 text-sm leading-6 text-[var(--muted)]">
+        <div className="mt-6">
+          <PageHeader
+            actions={<ActionLink href="#create-project">Создать проект</ActionLink>}
+            description="Создайте проект из идеи. Следующее действие появится на странице проекта."
+            eyebrow="Проекты"
+            title="Проекты"
+          />
+        </div>
+
+        <div className="mt-6 grid w-full gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <section>
+            <DetailsDisclosure title="Как пользоваться сервисом">
+              <ol className="grid gap-2">
               {[
                 "Создайте проект и опишите идею.",
-                "Укажите GitHub, деплой, Codex/Claude/Cursor и QA-настройки.",
-                "Запустите классификацию.",
-                "Ответьте на уточняющие вопросы.",
-                "Сгенерируйте и отредактируйте спецификацию.",
-                "Настройте исполнение и сгенерируйте roadmap.",
-                "Откройте задачу, сгенерируйте Codex Prompt и скачайте ZIP или экспорт в Linear.",
+                "Запустите классификацию и ответьте на вопросы.",
+                "Сгенерируйте spec, roadmap, prompts и export.",
               ].map((step, index) => (
                 <li key={step}>
                   <span className="font-semibold text-[var(--foreground)]">
@@ -66,7 +63,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                 </li>
               ))}
             </ol>
-          </section>
+            </DetailsDisclosure>
 
           {!projectsResult.databaseReady ? (
             <div className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 text-sm text-[var(--muted)]">
@@ -94,8 +91,9 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           <div className="mt-6 grid gap-4">
             {projectsResult.data.length === 0 ? (
               <EmptyState
+                actionHref="#create-project"
                 actionLabel="Создайте первый проект"
-                description="Пока нет проектов. Создайте первый проект из идеи, затем следуйте подсказкам на странице проекта."
+                description="Пока нет проектов. Начните с короткой формы справа."
                 title="Пока нет проектов"
               />
             ) : (
@@ -140,18 +138,20 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           </div>
         </section>
 
-        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+        <section
+          className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
+          id="create-project"
+        >
           <h2 className="text-xl font-semibold">Мастер создания проекта</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            Заполните основные данные. Это первый шаг основного сценария;
-            генерация spec, roadmap, prompts и export запускаются отдельно
-            после создания проекта.
+            Заполните основные данные. Остальные шаги запускаются после создания.
           </p>
 
           <div className="mt-6">
             <ProjectIntakeWizard />
           </div>
         </section>
+      </div>
       </div>
     </main>
   );

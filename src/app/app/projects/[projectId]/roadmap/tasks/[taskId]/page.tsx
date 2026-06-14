@@ -6,6 +6,7 @@ import {
   updateRoadmapTaskAction,
 } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { CopyButton } from "@/components/copy-button";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import {
   taskCategoryLabels,
   taskPriorityLabels,
@@ -108,16 +109,17 @@ export default async function TaskDetailPage({
           </div>
         ) : null}
 
+        <section className="mt-6">
+          <DetailsDisclosure title="Редактировать задачу">
         <form
           action={updateAction}
-          className="mt-6 grid gap-5 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
+          className="grid gap-5"
         >
           <input name="returnToTaskDetail" type="hidden" value="on" />
           <div>
             <h2 className="text-xl font-semibold">Рабочая единица для разработки</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Держите задачу достаточно узкой для Codex prompt, QA pass и
-              Linear-ready export.
+              Держите задачу достаточно узкой для prompt, QA и export.
             </p>
           </div>
           <label className="grid gap-2 text-sm font-semibold">
@@ -232,31 +234,37 @@ export default async function TaskDetailPage({
             Сохранить задачу
           </button>
         </form>
+          </DetailsDisclosure>
+        </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-2">
-          <DetailList items={task.requirements} title="Требования" />
-          <DetailList
-            items={task.acceptanceCriteria}
-            title="Критерии приемки"
-          />
-          <DetailList items={task.dependencies} title="Зависимости" />
-          <DetailText title="Контекст" value={task.context} />
-          <DetailText
-            title="Заметки по реализации"
-            value={task.implementationNotes}
-          />
-          <DetailList
-            items={task.qaInstructions}
-            title="QA-инструкции"
-          />
-          <DetailList
-            items={task.promptBlocks}
-            title="Блоки prompt"
-          />
-          <DetailList
-            items={task.linearMetadata}
-            title="Linear metadata"
-          />
+        <section className="mt-6">
+          <DetailsDisclosure title="Сохранённые детали">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <DetailList items={task.requirements} title="Требования" />
+              <DetailList
+                items={task.acceptanceCriteria}
+                title="Критерии приемки"
+              />
+              <DetailList items={task.dependencies} title="Зависимости" />
+              <DetailText title="Контекст" value={task.context} />
+              <DetailText
+                title="Заметки по реализации"
+                value={task.implementationNotes}
+              />
+              <DetailList
+                items={task.qaInstructions}
+                title="QA-инструкции"
+              />
+              <DetailList
+                items={task.promptBlocks}
+                title="Блоки prompt"
+              />
+              <DetailList
+                items={task.linearMetadata}
+                title="Linear metadata"
+              />
+            </div>
+          </DetailsDisclosure>
         </section>
 
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
@@ -269,14 +277,8 @@ export default async function TaskDetailPage({
                 Scoped prompt для задачи
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Генерирует plain-text prompt только для этой задачи. Внутри:
-                контекст проекта, требования, критерии приемки, checks и
-                guardrails против выхода за scope.
-              </p>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Сам prompt для Codex может оставаться на английском, чтобы
-                повысить совместимость с coding tools. UI вокруг него
-                локализован на русский.
+                Prompt остаётся scoped для этой задачи. Текст prompt может быть
+                на английском для совместимости с coding tools.
               </p>
             </div>
             <form action={generatePromptAction}>
@@ -298,7 +300,7 @@ export default async function TaskDetailPage({
                 <CopyButton text={task.codexPrompt.content} />
               </div>
               <textarea
-                className="min-h-[520px] rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
+                className="min-h-[360px] rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
                 readOnly
                 value={task.codexPrompt.content}
               />

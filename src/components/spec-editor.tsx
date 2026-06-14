@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import type { StoredSpecView } from "@/lib/spec/types";
 
 type SpecEditorProps = {
@@ -58,9 +59,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
           <div>
             <h2 className="text-xl font-semibold">Редактор spec</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-              Редактируйте Markdown напрямую. Черновик autosave обновляет
-              текущую spec; нажмите “Сохранить версию”, когда правка должна
-              стать отдельной версией.
+              Отредактируйте Markdown и сохраните версию.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -119,7 +118,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
         >
           <label className="text-sm font-semibold">Markdown</label>
           <textarea
-            className="mt-3 min-h-[640px] w-full resize-y rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+            className="mt-3 min-h-[440px] w-full resize-y rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)] lg:min-h-[560px]"
             onChange={(event) => {
               setMarkdown(event.target.value);
               setSaveState("saving");
@@ -153,9 +152,8 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h3 className="text-lg font-semibold">История версий</h3>
-          <div className="mt-4 grid gap-2">
+        <DetailsDisclosure title="История версий">
+          <div className="grid gap-2">
             {spec.versions.length > 0 ? (
               spec.versions.map((version) => (
                 <div
@@ -174,11 +172,10 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               </p>
             )}
           </div>
-        </div>
+        </DetailsDisclosure>
 
-        <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <h3 className="text-lg font-semibold">Действия с секциями</h3>
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <DetailsDisclosure title="Будущие действия с секциями">
+          <div className="grid gap-2 sm:grid-cols-3">
             {["Улучшить секцию", "Перегенерировать секцию", "Добавить детали"].map(
               (action) => (
                 <button
@@ -192,7 +189,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               ),
             )}
           </div>
-        </div>
+        </DetailsDisclosure>
       </section>
     </form>
   );

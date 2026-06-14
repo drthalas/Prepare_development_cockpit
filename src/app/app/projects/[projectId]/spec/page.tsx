@@ -8,6 +8,7 @@ import {
   saveSpecVersionAction,
 } from "@/app/app/projects/[projectId]/spec/actions";
 import { SpecEditor } from "@/components/spec-editor";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
@@ -75,9 +76,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Сгенерируйте и отредактируйте спецификацию из intake,
-                классификации и ответов анкеты. Перед roadmap проверьте
-                полноту и добавьте уточнения.
+                Сгенерируйте spec, отредактируйте и проверьте готовность.
               </p>
             </div>
             <form action={generateAction}>
@@ -154,9 +153,8 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               qualityAction={qualityAction}
               qualityCheck={spec.qualityCheck}
             />
-            <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-              <h2 className="text-xl font-semibold">Статус спецификации</h2>
-              <dl className="mt-5 grid gap-4">
+            <DetailsDisclosure title="Статус и секции spec">
+              <dl className="grid gap-4">
                 <SpecMeta
                   label="Текущая версия"
                   value={spec.currentVersion ? `v${spec.currentVersion}` : "Не выбрано"}
@@ -177,11 +175,11 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
                     href={`#${section.id}`}
                     key={section.id}
                   >
-                    {section.title}
-                  </a>
-                ))}
+                  {section.title}
+                </a>
+              ))}
               </div>
-            </section>
+            </DetailsDisclosure>
           </div>
         ) : (
           <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
@@ -218,9 +216,7 @@ function SpecQualityPanel({
             Качество spec и недостающая информация
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Запустите проверку перед roadmap: недостающая информация, размытые
-            требования, риски и уточняющие вопросы. Roadmap и tasks здесь не
-            создаются.
+            Проверьте готовность перед roadmap.
           </p>
         </div>
         <form action={qualityAction}>
@@ -264,28 +260,30 @@ function SpecQualityPanel({
             {qualityCheck.summary}
           </p>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <QualityList
-              emptyLabel="Недостающая информация не найдена."
-              items={qualityCheck.missingInformation}
-              title="Недостающая информация"
-            />
-            <QualityList
-              emptyLabel="Размытые требования не найдены."
-              items={qualityCheck.vagueRequirements}
-              title="Размытые требования"
-            />
-            <QualityList
-              emptyLabel="Риски не найдены."
-              items={qualityCheck.riskAreas}
-              title="Риски"
-            />
-            <QualityList
-              emptyLabel="Уточняющие вопросы не предложены."
-              items={qualityCheck.recommendedFollowUpQuestions}
-              title="Рекомендуемые уточняющие вопросы"
-            />
-          </div>
+          <DetailsDisclosure title="Детали проверки">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <QualityList
+                emptyLabel="Недостающая информация не найдена."
+                items={qualityCheck.missingInformation}
+                title="Недостающая информация"
+              />
+              <QualityList
+                emptyLabel="Размытые требования не найдены."
+                items={qualityCheck.vagueRequirements}
+                title="Размытые требования"
+              />
+              <QualityList
+                emptyLabel="Риски не найдены."
+                items={qualityCheck.riskAreas}
+                title="Риски"
+              />
+              <QualityList
+                emptyLabel="Уточняющие вопросы не предложены."
+                items={qualityCheck.recommendedFollowUpQuestions}
+                title="Рекомендуемые уточняющие вопросы"
+              />
+            </div>
+          </DetailsDisclosure>
 
           <form action={applyClarificationAction} className="grid gap-3">
             <label className="text-sm font-semibold" htmlFor="clarification">

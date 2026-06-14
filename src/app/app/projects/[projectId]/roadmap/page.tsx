@@ -84,9 +84,7 @@ export default async function RoadmapPage({
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Сгенерируйте структурированный roadmap из текущей spec и
-                сохранённых настроек исполнения. Это не генерирует Codex Prompts
-                и экспорт в Linear.
+                Сгенерируйте roadmap из текущей spec и настроек исполнения.
               </p>
             </div>
             <Link
@@ -328,13 +326,26 @@ function RoadmapView({
           </div>
           <div className="mt-4 grid gap-3">
             {phase.tasks.map((task) => (
-              <div
+              <details
                 className="rounded-md bg-[var(--section-surface)] p-4"
                 key={task.id}
               >
+                <summary className="cursor-pointer list-none">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className="font-semibold">{task.title}</h4>
+                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--muted)]">
+                        {task.description}
+                      </p>
+                    </div>
+                    <span className="inline-flex min-h-9 w-fit items-center justify-center rounded-md border border-[var(--panel-border)] px-3 text-xs font-semibold text-[var(--muted)]">
+                      Редактировать
+                    </span>
+                  </div>
+                </summary>
                 <form
                   action={updateRoadmapTaskAction.bind(null, projectId, task.id)}
-                  className="grid gap-3"
+                  className="mt-4 grid gap-3"
                 >
                   <div className="grid gap-3 lg:grid-cols-[1fr_180px_140px_180px]">
                     <label className="grid gap-2 text-sm font-semibold">
@@ -440,7 +451,7 @@ function RoadmapView({
                     </button>
                   </form>
                 </div>
-              </div>
+              </details>
             ))}
           </div>
           <form

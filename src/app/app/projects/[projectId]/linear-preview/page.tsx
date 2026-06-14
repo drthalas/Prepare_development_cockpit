@@ -5,6 +5,7 @@ import {
   createLinearProjectAction,
   runLinearDryRunAction,
 } from "@/app/app/projects/[projectId]/linear-preview/actions";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getLinearApiStatus } from "@/lib/linear/linear-api";
 import { getLinearProjectStructure } from "@/lib/linear/linear-structure";
 
@@ -66,9 +67,7 @@ export default async function LinearPreviewPage({
                 {structure.project.name}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Проверьте внутреннюю структуру Linear Project для будущего API.
-                Ручной экспорт и dry run безопасны; реальное создание спрятано
-                за расширенным подтверждением.
+                Сначала проверьте preview. Реальное создание спрятано отдельно.
               </p>
             </div>
             <Link
@@ -132,10 +131,7 @@ export default async function LinearPreviewPage({
               <div className="mt-4 rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
                 <h3 className="font-semibold">Ручной экспорт</h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  Самый безопасный путь для прототипа — ручной экспорт.
-                  Используйте пакет экспорта, чтобы скопировать milestones,
-                  issues, Codex Prompt и QA-проверки без создания сущностей
-                  в Linear.
+                  Скачайте пакет и перенесите задачи вручную.
                 </p>
                 <Link
                   className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
@@ -151,8 +147,7 @@ export default async function LinearPreviewPage({
             >
               <h3 className="font-semibold">Dry run</h3>
               <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--muted)]">
-                Записывает только preview result. Реальные Linear API create
-                calls не выполняются.
+                Проверяет структуру без создания сущностей в Linear.
               </p>
               <button
                 className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
@@ -201,34 +196,36 @@ export default async function LinearPreviewPage({
           )}
         </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-2">
-          <article className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-            <h2 className="text-lg font-semibold">Linear project</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-              {structure.project.description}
-            </p>
-          </article>
-          <article className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-            <h2 className="text-lg font-semibold">Labels</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {structure.labels.map((label) => (
-                <span
-                  className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]"
-                  key={label}
-                >
-                  {label}
-                </span>
-              ))}
+        <section className="mt-6">
+          <DetailsDisclosure title="Подробный Linear preview">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <article className="rounded-lg bg-[var(--panel)] p-4">
+                <h2 className="text-lg font-semibold">Linear project</h2>
+                <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
+                  {structure.project.description}
+                </p>
+              </article>
+              <article className="rounded-lg bg-[var(--panel)] p-4">
+                <h2 className="text-lg font-semibold">Labels</h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {structure.labels.map((label) => (
+                    <span
+                      className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]"
+                      key={label}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              </article>
             </div>
-          </article>
-        </section>
 
-        <section className="mt-6 grid gap-5">
-          {structure.milestones.map((milestone) => (
-            <article
-              className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
-              key={milestone.title}
-            >
+            <div className="mt-5 grid gap-4">
+              {structure.milestones.map((milestone) => (
+                <article
+                  className="rounded-lg bg-[var(--panel)] p-4"
+                  key={milestone.title}
+                >
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
                 Milestone {milestone.order}
               </p>
@@ -282,8 +279,10 @@ export default async function LinearPreviewPage({
                     </div>
                   ))}
               </div>
-            </article>
-          ))}
+                </article>
+              ))}
+            </div>
+          </DetailsDisclosure>
         </section>
       </div>
     </main>

@@ -46,9 +46,7 @@ export function QuestionnaireWizard({
               Адаптивная анкета
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-              Ответьте на вопросы, выбранные по типу проекта, классификации,
-              GitHub-контексту и недостающей информации. Это ещё не генерирует
-              спецификацию.
+              Один вопрос за раз. Ответы сохранятся для будущей spec.
             </p>
           </div>
           <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
@@ -63,10 +61,10 @@ export function QuestionnaireWizard({
           />
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
           {session.questions.map((question, index) => (
             <button
-              className={`h-9 min-w-9 rounded-md border px-3 text-xs font-semibold transition ${
+              className={`h-9 min-w-9 shrink-0 rounded-md border px-3 text-xs font-semibold transition ${
                 index === activeIndex
                   ? "border-[var(--accent)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
                   : "border-[var(--panel-border)] bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -107,8 +105,7 @@ export function QuestionnaireWizard({
 
       {session.status === "completed" ? (
         <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--soft-accent)] p-4 text-sm font-medium text-[var(--accent-strong)]">
-          Анкета завершена. Вы всё ещё можете изменить ответы и сохранить их
-          заново до генерации спецификации.
+          Анкета завершена. Ответы можно обновить до генерации spec.
         </div>
       ) : null}
 

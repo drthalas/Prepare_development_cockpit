@@ -10,6 +10,7 @@ import {
   executionSettingLabels,
   type ExecutionSettingsView,
 } from "@/lib/execution/execution-options";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getExecutionSettings } from "@/lib/execution/execution-store";
 import { getLinearReadyExportBundle } from "@/lib/export/export-service";
 import {
@@ -308,48 +309,6 @@ export default async function ProjectDetailPage({
           </div>
         ) : null}
 
-        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Прогресс прототипа
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">
-                Основной сценарий подготовки
-              </h2>
-            </div>
-            <p className="text-sm text-[var(--muted)]">
-              {progressSteps.filter((step) => step.state === "done").length}/
-              {progressSteps.length} шагов готово
-            </p>
-          </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {progressSteps.map((step) => (
-              <Link
-                className="rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-3 transition hover:border-[var(--accent)]"
-                href={step.href}
-                key={step.label}
-              >
-                <span
-                  className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                    step.state === "done"
-                      ? "bg-[var(--soft-accent)] text-[var(--accent-strong)]"
-                      : "bg-[var(--soft-warning)] text-amber-800"
-                  }`}
-                >
-                  {step.state === "done" ? "Готово" : "Далее"}
-                </span>
-                <p className="mt-3 text-sm font-semibold">{step.label}</p>
-              </Link>
-            ))}
-          </div>
-          <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
-            Каждый шаг запускается отдельной кнопкой, чтобы было понятно, что
-            уже готово, что работает в mock/deterministic режиме и где нужны
-            ручные действия.
-          </p>
-        </section>
-
         <section className="mt-6 rounded-lg border border-[var(--accent)] bg-[var(--soft-accent)] p-5 text-[var(--accent-strong)] shadow-sm">
           <p className="text-xs font-semibold uppercase">Следующий шаг</p>
           <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -368,6 +327,29 @@ export default async function ProjectDetailPage({
           </div>
         </section>
 
+        <section className="mt-6">
+          <DetailsDisclosure
+            title={`Прогресс: ${
+              progressSteps.filter((step) => step.state === "done").length
+            }/${progressSteps.length} шагов`}
+          >
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {progressSteps.map((step) => (
+                <Link
+                  className="flex items-center justify-between rounded-md border border-transparent bg-[var(--panel)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
+                  href={step.href}
+                  key={step.label}
+                >
+                  <span>{step.label}</span>
+                  <span className="text-xs text-[var(--muted)]">
+                    {step.state === "done" ? "Готово" : "Далее"} →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </DetailsDisclosure>
+        </section>
+
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -378,9 +360,8 @@ export default async function ProjectDetailPage({
                 Классификация типа проекта
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Проанализируйте intake-контекст, чтобы определить тип проекта,
-                сложность, возможные модули, недостающую информацию и блоки
-                вопросов. Без AI key работает deterministic mock mode.
+                Определяет тип проекта и недостающую информацию. Без AI key
+                работает mock mode.
               </p>
             </div>
             <form action={classifyAction}>
@@ -450,100 +431,101 @@ export default async function ProjectDetailPage({
           )}
         </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-3">
-          <ContextPanel title="GitHub и репозиторий">
-            <ProjectMeta
-              label="Состояние"
-              value={
-                project.repositoryMode
-                  ? repositoryModeLabels[project.repositoryMode]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Видимость"
-              value={
-                project.repositoryVisibility
-                  ? repositoryVisibilityLabels[project.repositoryVisibility]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Кто создаёт"
-              value={
-                project.repositoryOwner
-                  ? repositoryOwnerLabels[project.repositoryOwner]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Агент может push"
-              value={
-                project.agentCanPush
-                  ? agentPushAccessLabels[project.agentCanPush]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Default branch"
-              value={project.defaultBranch ?? "Не указана"}
-            />
-          </ContextPanel>
+        <section className="mt-6">
+          <DetailsDisclosure title="Контекст проекта">
+            <div className="grid gap-4 lg:grid-cols-3">
+              <ContextPanel title="GitHub и репозиторий">
+                <ProjectMeta
+                  label="Состояние"
+                  value={
+                    project.repositoryMode
+                      ? repositoryModeLabels[project.repositoryMode]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Видимость"
+                  value={
+                    project.repositoryVisibility
+                      ? repositoryVisibilityLabels[project.repositoryVisibility]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Кто создаёт"
+                  value={
+                    project.repositoryOwner
+                      ? repositoryOwnerLabels[project.repositoryOwner]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Агент может push"
+                  value={
+                    project.agentCanPush
+                      ? agentPushAccessLabels[project.agentCanPush]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Default branch"
+                  value={project.defaultBranch ?? "Не указана"}
+                />
+              </ContextPanel>
 
-          <ContextPanel title="Контекст деплоя">
-            <ProjectMeta
-              label="Цель"
-              value={
-                project.deploymentTarget
-                  ? deploymentTargetLabels[project.deploymentTarget]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Режим"
-              value={
-                project.deploymentMode
-                  ? deploymentModeLabels[project.deploymentMode]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="Кто настраивает"
-              value={
-                project.deploymentOwner
-                  ? deploymentOwnerLabels[project.deploymentOwner]
-                  : "Не выбрано"
-              }
-            />
-          </ContextPanel>
+              <ContextPanel title="Контекст деплоя">
+                <ProjectMeta
+                  label="Цель"
+                  value={
+                    project.deploymentTarget
+                      ? deploymentTargetLabels[project.deploymentTarget]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Режим"
+                  value={
+                    project.deploymentMode
+                      ? deploymentModeLabels[project.deploymentMode]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="Кто настраивает"
+                  value={
+                    project.deploymentOwner
+                      ? deploymentOwnerLabels[project.deploymentOwner]
+                      : "Не выбрано"
+                  }
+                />
+              </ContextPanel>
 
-          <ContextPanel title="Контекст разработки">
-            <ProjectMeta
-              label="Целевой инструмент разработки"
-              value={
-                project.executionTarget
-                  ? executionTargetLabels[project.executionTarget]
-                  : "Не выбрано"
-              }
-            />
-            <ProjectMeta
-              label="QA-настройка"
-              value={
-                project.qaPreference
-                  ? qaModeLabels[project.qaPreference]
-                  : "Не выбрано"
-              }
-            />
-            <div className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-xs font-semibold text-[var(--muted)]">
-              Эти настройки влияют на roadmap, tasks, prompts, QA и export.
+              <ContextPanel title="Контекст разработки">
+                <ProjectMeta
+                  label="Инструмент"
+                  value={
+                    project.executionTarget
+                      ? executionTargetLabels[project.executionTarget]
+                      : "Не выбрано"
+                  }
+                />
+                <ProjectMeta
+                  label="QA"
+                  value={
+                    project.qaPreference
+                      ? qaModeLabels[project.qaPreference]
+                      : "Не выбрано"
+                  }
+                />
+                <Link
+                  className="inline-flex min-h-10 w-fit items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
+                  href={`/app/projects/${project.id}/execution`}
+                >
+                  Настроить
+                </Link>
+              </ContextPanel>
             </div>
-            <Link
-              className="inline-flex min-h-10 w-fit items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-              href={`/app/projects/${project.id}/execution`}
-            >
-              Настроить исполнение
-            </Link>
-          </ContextPanel>
+          </DetailsDisclosure>
         </section>
 
         {executionSettings ? (

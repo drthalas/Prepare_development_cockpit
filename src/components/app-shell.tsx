@@ -2,20 +2,18 @@ import Link from "next/link";
 
 import { appConfig } from "@/config/app";
 import { EmptyState } from "@/components/empty-state";
-import { StatusCard } from "@/components/status-card";
+import {
+  ActionLink,
+  DetailsDisclosure,
+  PageHeader,
+} from "@/components/ui/patterns";
 
 const navItems = ["Проекты", "Spec", "Roadmap", "Задачи", "QA", "Экспорт"];
 
-const workspaceCards = [
-  { label: "Основной сценарий", metric: "E2E", tone: "ready" as const },
-  { label: "Пакет экспорта", metric: "ZIP", tone: "ready" as const },
-  { label: "Linear create", metric: "Защищено", tone: "planned" as const },
-];
-
 const placeholderRows = [
-  "Создайте проект и заполните intake",
-  "Сгенерируйте и отредактируйте спецификацию",
-  "Соберите roadmap, prompts, QA и export",
+  "Создать проект",
+  "Ответить на вопросы",
+  "Скачать пакет",
 ];
 
 const howToUseSteps = [
@@ -58,48 +56,20 @@ export function AppShell() {
             ))}
           </nav>
 
-          <div className="mt-8 hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4 text-sm text-[var(--muted)] lg:block">
-            <p className="font-semibold text-[var(--foreground)]">
-              Публичный прототип
-            </p>
-            <p className="mt-2 leading-6">
-              Режим review. Auth, billing и production deployment намеренно
-              отложены.
-            </p>
-          </div>
+          <p className="mt-8 hidden rounded-md bg-[var(--panel)] px-3 py-2 text-xs font-medium text-[var(--muted)] lg:block">
+            Review-прототип без auth/billing.
+          </p>
         </aside>
 
         <section className="px-5 py-6 sm:px-8 lg:px-10">
-          <header className="flex flex-col gap-5 border-b border-[var(--panel-border)] pb-6 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-[var(--accent-strong)]">
-                Рабочая область
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold">
-                Cockpit подготовки разработки
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                Начните с описания проекта, затем пройдите анкету, spec,
-                roadmap, prompts для задач, QA-проверки, Linear preview и export.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 text-sm">
-              <span className="rounded-full bg-[var(--soft-accent)] px-3 py-1 font-medium text-[var(--accent-strong)]">
-                Foundation готов
-              </span>
-              <span className="rounded-full bg-[var(--soft-blue)] px-3 py-1 font-medium text-blue-700">
-                DB-backed
-              </span>
-            </div>
-          </header>
+          <PageHeader
+            actions={<ActionLink href="/app/projects">Создать проект</ActionLink>}
+            description="Начните с проекта. Дальше страница проекта покажет одну главную кнопку для следующего шага."
+            eyebrow="Рабочая область"
+            title="Cockpit подготовки разработки"
+          />
 
-          <div className="grid gap-4 py-6 md:grid-cols-3">
-            {workspaceCards.map((card) => (
-              <StatusCard key={card.label} {...card} />
-            ))}
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
             <section
               className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
               id="projects"
@@ -117,18 +87,11 @@ export function AppShell() {
               </div>
               <div className="mt-5">
                 <EmptyState
+                  actionHref="/app/projects"
                   actionLabel="Открыть проекты"
-                  description="Пока нет проектов. Создайте первый проект из идеи, затем следуйте подсказке следующего шага на странице проекта."
+                  description="Создайте первый проект из идеи."
                   title="Пока нет проектов"
                 />
-                <div className="mt-5 text-center">
-                  <Link
-                    className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-                    href="/app/projects"
-                  >
-                    Открыть проекты
-                  </Link>
-                </div>
               </div>
             </section>
 
@@ -150,7 +113,7 @@ export function AppShell() {
               <div className="mt-6 grid gap-3">
                 {placeholderRows.map((row, index) => (
                   <div
-                    className="rounded-md border border-[var(--panel-border)] p-4"
+                    className="rounded-md bg-[var(--section-surface)] px-4 py-3"
                     key={row}
                   >
                     <div className="flex items-center justify-between gap-4">
@@ -166,15 +129,9 @@ export function AppShell() {
                 ))}
               </div>
 
-              <div className="mt-6 rounded-lg bg-[var(--section-surface)] p-5">
-                <p className="text-sm font-semibold">Инструкция</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  Двигайтесь сверху вниз: сначала создайте проект, затем
-                  выполняйте действия, которые подсвечены на странице проекта.
-                  Генераторы работают в mock/deterministic режиме, если внешние
-                  ключи не настроены.
-                </p>
-                <ol className="mt-4 grid gap-2 text-sm leading-6 text-[var(--muted)]">
+              <div className="mt-6">
+                <DetailsDisclosure title="Как пользоваться">
+                  <ol className="grid gap-2">
                   {howToUseSteps.map((step, index) => (
                     <li key={step}>
                       <span className="font-semibold text-[var(--foreground)]">
@@ -184,6 +141,7 @@ export function AppShell() {
                     </li>
                   ))}
                 </ol>
+                </DetailsDisclosure>
               </div>
             </section>
           </div>

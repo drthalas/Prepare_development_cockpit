@@ -1,12 +1,20 @@
+import Link from "next/link";
+
 type EmptyStateProps = {
   actionLabel?: string;
+  actionHref?: string;
   description: string;
   title: string;
 };
 
-export function EmptyState({ actionLabel, description, title }: EmptyStateProps) {
+export function EmptyState({
+  actionHref,
+  actionLabel,
+  description,
+  title,
+}: EmptyStateProps) {
   return (
-    <div className="rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
+    <div className="rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-6 text-center">
       <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-md bg-[var(--soft-accent)] text-sm font-semibold text-[var(--accent-strong)]">
         PDC
       </div>
@@ -16,10 +24,13 @@ export function EmptyState({ actionLabel, description, title }: EmptyStateProps)
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[var(--muted)]">
         {description}
       </p>
-      {actionLabel ? (
-        <div className="mt-5 inline-flex rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-medium text-[var(--muted)]">
+      {actionLabel && actionHref ? (
+        <Link
+          className="mt-5 inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+          href={actionHref}
+        >
           {actionLabel}
-        </div>
+        </Link>
       ) : null}
     </div>
   );

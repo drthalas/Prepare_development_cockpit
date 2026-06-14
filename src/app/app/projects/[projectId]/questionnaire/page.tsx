@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { completeQuestionnaireAction } from "@/app/app/projects/[projectId]/questionnaire/actions";
 import { QuestionnaireWizard } from "@/components/questionnaire-wizard";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getOrCreateQuestionnaireWorkspace } from "@/lib/questionnaire/questionnaire-store";
 
 export const dynamic = "force-dynamic";
@@ -63,9 +64,7 @@ export default async function QuestionnairePage({
             <div>
               <h1 className="text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Вопросы подбираются из intake-контекста и результата
-                классификации. Ответы сохраняются структурно для будущей
-                генерации спецификации.
+                Ответьте на вопросы и нажмите “Завершить анкету”.
               </p>
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
@@ -93,12 +92,12 @@ export default async function QuestionnairePage({
         </section>
 
         {session.status === "completed" ? (
-          <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-            <h2 className="text-xl font-semibold">Сохранённые ответы</h2>
-            <div className="mt-5 grid gap-4">
+          <section className="mt-6">
+            <DetailsDisclosure title="Сохранённые ответы">
+              <div className="grid gap-3">
               {session.questions.map((question) => (
                 <article
-                  className="rounded-md bg-[var(--section-surface)] p-4"
+                  className="rounded-md bg-[var(--panel)] p-3"
                   key={question.id}
                 >
                   <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
@@ -113,6 +112,7 @@ export default async function QuestionnairePage({
                 </article>
               ))}
             </div>
+            </DetailsDisclosure>
           </section>
         ) : null}
       </div>

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { DownloadButton } from "@/components/download-button";
+import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getProjectArtifactBundle } from "@/lib/export/artifact-bundle";
 import { getLinearReadyExportBundle } from "@/lib/export/export-service";
 
@@ -69,8 +70,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
                 {bundle.project.title}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Скопируйте или скачайте структурированный пакет, который можно
-                вручную перенести в Linear. Эта страница не вызывает Linear API.
+                Скачайте ZIP или откройте нужный формат экспорта.
               </p>
             </div>
             <Link
@@ -87,8 +87,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <div>
               <h2 className="text-xl font-semibold">Сводка экспорта</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Собрано из структурированного проекта, актуального roadmap,
-                задач, prompts, QA-проверок, настроек исполнения и GitHub-контекста.
+                Экспорт работает без Linear API.
               </p>
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
@@ -201,7 +200,9 @@ export default async function ExportPage({ params }: ExportPageProps) {
                 Скачать ZIP-пакет
               </a>
             </div>
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
+            <div className="mt-5">
+              <DetailsDisclosure title="Отдельные файлы">
+                <div className="grid gap-3 md:grid-cols-2">
               {artifactBundle.files.map((file) => (
                 <div
                   className="rounded-md bg-[var(--section-surface)] p-4"
@@ -226,6 +227,8 @@ export default async function ExportPage({ params }: ExportPageProps) {
                   </div>
                 </div>
               ))}
+                </div>
+              </DetailsDisclosure>
             </div>
           </section>
         ) : null}
@@ -316,21 +319,26 @@ function ExportPanel({
   wide?: boolean;
 }) {
   return (
-    <article
+    <details
       className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm ${
         wide ? "lg:col-span-2" : ""
       }`}
     >
+      <summary className="cursor-pointer list-none">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
-        <div className="flex flex-wrap gap-2">{actions}</div>
+        <span className="w-fit rounded-md border border-[var(--panel-border)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
+          Открыть
+        </span>
       </div>
+      </summary>
+      <div className="mt-4 flex flex-wrap gap-2">{actions}</div>
       <textarea
-        className="mt-4 min-h-80 w-full rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
+        className="mt-4 min-h-56 w-full rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
         readOnly
         value={content}
       />
-    </article>
+    </details>
   );
 }
 
