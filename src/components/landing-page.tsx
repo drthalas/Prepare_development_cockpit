@@ -14,32 +14,36 @@ const infoSteps = [
 export function LandingPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="mx-auto grid h-14 w-full max-w-5xl grid-cols-[1fr_minmax(0,1.1fr)_1fr] items-center gap-2 px-4 sm:h-16 sm:px-6">
-        <p className="min-w-0 text-xs font-semibold text-[var(--foreground)] sm:text-sm">
-          Николаев AI
-        </p>
-        <p className="min-w-0 text-center text-xs font-medium leading-tight text-[var(--muted)] sm:text-sm">
+      <header className="mx-auto grid h-12 w-full max-w-5xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:h-14 sm:px-6">
+        <Link
+          className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-[var(--foreground)]"
+          href="/"
+        >
+          <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+          <span>Nikolaev.AI</span>
+        </Link>
+        <p className="min-w-0 truncate text-center text-[10px] font-medium leading-none text-[var(--muted)] sm:text-xs">
           Prepare Development Cockpit
         </p>
         <Link
-          className="justify-self-end rounded-md border border-[var(--panel-border)] px-3 py-2 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)] sm:px-4 sm:text-sm"
+          className="justify-self-end rounded-md border border-[var(--panel-border)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)] sm:px-4 sm:py-2"
           href="/app/projects"
         >
           Проекты
         </Link>
       </header>
 
-      <section className="flex min-h-[calc(100vh-3.5rem)] items-start justify-center px-5 pt-14 pb-16 sm:min-h-[calc(100vh-4rem)] sm:px-8 sm:pt-20">
+      <section className="flex min-h-[calc(100vh-3rem)] items-start justify-center px-5 pt-10 pb-12 sm:min-h-[calc(100vh-3.5rem)] sm:px-8 sm:pt-16">
         <div className="mx-auto w-full max-w-2xl text-center">
-          <h1 className="mx-auto max-w-[17rem] text-4xl font-semibold leading-[1.05] tracking-normal text-[var(--foreground)] sm:max-w-2xl sm:text-5xl md:text-6xl">
+          <h1 className="mx-auto max-w-[16.5rem] text-[2.25rem] font-semibold leading-[1.06] tracking-normal text-[var(--foreground)] sm:max-w-2xl sm:text-5xl md:text-6xl">
             Prepare Development Cockpit
           </h1>
-          <p className="mx-auto mt-7 max-w-md text-lg leading-7 text-[var(--muted)] sm:mt-8 sm:max-w-xl sm:text-xl sm:leading-8">
+          <p className="mx-auto mt-6 max-w-sm text-base leading-7 text-[var(--muted)] sm:mt-7 sm:max-w-xl sm:text-xl sm:leading-8">
             Создайте проект из идеи
             <br />и получите структуру разработки.
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mx-auto mt-10 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
             <Button
               className="min-h-12 w-full rounded-lg px-6 shadow-md shadow-emerald-900/10 sm:w-auto"
               href="/app/projects"
