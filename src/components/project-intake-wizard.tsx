@@ -16,7 +16,7 @@ import {
 const wizardSteps = [
   { title: "Идея", value: "Название, идея и аудитория" },
   { title: "Контекст", value: "GitHub, деплой и окружение" },
-  { title: "Настройки", value: "Execution target и QA" },
+  { title: "Настройки", value: "Инструмент и QA" },
 ];
 
 export function ProjectIntakeWizard() {
@@ -71,7 +71,7 @@ export function ProjectIntakeWizard() {
         </Field>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field icon="cloud" label="Deployment">
+          <Field icon="cloud" label="Деплой">
             <select
               className={inputClassName}
               defaultValue="railway"
@@ -86,7 +86,7 @@ export function ProjectIntakeWizard() {
             </select>
           </Field>
 
-          <Field icon="target" label="Execution target">
+          <Field icon="target" label="Инструмент реализации">
             <select
               className={inputClassName}
               defaultValue="codex"
@@ -102,7 +102,7 @@ export function ProjectIntakeWizard() {
           </Field>
         </div>
 
-        <Field icon="shield" label="QA preference">
+        <Field icon="shield" label="QA-проверка">
           <select className={inputClassName} defaultValue="standard" name="qaPreference">
             {qaModes.map((mode) => (
               <option key={mode} value={mode}>
@@ -122,7 +122,7 @@ export function ProjectIntakeWizard() {
       <input name="deploymentMode" type="hidden" value="manual_instructions" />
       <input name="deploymentOwner" type="hidden" value="not_decided" />
 
-      <div className="mt-2 flex flex-col gap-3 border-t border-[var(--panel-border)] pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <div className="mt-2 flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-end">
         <Link
           className="inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
           href="/"
@@ -205,8 +205,8 @@ function Field({
   label: string;
 }) {
   return (
-    <label className="grid grid-cols-[2.5rem_1fr] gap-3 rounded-xl border border-[var(--panel-border)] bg-[rgba(255,255,255,0.82)] p-3 text-sm font-semibold shadow-[0_8px_24px_rgba(23,32,38,0.03)] sm:grid-cols-[2.75rem_1fr] sm:p-4">
-      <span className="mt-7 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--section-surface)] text-[var(--muted)] sm:h-9 sm:w-9">
+    <label className="grid grid-cols-[2.25rem_1fr] gap-3 border-b border-[var(--panel-border)] py-3 text-sm font-semibold sm:grid-cols-[2.5rem_1fr]">
+      <span className="mt-7 flex h-8 w-8 items-center justify-center text-[var(--muted)]">
         <FieldIcon name={icon} />
       </span>
       <span className="grid gap-2">
@@ -298,4 +298,4 @@ function FieldIcon({ name }: { name: FieldIconName }) {
 }
 
 const inputClassName =
-  "min-h-11 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm font-medium text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)]/70 focus:border-[var(--accent)] focus:bg-[var(--panel)]";
+  "min-h-10 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] px-3 text-sm font-medium text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)]/70 focus:border-[var(--accent)]";
