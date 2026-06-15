@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "check:frontend-only": "node scripts/check-frontend-only-diff.mjs",
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
