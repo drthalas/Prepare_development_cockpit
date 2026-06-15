@@ -41,17 +41,40 @@ export function ActionLink({
 
 export function PageHeader({
   actions,
+  backHref,
+  backLabel = "Назад",
   description,
   eyebrow,
+  metadata,
+  secondaryAction,
   title,
+  variant = "panel",
 }: {
   actions?: ReactNode;
+  backHref?: string;
+  backLabel?: string;
   description?: string;
   eyebrow?: string;
+  metadata?: ReactNode;
+  secondaryAction?: ReactNode;
   title: string;
+  variant?: "panel" | "plain";
 }) {
   return (
-    <header className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm sm:p-6">
+    <header
+      className={cn(
+        variant === "panel" &&
+          "rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm sm:p-6",
+      )}
+    >
+      {backHref ? (
+        <Link
+          className="mb-5 inline-flex text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+          href={backHref}
+        >
+          ← {backLabel}
+        </Link>
+      ) : null}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           {eyebrow ? (
@@ -68,9 +91,50 @@ export function PageHeader({
             </p>
           ) : null}
         </div>
-        {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+        {actions || secondaryAction ? (
+          <div className="flex flex-wrap gap-2">
+            {secondaryAction}
+            {actions}
+          </div>
+        ) : null}
       </div>
+      {metadata ? <div className="mt-5">{metadata}</div> : null}
     </header>
+  );
+}
+
+export function PageShell({
+  children,
+  className,
+  maxWidth = "7xl",
+  surface = "workspace",
+}: {
+  children: ReactNode;
+  className?: string;
+  maxWidth?: "4xl" | "5xl" | "6xl" | "7xl" | "none";
+  surface?: "background" | "workspace";
+}) {
+  const maxWidthClass = {
+    "4xl": "max-w-4xl",
+    "5xl": "max-w-5xl",
+    "6xl": "max-w-6xl",
+    "7xl": "max-w-7xl",
+    none: "max-w-none",
+  }[maxWidth];
+
+  return (
+    <main
+      className={cn(
+        "min-h-screen px-4 py-5 text-[var(--foreground)] sm:px-6 lg:px-8",
+        surface === "workspace"
+          ? "bg-[var(--workspace-bg)]"
+          : "bg-[var(--background)]",
+      )}
+    >
+      <div className={cn("mx-auto w-full", maxWidthClass, className)}>
+        {children}
+      </div>
+    </main>
   );
 }
 

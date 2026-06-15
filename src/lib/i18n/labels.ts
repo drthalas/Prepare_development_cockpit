@@ -19,6 +19,56 @@ export const taskStatusLabels: Record<string, string> = {
   todo: "К выполнению",
 };
 
+export const complexityLabels: Record<string, string> = {
+  high: "Высокая",
+  low: "Низкая",
+  medium: "Средняя",
+  unknown: "Неизвестно",
+};
+
+export const projectMetadataLabels = {
+  created: "Создан",
+  deployment: "Деплой",
+  execution: "Исполнение",
+  repository: "Репозиторий",
+  type: "Тип проекта",
+  updated: "Обновлён",
+} as const;
+
+export const workflowStepLabels = {
+  classification: "Классификация",
+  execution: "Настройки",
+  export: "Экспорт",
+  idea: "Идея",
+  prompts: "Промпты",
+  questionnaire: "Анкета",
+  roadmap: "Дорожная карта",
+  spec: "Спецификация",
+} as const;
+
+export const workflowActionLabels = {
+  classify: "Классифицировать проект",
+  export: "Открыть экспорт",
+  generateRoadmap: "Сгенерировать дорожную карту",
+  generateSpec: "Сгенерировать спецификацию",
+  open: "Открыть",
+  openExecution: "Настроить параметры",
+  openQuestionnaire: "Ответить на вопросы",
+  openSpec: "Открыть спецификацию",
+  openTasks: "Открыть задачи",
+} as const;
+
+export const workflowStateLabels = {
+  available: "Доступно",
+  completed: "Готово",
+  current: "Следующий шаг",
+  disabled: "Недоступно",
+  locked: "Заблокировано",
+  needs_action: "Нужно действие",
+  not_ready: "Не готово",
+  upcoming: "Позже",
+} as const;
+
 export function displayLabel(
   labels: Record<string, string>,
   value?: string | null,

@@ -40,3 +40,33 @@ export function Button({
     </Link>
   );
 }
+
+export function PrimaryButton(props: Omit<ButtonProps, "variant">) {
+  return <Button {...props} variant="primary" />;
+}
+
+export function SecondaryButton(props: Omit<ButtonProps, "variant">) {
+  return <Button {...props} variant="secondary" />;
+}
+
+export function GhostButton(props: Omit<ButtonProps, "variant">) {
+  return <Button {...props} variant="ghost" />;
+}
+
+export function TextLink({
+  children,
+  className,
+  href,
+}: Omit<ButtonProps, "variant">) {
+  return (
+    <Link
+      className={cn(
+        "inline-flex items-center text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]",
+        className,
+      )}
+      href={href}
+    >
+      {children}
+    </Link>
+  );
+}
