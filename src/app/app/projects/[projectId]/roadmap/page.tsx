@@ -80,11 +80,11 @@ export default async function RoadmapPage({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Roadmap
+                Дорожная карта
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Сгенерируйте roadmap из текущей spec и настроек исполнения.
+                Работайте с дорожной картой, задачами и QA-проверками.
               </p>
             </div>
             <Link
@@ -101,7 +101,7 @@ export default async function RoadmapPage({
             ok={roadmapState === "generated"}
             text={
               roadmapState === "generated"
-                ? "Roadmap сгенерирован и сохранён."
+                ? "Дорожная карта сгенерирована и сохранена."
                 : getRoadmapErrorMessage(roadmapState)
             }
           />
@@ -112,8 +112,8 @@ export default async function RoadmapPage({
             ok={specState === "regenerated"}
             text={
               specState === "regenerated"
-                ? "Spec перегенерирована из сохранённых данных. Проверьте её перед roadmap."
-                : "Перегенерация spec не удалась. Проверьте контекст и provider mode."
+                ? "Спецификация перегенерирована из сохранённых данных. Проверьте её перед дорожной картой."
+                : "Перегенерация спецификации не удалась. Проверьте контекст и режим провайдера."
             }
           />
         ) : null}
@@ -123,7 +123,7 @@ export default async function RoadmapPage({
             ok={phaseState === "saved"}
             text={
               phaseState === "saved"
-                ? "Phase saved."
+                ? "Фаза сохранена."
                 : getMutationErrorMessage(phaseState)
             }
           />
@@ -147,119 +147,117 @@ export default async function RoadmapPage({
           />
         ) : null}
 
-        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Проверка перед генерацией</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                {precheck.summary}
-              </p>
+        {!latestRoadmap ? (
+          <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">
+                  Дорожная карта ещё не создана
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                  {precheck.summary}
+                </p>
+              </div>
+              <span
+                className={`w-fit rounded-full px-3 py-1 text-sm font-semibold ${
+                  precheck.canGenerate
+                    ? "bg-[var(--soft-accent)] text-[var(--accent-strong)]"
+                    : "bg-[var(--soft-warning)] text-amber-900"
+                }`}
+              >
+                {precheck.canGenerate ? "Готово" : "Нужно проверить"}
+              </span>
             </div>
-            <span
-              className={`w-fit rounded-full px-3 py-1 text-sm font-semibold ${
-                precheck.canGenerate
-                  ? "bg-[var(--soft-accent)] text-[var(--accent-strong)]"
-                  : "bg-[var(--soft-warning)] text-amber-900"
-              }`}
-            >
-              {precheck.canGenerate ? "Готово" : "Нужно проверить"}
-            </span>
-          </div>
 
-          {!precheck.canGenerate ? (
-            <div className="mt-4 grid gap-3">
-              <ul className="grid gap-2">
-                {precheck.reasons.map((reason) => (
-                  <li
-                    className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]"
-                    key={reason}
-                  >
-                    {formatPrecheckReason(reason)}
-                  </li>
-                ))}
-              </ul>
-              {specAvailable ? (
-                <form action={regenerateSpecAction}>
-                  <button
-                    className="inline-flex min-h-10 w-fit items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
-                    type="submit"
-                  >
-                    Перегенерировать spec из сохранённых данных
-                  </button>
-                </form>
-              ) : null}
-            </div>
-          ) : null}
-
-          <form action={generateAction} className="mt-5 flex flex-wrap gap-3">
             {!precheck.canGenerate ? (
-              <label className="flex min-h-10 items-center gap-2 rounded-md border border-[var(--panel-border)] px-3 text-sm font-semibold text-[var(--muted)]">
-                <input name="overrideIncompleteSpec" type="checkbox" />
-                Всё равно сгенерировать draft
-              </label>
+              <div className="mt-4 grid gap-3">
+                <ul className="grid gap-2">
+                  {precheck.reasons.map((reason) => (
+                    <li
+                      className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm text-[var(--muted)]"
+                      key={reason}
+                    >
+                      {formatPrecheckReason(reason)}
+                    </li>
+                  ))}
+                </ul>
+                {specAvailable ? (
+                  <form action={regenerateSpecAction}>
+                    <button
+                      className="inline-flex min-h-10 w-fit items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
+                      type="submit"
+                    >
+                      Перегенерировать спецификацию из сохранённых данных
+                    </button>
+                  </form>
+                ) : null}
+              </div>
             ) : null}
-            <button
-              className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-              type="submit"
-            >
-              Сгенерировать roadmap
-            </button>
-          </form>
-        </section>
 
-        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                QA-проверки
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">
-                Поведение QA-режима
-              </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                {qaStatus.summary}
-              </p>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-3">
-                <Meta
-                  label="QA-режим"
-                  value={executionSettingLabels.qaModeLabels[qaStatus.mode]}
-                />
-                <Meta
-                  label="Частота"
-                  value={
-                    executionSettingLabels.qaCheckpointFrequencyLabels[
-                      qaStatus.frequency
-                    ]
-                  }
-                />
-                <Meta
-                  label="Проверки"
-                  value={String(qaStatus.checkpointCount)}
-                />
-              </dl>
-            </div>
-            <form action={generateQAAction}>
+            <form action={generateAction} className="mt-5 flex flex-wrap gap-3">
+              {!precheck.canGenerate ? (
+                <label className="flex min-h-10 items-center gap-2 rounded-md border border-[var(--panel-border)] px-3 text-sm font-semibold text-[var(--muted)]">
+                  <input name="overrideIncompleteSpec" type="checkbox" />
+                  Всё равно сгенерировать draft
+                </label>
+              ) : null}
               <button
-                className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 type="submit"
               >
-                Сгенерировать QA-проверки
+                Сгенерировать дорожную карту
               </button>
             </form>
-          </div>
-        </section>
+          </section>
+        ) : null}
+
+        {latestRoadmap ? (
+          <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
+                  QA-проверки
+                </p>
+                <h2 className="mt-2 text-xl font-semibold">
+                  Поведение QA-режима
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+                  {qaStatus.summary}
+                </p>
+                <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <Meta
+                    label="QA-режим"
+                    value={executionSettingLabels.qaModeLabels[qaStatus.mode]}
+                  />
+                  <Meta
+                    label="Частота"
+                    value={
+                      executionSettingLabels.qaCheckpointFrequencyLabels[
+                        qaStatus.frequency
+                      ]
+                    }
+                  />
+                  <Meta
+                    label="Проверки"
+                    value={String(qaStatus.checkpointCount)}
+                  />
+                </dl>
+              </div>
+              <form action={generateQAAction}>
+                <button
+                  className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--accent)] bg-[var(--soft-accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)] transition hover:border-[var(--accent-strong)]"
+                  type="submit"
+                >
+                  Сгенерировать QA-проверки
+                </button>
+              </form>
+            </div>
+          </section>
+        ) : null}
 
         {latestRoadmap ? (
           <RoadmapView projectId={project.id} roadmap={latestRoadmap} />
-        ) : (
-          <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
-            <h2 className="text-xl font-semibold">Roadmap ещё не создан</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              Проверьте spec и настройте параметры разработки, затем нажмите
-              “Сгенерировать roadmap”.
-            </p>
-          </section>
-        )}
+        ) : null}
       </div>
     </main>
   );
@@ -558,7 +556,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Назад к проекту
+      ← К проекту
     </Link>
   );
 }
@@ -604,9 +602,9 @@ function formatDate(date: Date) {
 function formatPrecheckReason(reason: string) {
   const labels: Record<string, string> = {
     low_readiness_score: "Последний readiness score слишком низкий.",
-    smoke_test_spec: "Текущая spec похожа на smoke-test placeholder.",
-    spec_required: "Spec ещё не создана.",
-    spec_too_short: "Текущая spec слишком короткая для production roadmap.",
+    smoke_test_spec: "Текущая спецификация похожа на smoke-test placeholder.",
+    spec_required: "Спецификация ещё не создана.",
+    spec_too_short: "Текущая спецификация слишком короткая для production roadmap.",
   };
 
   return labels[reason] ?? reason;
@@ -614,18 +612,18 @@ function formatPrecheckReason(reason: string) {
 
 function getRoadmapErrorMessage(reason: string) {
   if (reason === "incomplete_spec") {
-    return "Spec может быть неполной. Перегенерируйте или улучшите её перед roadmap либо создайте draft.";
+    return "Спецификация может быть неполной. Перегенерируйте или улучшите её перед дорожной картой либо создайте draft.";
   }
 
   if (reason === "spec_required") {
-    return "Сначала сгенерируйте spec.";
+    return "Сначала сгенерируйте спецификацию.";
   }
 
   if (reason === "database") {
-    return "Roadmap не удалось сохранить: база данных не настроена или недоступна.";
+    return "Дорожную карту не удалось сохранить: база данных не настроена или недоступна.";
   }
 
-  return "Генерация roadmap не удалась.";
+  return "Генерация дорожной карты не удалась.";
 }
 
 function getTaskStateMessage(state: string) {
@@ -647,7 +645,7 @@ function getQAErrorMessage(state: string) {
   const messages: Record<string, string> = {
     database: "QA-проверки не удалось сохранить: база данных недоступна.",
     not_found: "Проект не найден.",
-    roadmap_required: "Сначала сгенерируйте roadmap.",
+    roadmap_required: "Сначала сгенерируйте дорожную карту.",
   };
 
   return messages[state] ?? "Генерация QA-проверок не удалась.";
@@ -656,7 +654,7 @@ function getQAErrorMessage(state: string) {
 function getMutationErrorMessage(state: string) {
   const messages: Record<string, string> = {
     database: "Изменение не удалось сохранить: база данных недоступна.",
-    not_found: "Элемент roadmap не найден.",
+    not_found: "Элемент дорожной карты не найден.",
     validation: "Заполните обязательные поля.",
   };
 

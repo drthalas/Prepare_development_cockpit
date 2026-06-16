@@ -64,7 +64,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Linear-ready export
+                Linear-ready экспорт
               </p>
               <h1 className="mt-2 text-3xl font-semibold">
                 {bundle.project.title}
@@ -102,11 +102,11 @@ export default async function ExportPage({ params }: ExportPageProps) {
               value={String(bundle.exportSummary.qaCheckpointCount)}
             />
             <Meta
-              label="Нет prompts"
+              label="Нет промптов"
               value={String(bundle.exportSummary.missingPromptCount)}
             />
             <Meta
-              label="Roadmap"
+              label="Дорожная карта"
               value={bundle.exportSummary.roadmapAvailable ? "Готов" : "Не создан"}
             />
           </dl>
@@ -114,16 +114,16 @@ export default async function ExportPage({ params }: ExportPageProps) {
           {!bundle.exportSummary.roadmapAvailable ? (
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
-              linkLabel="Открыть roadmap"
-              text="Roadmap ещё не создан. Сначала сгенерируйте roadmap, затем возвращайтесь к export."
+              linkLabel="Открыть дорожную карту"
+              text="Дорожная карта ещё не создана. Сначала сгенерируйте дорожную карту, затем возвращайтесь к экспорту."
             />
           ) : null}
 
           {bundle.exportSummary.missingPromptCount > 0 ? (
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
-              linkLabel="Открыть roadmap"
-              text="У части задач нет Codex Prompt. Экспорт не блокируется, но в описаниях Linear будет отметка, что prompt отсутствует. Откройте задачу и нажмите “Сгенерировать prompt”."
+              linkLabel="Открыть дорожную карту"
+              text="У части задач нет Codex Prompt. Экспорт не блокируется, но в описаниях Linear будет отметка, что промпт отсутствует. Откройте задачу и нажмите “Сгенерировать промпт”."
             />
           ) : null}
 
@@ -137,13 +137,13 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase">
-                  Покрытие prompts
+                  Покрытие промптами
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
                   {missingPromptTasks.length} задач без Codex Prompt
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900">
-                  Export доступен, но лучше сгенерировать prompts на страницах
+                  Экспорт доступен, но лучше сгенерировать промпты на страницах
                   задач, чтобы Linear issues получили scoped инструкции для
                   реализации.
                 </p>
@@ -152,7 +152,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
                 className="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 transition hover:border-amber-500"
                 href={missingPromptTasks[0].href}
               >
-                Открыть первую задачу без prompt
+                Открыть первую задачу без промпта
               </Link>
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2">
@@ -172,7 +172,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             {missingPromptTasks.length > 8 ? (
               <p className="mt-3 text-sm text-amber-900">
                 Ещё {missingPromptTasks.length - 8} задач доступны на странице
-                roadmap.
+                дорожной карты.
               </p>
             ) : null}
           </section>
@@ -183,7 +183,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                  Artifact bundle
+                  ZIP-пакет проекта
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
                   Скачать файлы проекта
@@ -256,7 +256,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               />
             }
             content={bundle.markdownRoadmap}
-            title="Markdown roadmap export"
+            title="Markdown-экспорт дорожной карты"
           />
           <ExportPanel
             actions={
@@ -302,7 +302,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Назад к проекту
+      ← К проекту
     </Link>
   );
 }
@@ -357,7 +357,7 @@ function Meta({ label, value }: { label: string; value: string }) {
 
 function Warning({
   href,
-  linkLabel = "Открыть roadmap",
+  linkLabel = "Открыть дорожную карту",
   text,
 }: {
   href?: string;

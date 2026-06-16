@@ -76,23 +76,15 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               </p>
               <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Сгенерируйте spec, отредактируйте и проверьте готовность.
+                Редактируйте спецификацию и проверяйте готовность.
               </p>
             </div>
-            <form action={generateAction}>
-              <button
-                className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-                type="submit"
-              >
-                Сгенерировать спецификацию
-              </button>
-            </form>
           </div>
         </header>
 
         {!project.questionnaireCompleted ? (
           <div className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm font-medium text-amber-900">
-            Анкета ещё не завершена. Можно сгенерировать spec из доступных
+            Анкета ещё не завершена. Можно сгенерировать спецификацию из доступных
             данных, но она может быть неполной.
           </div>
         ) : null}
@@ -122,7 +114,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
             }`}
           >
             {qualityState === "checked"
-              ? "Проверка качества spec сохранена."
+              ? "Проверка качества спецификации сохранена."
               : getQualityErrorMessage(qualityState)}
           </div>
         ) : null}
@@ -153,7 +145,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               qualityAction={qualityAction}
               qualityCheck={spec.qualityCheck}
             />
-            <DetailsDisclosure title="Статус и секции spec">
+            <DetailsDisclosure title="Статус и секции спецификации">
               <dl className="grid gap-4">
                 <SpecMeta
                   label="Текущая версия"
@@ -167,7 +159,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
                 />
               </dl>
 
-              <h3 className="mt-6 text-sm font-semibold">Секции spec</h3>
+              <h3 className="mt-6 text-sm font-semibold">Секции спецификации</h3>
               <div className="mt-3 grid gap-2">
                 {spec.sections.map((section) => (
                   <a
@@ -189,6 +181,14 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               спецификацию”. Результат сохранится как текущий Markdown и
               версия 1.
             </p>
+            <form action={generateAction} className="mt-5">
+              <button
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                type="submit"
+              >
+                Сгенерировать спецификацию
+              </button>
+            </form>
           </section>
         )}
       </div>
@@ -213,10 +213,10 @@ function SpecQualityPanel({
             Проверка готовности
           </p>
           <h2 className="mt-2 text-xl font-semibold">
-            Качество spec и недостающая информация
+            Качество спецификации и недостающая информация
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Проверьте готовность перед roadmap.
+            Проверьте готовность перед дорожной картой.
           </p>
         </div>
         <form action={qualityAction}>
@@ -224,7 +224,7 @@ function SpecQualityPanel({
             className="inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
             type="submit"
           >
-            Проверить spec
+            Проверить спецификацию
           </button>
         </form>
       </div>
@@ -251,7 +251,7 @@ function SpecQualityPanel({
             <SpecMeta
               label="Режим"
               value={
-                qualityCheck.mode === "mock" ? "Mock mode" : "Настроенный provider"
+                qualityCheck.mode === "mock" ? "Mock-режим" : "Настроенный провайдер"
               }
             />
           </div>
@@ -293,7 +293,7 @@ function SpecQualityPanel({
               className="min-h-32 w-full resize-y rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-3 text-sm leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
               id="clarification"
               name="clarification"
-              placeholder="Добавьте короткий ответ на один из уточняющих вопросов. Он будет добавлен в spec и сохранён новой версией."
+              placeholder="Добавьте короткий ответ на один из уточняющих вопросов. Он будет добавлен в спецификацию и сохранён новой версией."
               required
             />
             <button
@@ -351,7 +351,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Назад к проекту
+      ← К проекту
     </Link>
   );
 }
@@ -399,7 +399,7 @@ function getSpecErrorMessage(reason: string) {
     return "Проект не найден.";
   }
 
-  return "Генерация spec не удалась. Проверьте AI provider или используйте mock mode.";
+  return "Генерация спецификации не удалась. Проверьте AI-провайдер или используйте mock-режим.";
 }
 
 function getQualityErrorMessage(reason: string) {
@@ -408,10 +408,10 @@ function getQualityErrorMessage(reason: string) {
   }
 
   if (reason === "not_found") {
-    return "Сначала сгенерируйте spec, затем запускайте проверку.";
+    return "Сначала сгенерируйте спецификацию, затем запускайте проверку.";
   }
 
-  return "Проверка качества не удалась. Проверьте AI provider или используйте mock mode.";
+  return "Проверка качества не удалась. Проверьте AI-провайдер или используйте mock-режим.";
 }
 
 function getClarificationErrorMessage(reason: string) {
@@ -423,5 +423,5 @@ function getClarificationErrorMessage(reason: string) {
     return "Уточнение не удалось сохранить: база данных не настроена или недоступна.";
   }
 
-  return "Spec не найдена. Сначала сгенерируйте spec, затем добавляйте уточнения.";
+  return "Спецификация не найдена. Сначала сгенерируйте спецификацию, затем добавляйте уточнения.";
 }

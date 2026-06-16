@@ -60,10 +60,10 @@ export default async function ExecutionSettingsPage({
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
             Настройки исполнения
           </p>
-          <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Настройте, как будут формироваться roadmap, будущие tasks,
-            prompts, QA и export. Эти значения сохраняются до генерации roadmap.
+              <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+            Настройте, как будут формироваться дорожная карта, задачи,
+            промпты, QA и экспорт. Эти значения сохраняются до генерации дорожной карты.
           </p>
         </header>
 
@@ -110,7 +110,7 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Укажите строгость QA и частоту checkpoint для будущих roadmap/tasks."
+              description="Укажите строгость QA и частоту checkpoint для будущих задач."
               title="QA-настройки"
             >
               <SelectField
@@ -130,7 +130,7 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Укажите, roadmap начинается с нового проекта или аудита существующего кода."
+              description="Укажите, дорожная карта начинается с нового проекта или аудита существующего кода."
               title="Режим проекта"
             >
               <SelectField
@@ -143,12 +143,12 @@ export default async function ExecutionSettingsPage({
             </SettingsSection>
 
             <SettingsSection
-              description="Выберите плотность планирования и стиль будущего roadmap."
-              title="Стиль roadmap"
+              description="Выберите плотность планирования и стиль будущей дорожной карты."
+              title="Стиль дорожной карты"
             >
               <SelectField
                 defaultValue={settings.roadmapStyle}
-                label="Стиль roadmap"
+                label="Стиль дорожной карты"
                 labels={executionSettingLabels.roadmapStyleLabels}
                 name="roadmapStyle"
                 values={executionSettingSelectOptions.roadmapStyles}
@@ -188,8 +188,8 @@ export default async function ExecutionSettingsPage({
               <div>
                 <h2 className="text-xl font-semibold">Сводка настроек</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                  Эти значения будут использоваться в roadmap, task, prompt,
-                  QA и export workflows.
+                  Эти значения будут использоваться в дорожной карте, задачах,
+                  промптах, QA и экспорте.
                 </p>
               </div>
               <button
@@ -213,7 +213,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Назад к проекту
+      ← К проекту
     </Link>
   );
 }
@@ -298,7 +298,7 @@ function SettingsSummary({ settings }: { settings: ExecutionSettingsView }) {
         value={executionSettingLabels.projectModeLabels[settings.projectMode]}
       />
       <SummaryItem
-        label="Стиль roadmap"
+        label="Стиль дорожной карты"
         value={executionSettingLabels.roadmapStyleLabels[settings.roadmapStyle]}
       />
       <SummaryItem

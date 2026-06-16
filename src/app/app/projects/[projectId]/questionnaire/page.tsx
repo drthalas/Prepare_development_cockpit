@@ -126,7 +126,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}`}
     >
-      Назад к проекту
+      ← К проекту
     </Link>
   );
 }

@@ -98,7 +98,10 @@ export function NextStepBanner({
 export function ArtifactList({ items }: { items: ArtifactListItem[] }) {
   return (
     <article className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-      <h2 className="text-xl font-semibold">Созданные артефакты</h2>
+      <h2 className="text-xl font-semibold">Маршрут проекта</h2>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+        Проходите этапы по порядку: от идеи до экспорта.
+      </p>
       <div className="mt-4 grid gap-2">
         {items.map((item, index) => (
           <ArtifactRow index={index + 1} item={item} key={item.id} />

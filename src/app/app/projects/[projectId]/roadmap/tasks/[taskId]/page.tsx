@@ -118,8 +118,8 @@ export default async function TaskDetailPage({
           <input name="returnToTaskDetail" type="hidden" value="on" />
           <div>
             <h2 className="text-xl font-semibold">Рабочая единица для разработки</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Держите задачу достаточно узкой для prompt, QA и export.
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              Держите задачу достаточно узкой для промпта, QA и экспорта.
             </p>
           </div>
           <label className="grid gap-2 text-sm font-semibold">
@@ -176,7 +176,7 @@ export default async function TaskDetailPage({
           <div className="grid gap-5 lg:grid-cols-2">
             <TextArea
               defaultValue={task.context ?? ""}
-              help="Контекст продукта, spec, репозитория или реализации, который нужен coding agent."
+              help="Контекст продукта, спецификации, репозитория или реализации, который нужен coding agent."
               label="Контекст"
               name="context"
             />
@@ -210,14 +210,14 @@ export default async function TaskDetailPage({
           <div className="grid gap-5 lg:grid-cols-3">
             <TextArea
               defaultValue={linesToTextarea(task.qaInstructions)}
-              help="QA-инструкции можно редактировать вручную. Генератор QA запускается на странице roadmap."
+              help="QA-инструкции можно редактировать вручную. Генератор QA запускается на странице дорожной карты."
               label="QA-инструкции"
               name="qaInstructions"
             />
             <TextArea
               defaultValue={linesToTextarea(task.promptBlocks)}
-              help="Черновые prompt blocks. Полный Codex Prompt генерируется кнопкой ниже."
-              label="Блоки prompt"
+              help="Черновые блоки промпта. Полный Codex Prompt генерируется кнопкой ниже."
+              label="Блоки промпта"
               name="promptBlocks"
             />
             <TextArea
@@ -257,7 +257,7 @@ export default async function TaskDetailPage({
               />
               <DetailList
                 items={task.promptBlocks}
-                title="Блоки prompt"
+                title="Блоки промпта"
               />
               <DetailList
                 items={task.linearMetadata}
@@ -274,10 +274,10 @@ export default async function TaskDetailPage({
                 Codex Prompt
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Scoped prompt для задачи
+                Scoped-промпт для задачи
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Prompt остаётся scoped для этой задачи. Текст prompt может быть
+                Промпт остаётся scoped для этой задачи. Текст промпта может быть
                 на английском для совместимости с coding tools.
               </p>
             </div>
@@ -286,7 +286,7 @@ export default async function TaskDetailPage({
                 className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
                 type="submit"
               >
-                {task.codexPrompt ? "Перегенерировать prompt" : "Сгенерировать prompt"}
+                {task.codexPrompt ? "Перегенерировать промпт" : "Сгенерировать промпт"}
               </button>
             </form>
           </div>
@@ -310,7 +310,7 @@ export default async function TaskDetailPage({
               <h3 className="font-semibold">Prompt ещё не сгенерирован</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                 Сначала уточните детали задачи, затем нажмите “Сгенерировать
-                prompt”. QA-проверки и экспорт в Linear запускаются отдельно.
+                промпт”. QA-проверки и экспорт в Linear запускаются отдельно.
               </p>
             </div>
           )}
@@ -326,7 +326,7 @@ function BackLink({ projectId }: { projectId: string }) {
       className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
       href={`/app/projects/${projectId}/roadmap`}
     >
-      Назад к roadmap
+      ← К дорожной карте
     </Link>
   );
 }

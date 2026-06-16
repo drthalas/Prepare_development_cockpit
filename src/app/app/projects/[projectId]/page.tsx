@@ -8,7 +8,6 @@ import {
   ArtifactList,
   MetadataGrid,
   MetadataPill,
-  NextStepBanner,
   StatusBadge,
   WorkflowStepper,
   type ArtifactListItem,
@@ -223,19 +222,6 @@ export default async function ProjectDetailPage({
         </div>
       ) : null}
 
-      <NextStepBanner
-        action={
-          <WorkflowAction
-            actionKey={workflow.nextStep.actionKey}
-            actions={actions}
-            emphasis="primary"
-            label={workflow.nextStep.actionLabel}
-          />
-        }
-        description={workflow.nextStep.description}
-        title={workflow.nextStep.title}
-      />
-
       <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
         <div className="grid gap-5">
           <ProjectAboutCard
@@ -260,7 +246,6 @@ export default async function ProjectDetailPage({
           />
 
           <ClassificationCard
-            action={actions.classify}
             classification={project.classification}
             updatedAt={project.classificationUpdatedAt}
           />
@@ -334,11 +319,9 @@ function ProjectAboutCard({
 }
 
 function ClassificationCard({
-  action,
   classification,
   updatedAt,
 }: {
-  action: BoundServerAction;
   classification: ProjectClassificationResult | null;
   updatedAt: Date | null;
 }) {
@@ -360,11 +343,7 @@ function ClassificationCard({
         {classification ? (
           <StatusBadge state="completed">✓ Завершено</StatusBadge>
         ) : (
-          <form action={action}>
-            <button className={secondaryActionClass} type="submit">
-              Классифицировать проект
-            </button>
-          </form>
+          <StatusBadge state="current">Требует действия</StatusBadge>
         )}
       </div>
 
