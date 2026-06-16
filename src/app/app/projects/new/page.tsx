@@ -1,7 +1,12 @@
 import Link from "next/link";
 
 import { ProjectIntakeWizard } from "@/components/project-intake-wizard";
-import { InfoNotice, PageHeader, PageShell } from "@/components/ui/patterns";
+import {
+  DetailsDisclosure,
+  InfoNotice,
+  PageHeader,
+  PageShell,
+} from "@/components/ui/patterns";
 
 export const dynamic = "force-dynamic";
 
@@ -19,20 +24,20 @@ export default async function NewProjectPage({
 
   return (
     <PageShell
-      className="max-w-[940px]"
+      className="max-w-[900px] pb-10"
       maxWidth="none"
       surface="background"
     >
       <Link
-        className="text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+        className="inline-flex text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
         href="/"
       >
         ← Назад на главную
       </Link>
 
-      <section className="pt-8 sm:pt-10">
+      <section className="pt-6 sm:pt-8">
         <PageHeader
-          description="Опишите идею продукта. Мы соберём данные для спецификации, roadmap и задач."
+          description="Опишите идею продукта. Мы соберём данные для спецификации, дорожной карты и задач."
           title="Мастер создания проекта"
           variant="plain"
         />
@@ -47,7 +52,17 @@ export default async function NewProjectPage({
           </div>
         ) : null}
 
-        <div className="mt-7">
+        <div className="mt-5">
+          <DetailsDisclosure title="Как это работает">
+            <ol className="grid gap-1">
+              <li>1. Опишите идею и аудиторию.</li>
+              <li>2. Укажите репозиторий, деплой и инструмент реализации.</li>
+              <li>3. Создайте проект и перейдите к следующему шагу.</li>
+            </ol>
+          </DetailsDisclosure>
+        </div>
+
+        <div className="mt-5">
           <ProjectIntakeWizard />
         </div>
       </section>

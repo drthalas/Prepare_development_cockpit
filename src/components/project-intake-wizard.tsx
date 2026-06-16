@@ -21,12 +21,14 @@ const wizardSteps = [
 
 export function ProjectIntakeWizard() {
   return (
-    <form action={createProjectAction} className="grid gap-5">
-      <div className="grid grid-cols-[auto_1fr_auto_1fr_auto] items-start gap-2 border-b border-[var(--panel-border)] pb-5">
+    <form
+      action={createProjectAction}
+      className="grid gap-5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-5"
+    >
+      <div className="grid grid-cols-3 gap-2 border-b border-[var(--panel-border)] pb-4">
         {wizardSteps.map((step, index) => (
           <StepIndicator
             index={index}
-            isLast={index === wizardSteps.length - 1}
             key={step.title}
             title={step.title}
             value={step.value}
@@ -34,7 +36,7 @@ export function ProjectIntakeWizard() {
         ))}
       </div>
 
-      <div className="grid gap-3">
+      <div className="grid gap-1">
         <Field icon="edit" label="Название проекта">
           <input
             className={inputClassName}
@@ -46,18 +48,18 @@ export function ProjectIntakeWizard() {
 
         <Field icon="idea" label="Идея продукта">
           <textarea
-            className={`${inputClassName} min-h-24 resize-y py-3 sm:min-h-28`}
+            className={`${inputClassName} min-h-24 resize-y py-3`}
             name="initialIdea"
-            placeholder="Опишите идею продукта, ключевую ценность и основные функции..."
+            placeholder="Ключевая ценность и основные функции"
             required
           />
         </Field>
 
         <Field icon="users" label="Аудитория">
           <textarea
-            className={`${inputClassName} min-h-20 resize-y py-3`}
+            className={`${inputClassName} min-h-16 resize-y py-3`}
             name="targetUser"
-            placeholder="Кто ваши пользователи? Опишите целевую аудиторию."
+            placeholder="Кто будет пользоваться продуктом"
           />
         </Field>
 
@@ -65,12 +67,12 @@ export function ProjectIntakeWizard() {
           <input
             className={inputClassName}
             name="repositoryUrl"
-            placeholder="https://github.com/owner/repo (необязательно)"
+            placeholder="https://github.com/owner/repo"
             type="url"
           />
         </Field>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-1 sm:grid-cols-2 sm:gap-4">
           <Field icon="cloud" label="Деплой">
             <select
               className={inputClassName}
@@ -122,9 +124,9 @@ export function ProjectIntakeWizard() {
       <input name="deploymentMode" type="hidden" value="manual_instructions" />
       <input name="deploymentOwner" type="hidden" value="not_decided" />
 
-      <div className="mt-2 flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
         <Link
-          className="inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl border border-transparent px-5 py-2.5 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
           href="/"
         >
           Отмена
@@ -142,47 +144,35 @@ export function ProjectIntakeWizard() {
 
 function StepIndicator({
   index,
-  isLast,
   title,
   value,
 }: {
   index: number;
-  isLast: boolean;
   title: string;
   value: string;
 }) {
   return (
-    <>
-      <div className="grid justify-items-center gap-1 text-center">
-        <span
-          className={`grid h-7 w-7 place-items-center rounded-full text-sm font-bold ${
-            index === 0
-              ? "bg-[var(--accent)] text-white"
-              : "bg-[var(--section-surface)] text-[var(--muted)]"
-          }`}
-        >
-          {index + 1}
-        </span>
-        <span
-          className={`text-xs font-semibold ${
-            index === 0 ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"
-          }`}
-        >
-          {title}
-        </span>
-        <span className="hidden max-w-32 text-xs text-[var(--muted)] sm:block">
-          {value}
-        </span>
-      </div>
-      {!isLast ? (
-        <span
-          aria-hidden="true"
-          className={`mt-3 h-px min-w-10 ${
-            index === 0 ? "bg-[var(--accent)]" : "bg-[var(--panel-border)]"
-          }`}
-        />
-      ) : null}
-    </>
+    <div className="grid justify-items-center gap-1 text-center">
+      <span
+        className={`grid h-7 w-7 place-items-center rounded-full text-sm font-bold ${
+          index === 0
+            ? "bg-[var(--accent)] text-white"
+            : "bg-[var(--section-surface)] text-[var(--muted)]"
+        }`}
+      >
+        {index + 1}
+      </span>
+      <span
+        className={`text-xs font-semibold ${
+          index === 0 ? "text-[var(--accent-strong)]" : "text-[var(--muted)]"
+        }`}
+      >
+        {title}
+      </span>
+      <span className="hidden max-w-32 text-xs leading-4 text-[var(--muted)] sm:block">
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -205,14 +195,14 @@ function Field({
   label: string;
 }) {
   return (
-    <label className="grid grid-cols-[2.25rem_1fr] gap-3 border-b border-[var(--panel-border)] py-3 text-sm font-semibold sm:grid-cols-[2.5rem_1fr]">
-      <span className="mt-7 flex h-8 w-8 items-center justify-center text-[var(--muted)]">
-        <FieldIcon name={icon} />
+    <label className="grid gap-2 border-b border-[var(--panel-border)] py-3 text-sm font-semibold last:border-b-0">
+      <span className="flex items-center gap-2 text-[var(--foreground)]">
+        <span className="grid h-7 w-7 place-items-center rounded-md bg-[var(--section-surface)] text-[var(--muted)]">
+          <FieldIcon name={icon} />
+        </span>
+        {label}
       </span>
-      <span className="grid gap-2">
-        <span className="text-[var(--foreground)]">{label}</span>
-        {children}
-      </span>
+      {children}
     </label>
   );
 }
@@ -298,4 +288,4 @@ function FieldIcon({ name }: { name: FieldIconName }) {
 }
 
 const inputClassName =
-  "min-h-10 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] px-3 text-sm font-medium text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)]/70 focus:border-[var(--accent)]";
+  "min-h-11 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm font-medium text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)]/70 focus:border-[var(--accent)]";
