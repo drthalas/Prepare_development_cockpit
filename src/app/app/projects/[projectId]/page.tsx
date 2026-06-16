@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { classifyProjectAction } from "@/app/app/projects/actions";
 import { generateRoadmapAction } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { generateSpecAction } from "@/app/app/projects/[projectId]/spec/actions";
 import {
   ArtifactList,
-  MetadataGrid,
-  MetadataPill,
   StatusBadge,
   WorkflowStepper,
   type ArtifactListItem,
@@ -17,11 +16,7 @@ import { cn } from "@/lib/classnames";
 import type { ProjectClassificationResult } from "@/lib/ai/types";
 import { getExecutionSettings } from "@/lib/execution/execution-store";
 import { getLinearReadyExportBundle } from "@/lib/export/export-service";
-import {
-  complexityLabels,
-  displayLabel,
-  projectMetadataLabels,
-} from "@/lib/i18n/labels";
+import { complexityLabels, displayLabel } from "@/lib/i18n/labels";
 import {
   deploymentTargetLabels,
   executionTargetLabels,
@@ -156,54 +151,21 @@ export default async function ProjectDetailPage({
       <section className="mt-5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-6">
         <WorkflowStepper steps={workflow.steps} />
 
-        <header className="mt-7 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(520px,1.35fr)] xl:items-end">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge state="completed">
-                {projectStatusLabels[project.status]}
-              </StatusBadge>
-              <span className="text-xs font-semibold text-[var(--muted)]">
-                {project.shortId}
-              </span>
-            </div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {project.title}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-              {project.initialIdea}
-            </p>
+        <header className="mt-7 max-w-3xl">
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge state="completed">
+              {projectStatusLabels[project.status]}
+            </StatusBadge>
+            <span className="text-xs font-semibold text-[var(--muted)]">
+              {project.shortId}
+            </span>
           </div>
-
-          <MetadataGrid>
-            <MetadataPill
-              label={projectMetadataLabels.created}
-              value={formatDate(project.createdAt)}
-            />
-            <MetadataPill
-              label={projectMetadataLabels.updated}
-              value={formatDate(project.updatedAt)}
-            />
-            <MetadataPill
-              label={projectMetadataLabels.type}
-              value={
-                project.classification?.projectType ??
-                project.projectType ??
-                "Пока не выбрано"
-              }
-            />
-            <MetadataPill
-              label={projectMetadataLabels.repository}
-              value={displayLabel(repositoryModeLabels, project.repositoryMode)}
-            />
-            <MetadataPill
-              label={projectMetadataLabels.execution}
-              value={displayLabel(executionTargetLabels, project.executionTarget)}
-            />
-            <MetadataPill
-              label={projectMetadataLabels.deployment}
-              value={displayLabel(deploymentTargetLabels, project.deploymentTarget)}
-            />
-          </MetadataGrid>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+            {project.title}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
+            {project.initialIdea}
+          </p>
         </header>
       </section>
 
@@ -233,6 +195,10 @@ export default async function ProjectDetailPage({
               executionTarget: displayLabel(
                 executionTargetLabels,
                 project.executionTarget,
+              ),
+              deployment: displayLabel(
+                deploymentTargetLabels,
+                project.deploymentTarget,
               ),
               initialIdea: project.initialIdea,
               projectType:
@@ -272,6 +238,7 @@ function ProjectAboutCard({
   complexity: string | null;
   project: {
     createdAt: Date;
+    deployment: string;
     executionTarget: string;
     initialIdea: string;
     projectType: string;
@@ -281,7 +248,10 @@ function ProjectAboutCard({
   };
 }) {
   return (
-    <article className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+    <article
+      className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
+      id="project-info"
+    >
       <h2 className="text-lg font-semibold">О проекте</h2>
       <dl className="mt-5 grid gap-3 text-sm">
         <DetailRow label="Название" value={project.title} />
@@ -289,6 +259,7 @@ function ProjectAboutCard({
         <DetailRow label="Тип проекта" value={project.projectType} />
         <DetailRow label="Репозиторий" value={project.repository} />
         <DetailRow label="Исполнение" value={project.executionTarget} />
+        <DetailRow label="Деплой" value={project.deployment} />
         <DetailRow
           label="Сложность"
           value={displayLabel(complexityLabels, complexity)}
@@ -326,7 +297,10 @@ function ClassificationCard({
   updatedAt: Date | null;
 }) {
   return (
-    <article className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+    <article
+      className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
+      id="project-classification"
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold">Классификация проекта</h2>
@@ -349,7 +323,6 @@ function ClassificationCard({
 
       {classification ? (
         <div className="mt-5 grid gap-4">
-          <DetailRow label="Тип проекта" value={classification.projectType} />
           <TagList items={classification.suggestedModules} title="Предложенные модули" />
           <TagList
             items={classification.missingInformationAreas}
@@ -420,20 +393,57 @@ function toArtifactListItem(
   item: ProjectArtifactItem,
   actions: WorkflowActions,
 ): ArtifactListItem {
+  const localAction = getLocalArtifactAction(item, actions.projectId);
+
   return {
     description: item.description,
     id: item.id,
     label: item.label,
     state: item.state,
     statusLabel: item.statusLabel,
-    action: item.actionKey ? (
-      <WorkflowAction
-        actionKey={item.actionKey}
-        actions={actions}
-        label={item.actionLabel ?? "Открыть"}
-      />
-    ) : undefined,
+    action:
+      localAction ??
+      (item.actionKey ? (
+        <WorkflowAction
+          actionKey={item.actionKey}
+          actions={actions}
+          label={item.actionLabel ?? "Открыть"}
+        />
+      ) : undefined),
   };
+}
+
+function getLocalArtifactAction(
+  item: ProjectArtifactItem,
+  projectId: string,
+): ReactNode {
+  if (item.actionKey !== "open_project") {
+    return undefined;
+  }
+
+  if (item.id === "idea") {
+    return (
+      <Link
+        className={secondaryActionClass}
+        href={`/app/projects/${projectId}#project-info`}
+      >
+        Открыть ↓
+      </Link>
+    );
+  }
+
+  if (item.id === "classification") {
+    return (
+      <Link
+        className={secondaryActionClass}
+        href={`/app/projects/${projectId}#project-classification`}
+      >
+        Открыть ↓
+      </Link>
+    );
+  }
+
+  return undefined;
 }
 
 function getActionHref(actionKey: WorkflowActionKey, projectId: string) {
