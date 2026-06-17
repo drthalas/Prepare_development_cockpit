@@ -138,6 +138,23 @@ export default async function ProjectDetailPage({
     specReady: Boolean(spec),
     taskCount,
   });
+  const workflowSteps = workflow.steps.map((step) => {
+    if (step.id === "idea") {
+      return {
+        ...step,
+        href: `/app/projects/${project.id}#project-info`,
+      };
+    }
+
+    if (step.id === "classification") {
+      return {
+        ...step,
+        href: `/app/projects/${project.id}#project-classification`,
+      };
+    }
+
+    return step;
+  });
 
   return (
     <PageShell maxWidth="7xl">
@@ -149,7 +166,7 @@ export default async function ProjectDetailPage({
       </Link>
 
       <section className="mt-5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-6">
-        <WorkflowStepper steps={workflow.steps} />
+        <WorkflowStepper steps={workflowSteps} />
 
         <header className="mt-7 max-w-3xl">
           <div className="flex flex-wrap items-center gap-2">
