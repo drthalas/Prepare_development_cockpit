@@ -22,12 +22,11 @@ export type NextStepBannerProps = {
 };
 
 export type ArtifactListItem = {
-  action?: ReactNode;
-  description: string;
+  formAction?: (formData: FormData) => Promise<void> | void;
+  href?: string;
   id: string;
   label: string;
   state: ArtifactState;
-  statusLabel: string;
 };
 
 export function WorkflowStepper({ steps }: { steps: WorkflowStepperItem[] }) {
@@ -102,7 +101,7 @@ export function ArtifactList({ items }: { items: ArtifactListItem[] }) {
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
         Проходите этапы по порядку: от идеи до экспорта.
       </p>
-      <div className="mt-4 grid gap-2">
+      <div className="mt-5 divide-y divide-[var(--panel-border)]">
         {items.map((item, index) => (
           <ArtifactRow index={index + 1} item={item} key={item.id} />
         ))}
@@ -119,50 +118,72 @@ export function ArtifactRow({
   item: ArtifactListItem;
 }) {
   const isCurrent = item.state === "current" || item.state === "needs_action";
-
-  return (
-    <div
-      className={cn(
-        "grid gap-3 rounded-xl border p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center",
-        isCurrent
-          ? "border-[var(--accent)] bg-[var(--soft-accent)]"
-          : "border-[var(--panel-border)] bg-white",
-      )}
-    >
+  const isDone = item.state === "done";
+  const isClickable = Boolean(item.href || item.formAction);
+  const rowClassName = cn(
+    "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-xl px-3 py-4 text-left transition sm:px-4",
+    isCurrent && "bg-[var(--soft-accent)]",
+    isClickable && "cursor-pointer hover:bg-[var(--section-surface)]",
+    isClickable && isCurrent && "hover:bg-[var(--soft-accent)]",
+  );
+  const content = (
+    <>
       <span
         className={cn(
-          "inline-flex size-8 items-center justify-center rounded-full text-sm font-bold",
-          item.state === "done"
-            ? "bg-[var(--accent)] text-white"
-            : isCurrent
-              ? "bg-[var(--accent)] text-white"
-              : "border border-[var(--panel-border)] text-[var(--muted)]",
+          "inline-flex size-10 shrink-0 items-center justify-center rounded-full text-base font-bold",
+          isDone && "bg-[var(--accent)] text-white",
+          isCurrent &&
+            "border-2 border-[var(--accent)] bg-white text-[var(--accent-strong)]",
+          !isDone &&
+            !isCurrent &&
+            "border border-[var(--panel-border)] bg-white text-[var(--muted)]",
         )}
       >
-        {item.state === "done" ? "✓" : index}
+        {isDone ? "✓" : index}
       </span>
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-semibold">{item.label}</h3>
-          <StatusBadge
-            state={item.state === "done" ? "completed" : isCurrent ? "current" : "disabled"}
-          >
-            {item.statusLabel}
-          </StatusBadge>
-        </div>
-        <p className="mt-1 text-sm leading-5 text-[var(--muted)]">
-          {item.description}
-        </p>
-      </div>
-      {item.action ? (
-        item.action
-      ) : (
-        <span className="text-sm font-semibold text-[var(--muted)]">
-          Недоступно
+      <span
+        className={cn(
+          "min-w-0 text-lg font-semibold text-[var(--foreground)]",
+          isCurrent && "text-[var(--accent-strong)]",
+        )}
+      >
+        {item.label}
+      </span>
+      {isClickable ? (
+        <span
+          aria-hidden="true"
+          className={cn(
+            "text-3xl font-light leading-none text-[var(--muted)]",
+            isCurrent && "text-[var(--accent-strong)]",
+          )}
+        >
+          ›
         </span>
+      ) : (
+        <span aria-hidden="true" className="size-4" />
       )}
-    </div>
+    </>
   );
+
+  if (item.href) {
+    return (
+      <Link className={rowClassName} href={item.href}>
+        {content}
+      </Link>
+    );
+  }
+
+  if (item.formAction) {
+    return (
+      <form action={item.formAction}>
+        <button className={rowClassName} type="submit">
+          {content}
+        </button>
+      </form>
+    );
+  }
+
+  return <div className={rowClassName}>{content}</div>;
 }
 
 export function StatusBadge({
