@@ -96,12 +96,12 @@ export function NextStepBanner({
 
 export function ArtifactList({ items }: { items: ArtifactListItem[] }) {
   return (
-    <article className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
-      <h2 className="text-xl font-semibold">Маршрут проекта</h2>
-      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-        Проходите этапы по порядку: от идеи до экспорта.
-      </p>
-      <div className="mt-5 divide-y divide-[var(--panel-border)]">
+    <article className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-5">
+      <h2 className="flex items-center gap-3 px-2 pb-4 text-xl font-semibold">
+        <RouteIcon />
+        Маршрут проекта
+      </h2>
+      <div className="overflow-hidden rounded-lg border border-[var(--panel-border)]">
         {items.map((item, index) => (
           <ArtifactRow index={index + 1} item={item} key={item.id} />
         ))}
@@ -121,7 +121,7 @@ export function ArtifactRow({
   const isDone = item.state === "done";
   const isClickable = Boolean(item.href || item.formAction);
   const rowClassName = cn(
-    "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-xl px-3 py-4 text-left transition sm:px-4",
+    "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[var(--panel-border)] bg-white px-3 py-3 text-left transition last:border-b-0 sm:px-4",
     isCurrent && "bg-[var(--soft-accent)]",
     isClickable && "cursor-pointer hover:bg-[var(--section-surface)]",
     isClickable && isCurrent && "hover:bg-[var(--soft-accent)]",
@@ -130,7 +130,7 @@ export function ArtifactRow({
     <>
       <span
         className={cn(
-          "inline-flex size-10 shrink-0 items-center justify-center rounded-full text-base font-bold",
+          "inline-flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold",
           isDone && "bg-[var(--accent)] text-white",
           isCurrent &&
             "border-2 border-[var(--accent)] bg-white text-[var(--accent-strong)]",
@@ -143,7 +143,7 @@ export function ArtifactRow({
       </span>
       <span
         className={cn(
-          "min-w-0 text-lg font-semibold text-[var(--foreground)]",
+          "min-w-0 text-base font-semibold text-[var(--foreground)] sm:text-lg",
           isCurrent && "text-[var(--accent-strong)]",
         )}
       >
@@ -184,6 +184,25 @@ export function ArtifactRow({
   }
 
   return <div className={rowClassName}>{content}</div>;
+}
+
+function RouteIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-5 text-[var(--foreground)]"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="6" cy="6" r="2" />
+      <circle cx="18" cy="18" r="2" />
+      <path d="M8 6h4a4 4 0 0 1 0 8H9a3 3 0 0 0 0 6h7" />
+    </svg>
+  );
 }
 
 export function StatusBadge({

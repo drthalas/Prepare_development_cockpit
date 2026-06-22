@@ -6,20 +6,16 @@ import { generateRoadmapAction } from "@/app/app/projects/[projectId]/roadmap/ac
 import { generateSpecAction } from "@/app/app/projects/[projectId]/spec/actions";
 import {
   ArtifactList,
-  StatusBadge,
   type ArtifactListItem,
 } from "@/components/ui/workflow";
 import { PageShell } from "@/components/ui/patterns";
 import { cn } from "@/lib/classnames";
-import type { ProjectClassificationResult } from "@/lib/ai/types";
 import { getExecutionSettings } from "@/lib/execution/execution-store";
 import { getLinearReadyExportBundle } from "@/lib/export/export-service";
 import { complexityLabels, displayLabel } from "@/lib/i18n/labels";
 import {
   deploymentTargetLabels,
   executionTargetLabels,
-  projectStatusLabels,
-  repositoryModeLabels,
 } from "@/lib/projects/project-options";
 import { getProject } from "@/lib/projects/project-store";
 import {
@@ -138,7 +134,7 @@ export default async function ProjectDetailPage({
   });
 
   return (
-    <PageShell maxWidth="7xl">
+    <PageShell className="max-w-[1052px]" maxWidth="none">
       <Link
         className="inline-flex items-center text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
         href="/app/projects"
@@ -146,24 +142,17 @@ export default async function ProjectDetailPage({
         ← К проектам
       </Link>
 
-      <section className="mt-5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-6">
-        <header className="max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge state="completed">
-              {projectStatusLabels[project.status]}
-            </StatusBadge>
-            <span className="text-xs font-semibold text-[var(--muted)]">
-              {project.shortId}
-            </span>
-          </div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+      <header className="mt-6 flex items-start gap-5">
+        <ProjectGlyph />
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             {project.title}
           </h1>
-          <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-            {project.initialIdea}
+          <p className="mt-2 text-sm font-medium leading-6 text-[var(--muted)]">
+            Обзор и текущий прогресс проекта
           </p>
-        </header>
-      </section>
+        </div>
+      </header>
 
       {classificationState ? (
         <div
@@ -175,42 +164,32 @@ export default async function ProjectDetailPage({
           )}
         >
           {classificationState === "saved"
-            ? "Классификация проекта сохранена."
+            ? "Данные проекта обновлены."
             : getClassificationErrorMessage(classificationState)}
         </div>
       ) : null}
 
-      <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
-        <div className="grid gap-5">
-          <ProjectAboutCard
-            classificationConfidence={project.classification?.confidence ?? null}
-            classificationMode={project.classification?.mode ?? null}
-            complexity={project.classification?.complexity ?? null}
-            project={{
-              createdAt: project.createdAt,
-              executionTarget: displayLabel(
-                executionTargetLabels,
-                project.executionTarget,
-              ),
-              deployment: displayLabel(
-                deploymentTargetLabels,
-                project.deploymentTarget,
-              ),
-              initialIdea: project.initialIdea,
-              projectType: formatProjectType(
-                project.classification?.projectType ?? project.projectType,
-              ),
-              repository: displayLabel(repositoryModeLabels, project.repositoryMode),
-              title: project.title,
-              updatedAt: project.updatedAt,
-            }}
-          />
-
-          <ClassificationCard
-            classification={project.classification}
-            updatedAt={project.classificationUpdatedAt}
-          />
-        </div>
+      <section className="mt-7 grid gap-5">
+        <ProjectAboutCard
+          classificationMode={project.classification?.mode ?? null}
+          complexity={project.classification?.complexity ?? null}
+          project={{
+            createdAt: project.createdAt,
+            deployment: displayLabel(
+              deploymentTargetLabels,
+              project.deploymentTarget,
+            ),
+            executionTarget: displayLabel(
+              executionTargetLabels,
+              project.executionTarget,
+            ),
+            projectType: formatProjectType(
+              project.classification?.projectType ?? project.projectType,
+            ),
+            title: project.title,
+            updatedAt: project.updatedAt,
+          }}
+        />
 
         <ArtifactList
           items={toProjectRouteItems(workflow.artifacts, actions)}
@@ -220,114 +199,99 @@ export default async function ProjectDetailPage({
   );
 }
 
+function ProjectGlyph() {
+  return (
+    <div
+      aria-hidden="true"
+      className="flex size-16 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] text-[var(--accent)] shadow-sm"
+    >
+      <svg
+        className="size-9"
+        fill="none"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.8 3.5 8.3 17.7h7.9l-3 10.8 10.5-14.2h-7.9l3-10.8Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  );
+}
+
 function ProjectAboutCard({
-  classificationConfidence,
   classificationMode,
   complexity,
   project,
 }: {
-  classificationConfidence: number | null;
   classificationMode: string | null;
   complexity: string | null;
   project: {
     createdAt: Date;
     deployment: string;
     executionTarget: string;
-    initialIdea: string;
     projectType: string;
-    repository: string;
     title: string;
     updatedAt: Date;
   };
 }) {
   return (
     <article
-      className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
+      className="scroll-mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm"
       id="project-info"
     >
-      <h2 className="text-lg font-semibold">О проекте</h2>
-      <dl className="mt-5 grid gap-3 text-sm">
-        <DetailRow label="Название" value={project.title} />
-        <DetailRow label="Описание" value={project.initialIdea} />
-        <DetailRow label="Тип проекта" value={project.projectType} />
-        <DetailRow label="Репозиторий" value={project.repository} />
-        <DetailRow label="Исполнение" value={project.executionTarget} />
-        <DetailRow label="Деплой" value={project.deployment} />
-        <DetailRow
-          label="Сложность"
-          value={displayLabel(complexityLabels, complexity)}
-        />
-        <DetailRow
-          label="Уверенность классификации"
-          value={
-            classificationConfidence === null
-              ? "Пока не рассчитана"
-              : `${Math.round(classificationConfidence * 100)}%`
-          }
-        />
-        <DetailRow
-          label="Режим"
-          value={
-            classificationMode === "mock"
-              ? "Демо-режим"
-              : classificationMode === "configured"
-                ? "Настроенный провайдер"
-                : "Пока не выбран"
-          }
-        />
-        <DetailRow label="Создан" value={formatDate(project.createdAt)} />
-        <DetailRow label="Обновлён" value={formatDate(project.updatedAt)} />
+      <h2 className="flex items-center gap-3 text-xl font-semibold">
+        <DocumentIcon />
+        О проекте
+      </h2>
+      <dl className="mt-5 grid gap-x-10 lg:grid-cols-2">
+        <div>
+          <DetailRow label="Название" value={project.title} />
+          <DetailRow label="Тип проекта" value={project.projectType} />
+          <DetailRow label="Исполнение" value={project.executionTarget} />
+          <DetailRow label="Деплой" value={project.deployment} />
+          <DetailRow
+            label="Сложность"
+            value={displayLabel(complexityLabels, complexity)}
+          />
+        </div>
+        <div>
+          <DetailRow
+            label="Режим"
+            value={
+              classificationMode === "mock"
+                ? "Демо-режим"
+                : classificationMode === "configured"
+                  ? "Настроенный провайдер"
+                  : "Пока не выбран"
+            }
+          />
+          <DetailRow label="Создан" value={formatDate(project.createdAt)} />
+          <DetailRow label="Обновлён" value={formatDate(project.updatedAt)} />
+        </div>
       </dl>
     </article>
   );
 }
 
-function ClassificationCard({
-  classification,
-  updatedAt,
-}: {
-  classification: ProjectClassificationResult | null;
-  updatedAt: Date | null;
-}) {
+function DocumentIcon() {
   return (
-    <article
-      className="scroll-mt-6 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
-      id="project-classification"
+    <svg
+      aria-hidden="true"
+      className="size-5 text-[var(--foreground)]"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Классификация проекта</h2>
-          {classification ? (
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              Обновлено: {updatedAt ? formatDate(updatedAt) : "не записано"}
-            </p>
-          ) : (
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              Определите тип проекта и недостающую информацию.
-            </p>
-          )}
-        </div>
-        {classification ? (
-          <StatusBadge state="completed">✓ Завершено</StatusBadge>
-        ) : (
-          <StatusBadge state="current">Требует действия</StatusBadge>
-        )}
-      </div>
-
-      {classification ? (
-        <div className="mt-5 grid gap-4">
-          <TagList items={classification.suggestedModules} title="Предложенные модули" />
-          <TagList
-            items={classification.missingInformationAreas}
-            title="Недостающая информация"
-          />
-          <TagList
-            items={classification.recommendedQuestionBlocks}
-            title="Рекомендуемые блоки вопросов"
-          />
-        </div>
-      ) : null}
-    </article>
+      <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v5h5" />
+      <path d="M9 13h6" />
+      <path d="M9 17h6" />
+    </svg>
   );
 }
 
@@ -359,8 +323,8 @@ function toProjectRouteItems(
       fallbackLabel: "Дорожная карта",
     }),
     toRouteItem(prompts, actions, {
-      fallbackId: "prompts",
-      fallbackLabel: "Промпты",
+      fallbackId: "tasks",
+      fallbackLabel: "Задачи",
     }),
     promptsComplete
       ? {
@@ -457,7 +421,6 @@ function toRouteItem(
 
 function getRouteHref(stepId: WorkflowStepId, projectId: string) {
   const routes: Partial<Record<WorkflowStepId, string>> = {
-    classification: `/app/projects/${projectId}#project-classification`,
     execution: `/app/projects/${projectId}/execution`,
     export: `/app/projects/${projectId}/export`,
     idea: `/app/projects/${projectId}#project-info`,
@@ -472,33 +435,11 @@ function getRouteHref(stepId: WorkflowStepId, projectId: string) {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[150px_minmax(0,1fr)]">
-      <dt className="text-xs font-medium text-[var(--muted)]">{label}</dt>
-      <dd className="break-words text-sm font-medium text-[var(--foreground)]">
+    <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] gap-4 border-b border-[var(--panel-border)] py-3 last:border-b-0">
+      <dt className="text-sm font-medium text-[var(--muted)]">{label}</dt>
+      <dd className="break-words text-sm font-semibold text-[var(--foreground)]">
         {value}
       </dd>
-    </div>
-  );
-}
-
-function TagList({ items, title }: { items: string[]; title: string }) {
-  return (
-    <div>
-      <h3 className="text-xs font-medium text-[var(--muted)]">{title}</h3>
-      {items.length > 0 ? (
-        <ul className="mt-2 flex flex-wrap gap-2">
-          {items.map((item) => (
-            <li
-              className="rounded-full border border-[var(--panel-border)] bg-[var(--section-surface)] px-2.5 py-1 text-xs font-medium text-[var(--foreground)]"
-              key={item}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-2 text-sm text-[var(--muted)]">Пока нет данных.</p>
-      )}
     </div>
   );
 }
@@ -512,19 +453,19 @@ function formatDate(date: Date) {
 
 function getClassificationErrorMessage(reason: string) {
   if (reason === "database") {
-    return "Классификацию не удалось запустить: база данных не настроена или недоступна.";
+    return "Данные проекта не удалось обновить: база данных не настроена или недоступна.";
   }
 
   if (reason === "not_found") {
     return "Проект не найден.";
   }
 
-  return "Классификатор не сработал. Проверьте настройки AI-провайдера или используйте демо-режим.";
+  return "Данные проекта не обновились. Проверьте настройки AI-провайдера или используйте демо-режим.";
 }
 
 function formatProjectType(value: string | null) {
   if (!value || value === "other/unknown" || value === "unknown") {
-    return "Пока не определён";
+    return "не определён";
   }
 
   return value;
