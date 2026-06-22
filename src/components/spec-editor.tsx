@@ -57,7 +57,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
       <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Редактор spec</h2>
+            <h2 className="text-xl font-semibold">Редактор спецификации</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
               Отредактируйте Markdown и сохраните версию.
             </p>
@@ -83,7 +83,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               onClick={() => setActiveTab("preview")}
               type="button"
             >
-              Preview
+              Предпросмотр
             </button>
             <button
               className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-55"
@@ -100,7 +100,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
             Текущая версия: {spec.currentVersion ? `v${spec.currentVersion}` : "нет"}
           </span>
           <span className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-[var(--muted)]">
-            Autosave: {formatSaveState(saveState)}
+            Автосохранение: {formatSaveState(saveState)}
           </span>
           <span className="rounded-full bg-[var(--section-surface)] px-3 py-1 text-[var(--muted)]">
             Обновлено: {formatDate(spec.updatedAt)}
@@ -134,7 +134,7 @@ export function SpecEditor({ projectId, saveAction, spec }: SpecEditorProps) {
               : "hidden lg:block rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm"
           }
         >
-          <h3 className="text-sm font-semibold">Markdown preview</h3>
+          <h3 className="text-sm font-semibold">Предпросмотр Markdown</h3>
           <div className="mt-4 grid max-h-[680px] gap-4 overflow-auto">
             {previewSections.map((section) => (
               <article
@@ -211,7 +211,7 @@ function parseMarkdown(markdown: string) {
 
   return sections.length > 0
     ? sections
-    : [{ body: markdown, title: "Preview" }];
+    : [{ body: markdown, title: "Предпросмотр" }];
 }
 
 function formatSaveState(state: SaveState) {

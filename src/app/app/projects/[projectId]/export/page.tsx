@@ -91,7 +91,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               </p>
             </div>
             <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
-              API-free
+              Без вызова API
             </span>
           </div>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -238,13 +238,13 @@ export default async function ExportPage({ params }: ExportPageProps) {
             actions={
               <>
                 <CopyButton
-                  label="Скопировать Linear import prompt"
+                  label="Скопировать промпт импорта Linear"
                   text={bundle.linearImportPrompt}
                 />
               </>
             }
             content={bundle.linearImportPrompt}
-            title="Linear import prompt"
+            title="Промпт импорта Linear"
           />
           <ExportPanel
             actions={
@@ -268,7 +268,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               />
             }
             content={bundle.jsonTasksBundle}
-            title="JSON tasks bundle"
+            title="Пакет задач JSON"
           />
           <ExportPanel
             actions={
@@ -280,7 +280,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               />
             }
             content={bundle.csvIssues}
-            title="CSV issues export"
+            title="Экспорт issues в CSV"
           />
           <ExportPanel
             actions={

@@ -223,7 +223,7 @@ export default async function TaskDetailPage({
             <TextArea
               defaultValue={linesToTextarea(task.linearMetadata)}
               help="Метаданные для будущего экспорта в Linear."
-              label="Linear metadata"
+              label="Метаданные Linear"
               name="linearMetadata"
             />
           </div>
@@ -261,7 +261,7 @@ export default async function TaskDetailPage({
               />
               <DetailList
                 items={task.linearMetadata}
-                title="Linear metadata"
+                title="Метаданные Linear"
               />
             </div>
           </DetailsDisclosure>

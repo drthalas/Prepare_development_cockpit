@@ -8,7 +8,14 @@ import {
   PageHeader,
 } from "@/components/ui/patterns";
 
-const navItems = ["Проекты", "Spec", "Roadmap", "Задачи", "QA", "Экспорт"];
+const navItems = [
+  { href: "/app/projects", label: "Проекты" },
+  { label: "Спецификация" },
+  { label: "Дорожная карта" },
+  { label: "Задачи" },
+  { label: "QA" },
+  { label: "Экспорт" },
+];
 
 const placeholderRows = [
   "Создать проект",
@@ -41,19 +48,27 @@ export function AppShell() {
           </Link>
 
           <nav className="mt-8 flex gap-2 overflow-x-auto lg:grid lg:overflow-visible">
-            {navItems.map((item, index) => (
-              <Link
-                className={`shrink-0 rounded-md px-3 py-2 text-sm font-medium ${
-                  index === 0
-                    ? "bg-[var(--panel)] text-[var(--foreground)] shadow-sm"
-                    : "text-[var(--muted)] hover:bg-[var(--panel)] hover:text-[var(--foreground)]"
-                }`}
-                href={index === 0 ? "/app/projects" : `#${index}`}
-                key={item}
-              >
-                {item}
-              </Link>
-            ))}
+            {navItems.map((item, index) =>
+              item.href ? (
+                <Link
+                  className="shrink-0 rounded-md bg-[var(--panel)] px-3 py-2 text-sm font-medium text-[var(--foreground)] shadow-sm"
+                  href={item.href}
+                  key={item.label}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span
+                  className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)]"
+                  key={item.label}
+                >
+                  {item.label}
+                  {index > 0 ? (
+                    <span className="ml-2 text-xs font-semibold">после создания</span>
+                  ) : null}
+                </span>
+              ),
+            )}
           </nav>
 
           <p className="mt-8 hidden rounded-md bg-[var(--panel)] px-3 py-2 text-xs font-medium text-[var(--muted)] lg:block">

@@ -162,13 +162,12 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               <h3 className="mt-6 text-sm font-semibold">Секции спецификации</h3>
               <div className="mt-3 grid gap-2">
                 {spec.sections.map((section) => (
-                  <a
-                    className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
-                    href={`#${section.id}`}
+                  <div
+                    className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm font-medium text-[var(--muted)]"
                     key={section.id}
                   >
-                  {section.title}
-                </a>
+                    {section.title}
+                  </div>
               ))}
               </div>
             </DetailsDisclosure>
@@ -251,7 +250,7 @@ function SpecQualityPanel({
             <SpecMeta
               label="Режим"
               value={
-                qualityCheck.mode === "mock" ? "Mock-режим" : "Настроенный провайдер"
+                  qualityCheck.mode === "mock" ? "Демо-режим" : "Настроенный провайдер"
               }
             />
           </div>
@@ -392,14 +391,14 @@ function formatReadinessLevel(value: string) {
 
 function getSpecErrorMessage(reason: string) {
   if (reason === "database") {
-    return "Spec не удалось сохранить: база данных не настроена или недоступна.";
+    return "Спецификацию не удалось сохранить: база данных не настроена или недоступна.";
   }
 
   if (reason === "not_found") {
     return "Проект не найден.";
   }
 
-  return "Генерация спецификации не удалась. Проверьте AI-провайдер или используйте mock-режим.";
+  return "Генерация спецификации не удалась. Проверьте настройки AI-провайдера или используйте демо-режим.";
 }
 
 function getQualityErrorMessage(reason: string) {
@@ -411,7 +410,7 @@ function getQualityErrorMessage(reason: string) {
     return "Сначала сгенерируйте спецификацию, затем запускайте проверку.";
   }
 
-  return "Проверка качества не удалась. Проверьте AI-провайдер или используйте mock-режим.";
+  return "Проверка качества не удалась. Проверьте настройки AI-провайдера или используйте демо-режим.";
 }
 
 function getClarificationErrorMessage(reason: string) {

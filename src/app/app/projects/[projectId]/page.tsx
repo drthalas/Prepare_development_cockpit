@@ -218,10 +218,9 @@ export default async function ProjectDetailPage({
                 project.deploymentTarget,
               ),
               initialIdea: project.initialIdea,
-              projectType:
-                project.classification?.projectType ??
-                project.projectType ??
-                "Пока не выбрано",
+              projectType: formatProjectType(
+                project.classification?.projectType ?? project.projectType,
+              ),
               repository: displayLabel(repositoryModeLabels, project.repositoryMode),
               title: project.title,
               updatedAt: project.updatedAt,
@@ -293,7 +292,7 @@ function ProjectAboutCard({
           label="Режим"
           value={
             classificationMode === "mock"
-              ? "Mock-режим"
+              ? "Демо-режим"
               : classificationMode === "configured"
                 ? "Настроенный провайдер"
                 : "Пока не выбран"
@@ -526,7 +525,15 @@ function getClassificationErrorMessage(reason: string) {
     return "Проект не найден.";
   }
 
-  return "Классификатор не сработал. Проверьте AI_PROVIDER или используйте mock-режим.";
+  return "Классификатор не сработал. Проверьте настройки AI-провайдера или используйте демо-режим.";
+}
+
+function formatProjectType(value: string | null) {
+  if (!value || value === "other/unknown" || value === "unknown") {
+    return "Пока не определён";
+  }
+
+  return value;
 }
 
 const primaryActionClass =

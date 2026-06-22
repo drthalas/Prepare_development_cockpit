@@ -82,7 +82,7 @@ export default async function LinearPreviewPage({
         <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
           <h2 className="text-xl font-semibold">Сводка структуры</h2>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Meta label="Milestones" value={String(structure.milestones.length)} />
+            <Meta label="Этапы" value={String(structure.milestones.length)} />
             <Meta label="Issues" value={String(structure.issues.length)} />
             <Meta label="Labels" value={String(structure.labels.length)} />
             <Meta
@@ -206,7 +206,7 @@ export default async function LinearPreviewPage({
                 </p>
               </article>
               <article className="rounded-lg bg-[var(--panel)] p-4">
-                <h2 className="text-lg font-semibold">Labels</h2>
+                <h2 className="text-lg font-semibold">Метки Linear</h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {structure.labels.map((label) => (
                     <span
@@ -227,7 +227,7 @@ export default async function LinearPreviewPage({
                   key={milestone.title}
                 >
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Milestone {milestone.order}
+                Этап {milestone.order}
               </p>
               <h2 className="mt-2 text-xl font-semibold">{milestone.title}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
