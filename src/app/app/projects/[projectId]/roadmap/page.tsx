@@ -11,6 +11,7 @@ import {
   updateRoadmapPhaseAction,
   updateRoadmapTaskAction,
 } from "@/app/app/projects/[projectId]/roadmap/actions";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import type { StoredRoadmapView } from "@/lib/roadmap/types";
 import { executionSettingLabels } from "@/lib/execution/execution-options";
@@ -72,8 +73,12 @@ export default async function RoadmapPage({
   );
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
+    <ProjectSectionShell
+      active="roadmap"
+      contentClassName="max-w-7xl"
+      projectId={project.id}
+      projectTitle={project.title}
+    >
         <BackLink projectId={project.id} />
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -258,8 +263,7 @@ export default async function RoadmapPage({
         {latestRoadmap ? (
           <RoadmapView projectId={project.id} roadmap={latestRoadmap} />
         ) : null}
-      </div>
-    </main>
+    </ProjectSectionShell>
   );
 }
 
@@ -271,7 +275,7 @@ function RoadmapView({
   roadmap: StoredRoadmapView;
 }) {
   return (
-    <section className="mt-6 grid gap-5">
+    <section className="mt-6 grid scroll-mt-6 gap-5" id="tasks">
       <div className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
         <h2 className="text-xl font-semibold">{roadmap.title}</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-3">

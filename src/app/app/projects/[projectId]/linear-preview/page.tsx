@@ -5,6 +5,7 @@ import {
   createLinearProjectAction,
   runLinearDryRunAction,
 } from "@/app/app/projects/[projectId]/linear-preview/actions";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getLinearApiStatus } from "@/lib/linear/linear-api";
 import { getLinearProjectStructure } from "@/lib/linear/linear-structure";
@@ -53,8 +54,12 @@ export default async function LinearPreviewPage({
   const createAction = createLinearProjectAction.bind(null, projectId);
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
+    <ProjectSectionShell
+      active="export"
+      contentClassName="max-w-7xl"
+      projectId={projectId}
+      projectTitle={structure.project.name}
+    >
         <BackLink projectId={projectId} />
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -284,8 +289,7 @@ export default async function LinearPreviewPage({
             </div>
           </DetailsDisclosure>
         </section>
-      </div>
-    </main>
+    </ProjectSectionShell>
   );
 }
 

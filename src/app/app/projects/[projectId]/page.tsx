@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { classifyProjectAction } from "@/app/app/projects/actions";
-import { generateRoadmapAction } from "@/app/app/projects/[projectId]/roadmap/actions";
-import { generateSpecAction } from "@/app/app/projects/[projectId]/spec/actions";
-import {
-  ArtifactList,
-  type ArtifactListItem,
-} from "@/components/ui/workflow";
+import { ProjectRouteList } from "@/components/project-route-list";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { PageShell } from "@/components/ui/patterns";
 import { cn } from "@/lib/classnames";
 import { getExecutionSettings } from "@/lib/execution/execution-store";
@@ -20,8 +15,6 @@ import {
 import { getProject } from "@/lib/projects/project-store";
 import {
   getProjectWorkflow,
-  type ProjectArtifactItem,
-  type WorkflowStepId,
 } from "@/lib/projects/project-workflow";
 import { getRoadmapWorkspace } from "@/lib/roadmap/roadmap-store";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
@@ -33,15 +26,6 @@ type ProjectDetailPageProps = {
   searchParams: Promise<{
     classification?: string | string[];
   }>;
-};
-
-type BoundServerAction = (formData: FormData) => Promise<void> | void;
-
-type WorkflowActions = {
-  classify: BoundServerAction;
-  generateRoadmap: BoundServerAction;
-  generateSpec: BoundServerAction;
-  projectId: string;
 };
 
 export default async function ProjectDetailPage({
@@ -79,12 +63,6 @@ export default async function ProjectDetailPage({
   }
 
   const project = result.data;
-  const actions: WorkflowActions = {
-    classify: classifyProjectAction.bind(null, project.id),
-    generateRoadmap: generateRoadmapAction.bind(null, project.id),
-    generateSpec: generateSpecAction.bind(null, project.id),
-    projectId: project.id,
-  };
 
   const executionSettingsResult = await getExecutionSettings(project.id);
   const executionSettings =
@@ -134,7 +112,12 @@ export default async function ProjectDetailPage({
   });
 
   return (
-    <PageShell className="max-w-[1160px] pb-12" maxWidth="none">
+    <ProjectSectionShell
+      active="overview"
+      contentClassName="max-w-[1160px] pb-12"
+      projectId={project.id}
+      projectTitle={project.title}
+    >
       <Link
         className="inline-flex items-center rounded-lg px-1 py-1 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
         href="/app/projects"
@@ -193,11 +176,9 @@ export default async function ProjectDetailPage({
           }}
         />
 
-        <ArtifactList
-          items={toProjectRouteItems(workflow.artifacts, actions)}
-        />
+        <ProjectRouteList artifacts={workflow.artifacts} projectId={project.id} />
       </section>
-    </PageShell>
+    </ProjectSectionShell>
   );
 }
 
@@ -295,144 +276,6 @@ function DocumentIcon() {
       <path d="M9 17h6" />
     </svg>
   );
-}
-
-function toProjectRouteItems(
-  artifacts: ProjectArtifactItem[],
-  actions: WorkflowActions,
-): ArtifactListItem[] {
-  const byId = new Map<WorkflowStepId, ProjectArtifactItem>(
-    artifacts.map((item) => [item.id, item]),
-  );
-  const prompts = byId.get("prompts");
-  const promptsComplete = prompts?.state === "done";
-  const questionStage = getQuestionStageItem(byId, actions);
-
-  return [
-    {
-      href: `/app/projects/${actions.projectId}#project-info`,
-      id: "idea",
-      label: "Идея",
-      state: byId.get("idea")?.state ?? "done",
-    },
-    questionStage,
-    toRouteItem(byId.get("spec"), actions, {
-      fallbackId: "spec",
-      fallbackLabel: "Спецификация",
-    }),
-    toRouteItem(byId.get("roadmap"), actions, {
-      fallbackId: "roadmap",
-      fallbackLabel: "Дорожная карта",
-    }),
-    toRouteItem(prompts, actions, {
-      fallbackId: "tasks",
-      fallbackLabel: "Задачи",
-    }),
-    promptsComplete
-      ? {
-          href: `/app/projects/${actions.projectId}/export`,
-          id: "export",
-          label: "Экспорт",
-          state: "current",
-        }
-      : {
-          id: "export",
-          label: "Экспорт",
-          state: "locked",
-        },
-  ];
-}
-
-function getQuestionStageItem(
-  byId: Map<WorkflowStepId, ProjectArtifactItem>,
-  actions: WorkflowActions,
-): ArtifactListItem {
-  const steps = [
-    byId.get("classification"),
-    byId.get("questionnaire"),
-    byId.get("execution"),
-  ].filter((item): item is ProjectArtifactItem => Boolean(item));
-  const activeStep = steps.find((item) => item.state !== "done") ?? steps.at(-1);
-  const state = steps.every((item) => item.state === "done")
-    ? "done"
-    : activeStep?.state ?? "locked";
-  const item = activeStep
-    ? toRouteItem(activeStep, actions, {
-        fallbackId: "questions",
-        fallbackLabel: "Уточняющие вопросы",
-      })
-    : {
-        id: "questions",
-        label: "Уточняющие вопросы",
-        state,
-      };
-
-  return {
-    ...item,
-    id: "questions",
-    label: "Уточняющие вопросы",
-    state,
-  };
-}
-
-function toRouteItem(
-  item: ProjectArtifactItem | undefined,
-  actions: WorkflowActions,
-  fallback: { fallbackId: string; fallbackLabel: string },
-): ArtifactListItem {
-  const base: ArtifactListItem = {
-    id: fallback.fallbackId,
-    label: fallback.fallbackLabel,
-    state: item?.state ?? "locked",
-  };
-
-  if (!item?.actionKey) {
-    return base;
-  }
-
-  if (item.actionKey === "classify") {
-    return {
-      ...base,
-      formAction: actions.classify,
-    };
-  }
-
-  if (item.actionKey === "generate_spec") {
-    return {
-      ...base,
-      formAction: actions.generateSpec,
-    };
-  }
-
-  if (item.actionKey === "generate_roadmap") {
-    return {
-      ...base,
-      formAction: actions.generateRoadmap,
-    };
-  }
-
-  const href = getRouteHref(item.id, actions.projectId);
-
-  return href
-    ? {
-        ...base,
-        href,
-      }
-    : base;
-}
-
-function getRouteHref(stepId: WorkflowStepId, projectId: string) {
-  const routes: Partial<Record<WorkflowStepId, string>> = {
-    execution: `/app/projects/${projectId}/execution`,
-    export: `/app/projects/${projectId}/export`,
-    idea: `/app/projects/${projectId}#project-info`,
-    prompts: `/app/projects/${projectId}/roadmap`,
-    questionnaire: `/app/projects/${projectId}/questionnaire`,
-    roadmap: `/app/projects/${projectId}/roadmap`,
-    spec: `/app/projects/${projectId}/spec`,
-  };
-
-  return routes[stepId];
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {

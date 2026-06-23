@@ -7,6 +7,7 @@ import {
   runSpecQualityCheckAction,
   saveSpecVersionAction,
 } from "@/app/app/projects/[projectId]/spec/actions";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { SpecEditor } from "@/components/spec-editor";
 import { DetailsDisclosure } from "@/components/ui/patterns";
 import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
@@ -64,8 +65,12 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
   const clarificationState = firstQueryValue(query.clarification);
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-6xl">
+    <ProjectSectionShell
+      active="spec"
+      contentClassName="max-w-6xl"
+      projectId={project.id}
+      projectTitle={project.title}
+    >
         <BackLink projectId={project.id} />
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -190,8 +195,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
             </form>
           </section>
         )}
-      </div>
-    </main>
+    </ProjectSectionShell>
   );
 }
 

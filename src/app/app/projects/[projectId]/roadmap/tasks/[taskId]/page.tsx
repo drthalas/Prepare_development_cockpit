@@ -6,6 +6,7 @@ import {
   updateRoadmapTaskAction,
 } from "@/app/app/projects/[projectId]/roadmap/actions";
 import { CopyButton } from "@/components/copy-button";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { DetailsDisclosure } from "@/components/ui/patterns";
 import {
   taskCategoryLabels,
@@ -62,8 +63,12 @@ export default async function TaskDetailPage({
   );
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-5xl">
+    <ProjectSectionShell
+      active="tasks"
+      contentClassName="max-w-5xl"
+      projectId={projectId}
+      projectTitle={task.roadmapTitle}
+    >
         <BackLink projectId={projectId} />
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -315,8 +320,7 @@ export default async function TaskDetailPage({
             </div>
           )}
         </section>
-      </div>
-    </main>
+    </ProjectSectionShell>
   );
 }
 

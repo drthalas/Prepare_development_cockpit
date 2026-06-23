@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { DownloadButton } from "@/components/download-button";
+import { ProjectSectionShell } from "@/components/project-section-shell";
 import { DetailsDisclosure } from "@/components/ui/patterns";
 import { getProjectArtifactBundle } from "@/lib/export/artifact-bundle";
 import { getLinearReadyExportBundle } from "@/lib/export/export-service";
@@ -56,8 +57,12 @@ export default async function ExportPage({ params }: ExportPageProps) {
   const slug = bundle.project.shortId.toLowerCase();
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
+    <ProjectSectionShell
+      active="export"
+      contentClassName="max-w-7xl"
+      projectId={bundle.project.id}
+      projectTitle={bundle.project.title}
+    >
         <BackLink projectId={bundle.project.id} />
 
         <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
@@ -291,8 +296,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             wide
           />
         </section>
-      </div>
-    </main>
+    </ProjectSectionShell>
   );
 }
 
