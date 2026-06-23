@@ -134,21 +134,21 @@ export default async function ProjectDetailPage({
   });
 
   return (
-    <PageShell className="max-w-[1052px]" maxWidth="none">
+    <PageShell className="max-w-[1160px] pb-12" maxWidth="none">
       <Link
-        className="inline-flex items-center text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
+        className="inline-flex items-center rounded-lg px-1 py-1 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--foreground)]"
         href="/app/projects"
       >
         ← К проектам
       </Link>
 
-      <header className="mt-6 flex items-start gap-5">
+      <header className="mt-5 flex items-start gap-5 sm:gap-7">
         <ProjectGlyph />
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
             {project.title}
           </h1>
-          <p className="mt-2 text-sm font-medium leading-6 text-[var(--muted)]">
+          <p className="mt-2 text-base font-medium leading-6 text-[var(--muted)]">
             Обзор и текущий прогресс проекта
           </p>
         </div>
@@ -169,7 +169,7 @@ export default async function ProjectDetailPage({
         </div>
       ) : null}
 
-      <section className="mt-7 grid gap-5">
+      <section className="mt-7 grid gap-5 sm:ml-[5.75rem]">
         <ProjectAboutCard
           classificationMode={project.classification?.mode ?? null}
           complexity={project.classification?.complexity ?? null}
@@ -178,10 +178,12 @@ export default async function ProjectDetailPage({
             deployment: displayLabel(
               deploymentTargetLabels,
               project.deploymentTarget,
+              "не определён",
             ),
             executionTarget: displayLabel(
               executionTargetLabels,
               project.executionTarget,
+              "не определён",
             ),
             projectType: formatProjectType(
               project.classification?.projectType ?? project.projectType,
@@ -203,7 +205,7 @@ function ProjectGlyph() {
   return (
     <div
       aria-hidden="true"
-      className="flex size-16 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] text-[var(--accent)] shadow-sm"
+      className="flex size-16 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] text-[var(--accent)] shadow-[0_10px_24px_rgba(15,23,42,0.08)]"
     >
       <svg
         className="size-9"
@@ -238,25 +240,25 @@ function ProjectAboutCard({
 }) {
   return (
     <article
-      className="scroll-mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm"
+      className="scroll-mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)] sm:p-7"
       id="project-info"
     >
       <h2 className="flex items-center gap-3 text-xl font-semibold">
         <DocumentIcon />
         О проекте
       </h2>
-      <dl className="mt-5 grid gap-x-10 lg:grid-cols-2">
-        <div>
+      <dl className="mt-5 grid gap-x-12 gap-y-1 lg:grid-cols-2">
+        <div className="rounded-lg">
           <DetailRow label="Название" value={project.title} />
           <DetailRow label="Тип проекта" value={project.projectType} />
           <DetailRow label="Исполнение" value={project.executionTarget} />
           <DetailRow label="Деплой" value={project.deployment} />
           <DetailRow
             label="Сложность"
-            value={displayLabel(complexityLabels, complexity)}
+            value={displayLabel(complexityLabels, complexity, "не определён")}
           />
         </div>
-        <div>
+        <div className="rounded-lg">
           <DetailRow
             label="Режим"
             value={
@@ -435,7 +437,7 @@ function getRouteHref(stepId: WorkflowStepId, projectId: string) {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] gap-4 border-b border-[var(--panel-border)] py-3 last:border-b-0">
+    <div className="grid min-h-10 grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)] items-center gap-4 border-b border-[var(--line-soft)] py-2.5 last:border-b-0">
       <dt className="text-sm font-medium text-[var(--muted)]">{label}</dt>
       <dd className="break-words text-sm font-semibold text-[var(--foreground)]">
         {value}

@@ -96,12 +96,12 @@ export function NextStepBanner({
 
 export function ArtifactList({ items }: { items: ArtifactListItem[] }) {
   return (
-    <article className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-sm sm:p-5">
-      <h2 className="flex items-center gap-3 px-2 pb-4 text-xl font-semibold">
+    <article className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.06)] sm:p-5">
+      <h2 className="flex items-center gap-3 px-2 pb-5 text-xl font-semibold">
         <RouteIcon />
         Маршрут проекта
       </h2>
-      <div className="overflow-hidden rounded-lg border border-[var(--panel-border)]">
+      <div className="overflow-hidden rounded-lg border border-[var(--panel-border)] bg-white">
         {items.map((item, index) => (
           <ArtifactRow index={index + 1} item={item} key={item.id} />
         ))}
@@ -121,7 +121,7 @@ export function ArtifactRow({
   const isDone = item.state === "done";
   const isClickable = Boolean(item.href || item.formAction);
   const rowClassName = cn(
-    "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[var(--panel-border)] bg-white px-3 py-3 text-left transition last:border-b-0 sm:px-4",
+    "grid min-h-[56px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[var(--line-soft)] bg-white px-3 py-3 text-left transition last:border-b-0 sm:px-4",
     isCurrent && "bg-[var(--soft-accent)]",
     isClickable && "cursor-pointer hover:bg-[var(--section-surface)]",
     isClickable && isCurrent && "hover:bg-[var(--soft-accent)]",
@@ -130,7 +130,7 @@ export function ArtifactRow({
     <>
       <span
         className={cn(
-          "inline-flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold",
+          "inline-flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold shadow-[inset_0_0_0_1px_rgba(15,23,42,0.03)]",
           isDone && "bg-[var(--accent)] text-white",
           isCurrent &&
             "border-2 border-[var(--accent)] bg-white text-[var(--accent-strong)]",
@@ -153,7 +153,7 @@ export function ArtifactRow({
         <span
           aria-hidden="true"
           className={cn(
-            "text-3xl font-light leading-none text-[var(--muted)]",
+            "pr-1 text-3xl font-light leading-none text-[var(--muted)]",
             isCurrent && "text-[var(--accent-strong)]",
           )}
         >
