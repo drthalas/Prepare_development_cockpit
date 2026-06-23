@@ -10,6 +10,12 @@ import {
 import { ProjectSectionShell } from "@/components/project-section-shell";
 import { SpecEditor } from "@/components/spec-editor";
 import { DetailsDisclosure } from "@/components/ui/patterns";
+import { complexityLabels, displayLabel } from "@/lib/i18n/labels";
+import {
+  deploymentTargetLabels,
+  executionTargetLabels,
+} from "@/lib/projects/project-options";
+import { getProject } from "@/lib/projects/project-store";
 import type { SpecQualityCheckResult } from "@/lib/spec/quality-types";
 import { getProjectSpecWorkspace } from "@/lib/spec/spec-store";
 
@@ -32,6 +38,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
   const state = firstQueryValue(query.spec);
   const mode = firstQueryValue(query.mode);
   const result = await getProjectSpecWorkspace(projectId);
+  const projectResult = await getProject(projectId);
 
   if (!result.databaseReady) {
     return (
@@ -54,6 +61,8 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
   }
 
   const { project, spec } = result.data;
+  const projectDetails =
+    projectResult.databaseReady && projectResult.data ? projectResult.data : null;
   const generateAction = generateSpecAction.bind(null, project.id);
   const qualityAction = runSpecQualityCheckAction.bind(null, project.id);
   const clarificationAction = applySpecClarificationAction.bind(
@@ -71,32 +80,56 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
       projectId={project.id}
       projectTitle={project.title}
     >
-        <BackLink projectId={project.id} />
+      <BackLink projectId={project.id} />
 
-        <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Редактируемая спецификация
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold">{project.title}</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Редактируйте спецификацию и проверяйте готовность.
-              </p>
-            </div>
-          </div>
-        </header>
+      <header className="mt-5">
+        <p className="text-sm font-semibold text-[var(--muted)]">
+          Проект: {project.title}
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+          Спецификация
+        </h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          Содержание требований и договорённостей по проекту.
+        </p>
+      </header>
+
+      <section className="mt-6 grid gap-5">
+        <ProjectAboutCard
+          classificationMode={projectDetails?.classification?.mode ?? null}
+          complexity={projectDetails?.classification?.complexity ?? null}
+          project={{
+            createdAt: projectDetails?.createdAt ?? null,
+            deployment: displayLabel(
+              deploymentTargetLabels,
+              projectDetails?.deploymentTarget ?? null,
+              "не определён",
+            ),
+            executionTarget: displayLabel(
+              executionTargetLabels,
+              projectDetails?.executionTarget ?? null,
+              "не определён",
+            ),
+            projectType: formatProjectType(
+              projectDetails?.classification?.projectType ??
+                projectDetails?.projectType ??
+                null,
+            ),
+            title: project.title,
+            updatedAt: projectDetails?.updatedAt ?? null,
+          }}
+        />
 
         {!project.questionnaireCompleted ? (
-          <div className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm font-medium text-amber-900">
-            Анкета ещё не завершена. Можно сгенерировать спецификацию из доступных
-            данных, но она может быть неполной.
+          <div className="rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm font-medium text-amber-900">
+            Уточняющие вопросы ещё не завершены. Спецификацию можно вести по
+            доступным данным, но часть требований может быть неполной.
           </div>
         ) : null}
 
         {state ? (
           <div
-            className={`mt-6 rounded-lg border p-4 text-sm font-medium ${
+            className={`rounded-lg border p-4 text-sm font-medium ${
               state === "generated"
                 ? "border-[var(--panel-border)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
                 : "border-amber-200 bg-[var(--soft-warning)] text-amber-900"
@@ -105,14 +138,14 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
             {state === "generated"
               ? `Спецификация сгенерирована и сохранена${mode ? ` в режиме ${mode}` : ""}.`
               : state === "saved"
-                ? `Версия спецификации сохранена${firstQueryValue(query.version) ? ` как v${firstQueryValue(query.version)}` : ""}.`
+                ? `Сохранено${firstQueryValue(query.version) ? ` как версия ${firstQueryValue(query.version)}` : ""}.`
               : getSpecErrorMessage(state)}
           </div>
         ) : null}
 
         {qualityState ? (
           <div
-            className={`mt-6 rounded-lg border p-4 text-sm font-medium ${
+            className={`rounded-lg border p-4 text-sm font-medium ${
               qualityState === "checked"
                 ? "border-[var(--panel-border)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
                 : "border-amber-200 bg-[var(--soft-warning)] text-amber-900"
@@ -126,7 +159,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
 
         {clarificationState ? (
           <div
-            className={`mt-6 rounded-lg border p-4 text-sm font-medium ${
+            className={`rounded-lg border p-4 text-sm font-medium ${
               clarificationState === "applied"
                 ? "border-[var(--panel-border)] bg-[var(--soft-accent)] text-[var(--accent-strong)]"
                 : "border-amber-200 bg-[var(--soft-warning)] text-amber-900"
@@ -139,9 +172,8 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
         ) : null}
 
         {spec ? (
-          <div className="mt-6 grid gap-6">
+          <div className="grid gap-5">
             <SpecEditor
-              projectId={project.id}
               saveAction={saveVersionAction}
               spec={spec}
             />
@@ -150,40 +182,14 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
               qualityAction={qualityAction}
               qualityCheck={spec.qualityCheck}
             />
-            <DetailsDisclosure title="Статус и секции спецификации">
-              <dl className="grid gap-4">
-                <SpecMeta
-                  label="Текущая версия"
-                  value={spec.currentVersion ? `v${spec.currentVersion}` : "Не выбрано"}
-                />
-                <SpecMeta label="Режим" value={spec.mode} />
-                <SpecMeta label="Обновлено" value={formatDate(spec.updatedAt)} />
-                <SpecMeta
-                  label="Секции"
-                  value={`${spec.sections.length} структурных секций`}
-                />
-              </dl>
-
-              <h3 className="mt-6 text-sm font-semibold">Секции спецификации</h3>
-              <div className="mt-3 grid gap-2">
-                {spec.sections.map((section) => (
-                  <div
-                    className="rounded-md bg-[var(--section-surface)] px-3 py-2 text-sm font-medium text-[var(--muted)]"
-                    key={section.id}
-                  >
-                    {section.title}
-                  </div>
-              ))}
-              </div>
-            </DetailsDisclosure>
           </div>
         ) : (
-          <section className="mt-6 rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
+          <section className="rounded-lg border border-dashed border-[var(--panel-border)] bg-[var(--panel)] p-8 text-center">
             <h2 className="text-xl font-semibold">Спецификация ещё не создана</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
               Сначала пройдите анкету, затем нажмите “Сгенерировать
-              спецификацию”. Результат сохранится как текущий Markdown и
-              версия 1.
+              спецификацию”. Результат сохранится как текст спецификации и
+              первая версия.
             </p>
             <form action={generateAction} className="mt-5">
               <button
@@ -195,6 +201,7 @@ export default async function SpecPage({ params, searchParams }: SpecPageProps) 
             </form>
           </section>
         )}
+      </section>
     </ProjectSectionShell>
   );
 }
@@ -209,17 +216,17 @@ function SpecQualityPanel({
   qualityCheck: SpecQualityCheckResult | null;
 }) {
   return (
-    <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+    <section className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
             Проверка готовности
           </p>
           <h2 className="mt-2 text-xl font-semibold">
-            Качество спецификации и недостающая информация
+            Проверка спецификации
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            Проверьте готовность перед дорожной картой.
+            Проверьте, хватает ли данных для дорожной карты и задач.
           </p>
         </div>
         <form action={qualityAction}>
@@ -316,6 +323,89 @@ function SpecQualityPanel({
   );
 }
 
+function ProjectAboutCard({
+  classificationMode,
+  complexity,
+  project,
+}: {
+  classificationMode: string | null;
+  complexity: string | null;
+  project: {
+    createdAt: Date | null;
+    deployment: string;
+    executionTarget: string;
+    projectType: string;
+    title: string;
+    updatedAt: Date | null;
+  };
+}) {
+  return (
+    <article className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
+      <h2 className="flex items-center gap-3 text-xl font-semibold">
+        <DocumentIcon />
+        О проекте
+      </h2>
+      <dl className="mt-5 grid gap-x-12 gap-y-1 lg:grid-cols-2">
+        <div>
+          <DetailRow label="Название" value={project.title} />
+          <DetailRow label="Тип проекта" value={project.projectType} />
+          <DetailRow label="Исполнение" value={project.executionTarget} />
+          <DetailRow label="Деплой" value={project.deployment} />
+          <DetailRow
+            label="Сложность"
+            value={displayLabel(complexityLabels, complexity, "не определён")}
+          />
+        </div>
+        <div>
+          <DetailRow
+            label="Режим"
+            value={
+              classificationMode === "mock"
+                ? "Демо-режим"
+                : classificationMode === "configured"
+                  ? "Настроенный провайдер"
+                  : "не определён"
+            }
+          />
+          <DetailRow label="Создан" value={formatMaybeDate(project.createdAt)} />
+          <DetailRow label="Обновлён" value={formatMaybeDate(project.updatedAt)} />
+        </div>
+      </dl>
+    </article>
+  );
+}
+
+function DocumentIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-5 text-[var(--foreground)]"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v5h5" />
+      <path d="M9 13h6" />
+      <path d="M9 17h6" />
+    </svg>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid min-h-10 grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)] items-center gap-4 border-b border-[var(--line-soft)] py-2.5 last:border-b-0">
+      <dt className="text-sm font-medium text-[var(--muted)]">{label}</dt>
+      <dd className="break-words text-sm font-semibold text-[var(--foreground)]">
+        {value}
+      </dd>
+    </div>
+  );
+}
+
 function QualityList({
   emptyLabel,
   items,
@@ -381,6 +471,18 @@ function formatDate(date: Date) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
+}
+
+function formatMaybeDate(date: Date | null) {
+  return date ? formatDate(date) : "не определён";
+}
+
+function formatProjectType(value: string | null) {
+  if (!value || value === "other/unknown" || value === "unknown") {
+    return "не определён";
+  }
+
+  return value;
 }
 
 function formatReadinessLevel(value: string) {
