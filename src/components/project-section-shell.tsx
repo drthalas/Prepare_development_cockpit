@@ -66,7 +66,7 @@ export function ProjectSectionShell({
                       <Link
                         aria-current={isActive ? "page" : undefined}
                         className={cn(
-                          "flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition",
+                          "flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
                           isActive
                             ? "bg-[var(--soft-accent)] text-[var(--accent-strong)]"
                             : "text-[var(--foreground)] hover:bg-[var(--section-surface)]",

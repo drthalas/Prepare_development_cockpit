@@ -121,7 +121,7 @@ export function ArtifactRow({
   const isDone = item.state === "done";
   const isClickable = Boolean(item.href || item.formAction);
   const rowClassName = cn(
-    "grid min-h-[56px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[var(--line-soft)] bg-white px-3 py-3 text-left transition last:border-b-0 sm:px-4",
+    "grid min-h-[56px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-[var(--line-soft)] bg-white px-3 py-3 text-left transition last:border-b-0 focus-visible:relative focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] sm:px-4",
     isCurrent && "bg-[var(--soft-accent)]",
     isClickable && "cursor-pointer hover:bg-[var(--section-surface)]",
     isClickable && isCurrent && "hover:bg-[var(--soft-accent)]",

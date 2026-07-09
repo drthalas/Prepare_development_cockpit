@@ -65,20 +65,19 @@ export default async function TaskDetailPage({
   return (
     <ProjectSectionShell
       active="tasks"
-      contentClassName="max-w-5xl"
+      contentClassName="max-w-5xl pb-12"
       projectId={projectId}
       projectTitle={task.roadmapTitle}
     >
         <BackLink projectId={projectId} />
 
-        <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
-          <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-            Детали задачи
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold">{task.title}</h1>
-          <p className="mt-3 text-sm text-[var(--muted)]">
+        <header className="mt-5">
+          <p className="text-sm font-semibold text-[var(--muted)]">
             {task.roadmapTitle} / {task.phaseTitle}
           </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+            {task.title}
+          </h1>
           <div className="mt-4 flex flex-wrap gap-2">
             <Badge label={formatLabel(task.status)} />
             <Badge label={formatLabel(task.priority ?? "medium")} />
@@ -109,22 +108,19 @@ export default async function TaskDetailPage({
             }`}
           >
             {promptState === "generated"
-              ? "Codex Prompt сгенерирован и сохранён."
-              : "Codex Prompt не удалось сгенерировать. Проверьте базу данных и scope задачи."}
+              ? "Инструкция для реализации сгенерирована и сохранена."
+              : "Инструкцию для реализации не удалось сгенерировать. Проверьте базу данных и детали задачи."}
           </div>
         ) : null}
 
         <section className="mt-6">
           <DetailsDisclosure title="Редактировать задачу">
-        <form
-          action={updateAction}
-          className="grid gap-5"
-        >
+        <form action={updateAction} className="grid gap-5">
           <input name="returnToTaskDetail" type="hidden" value="on" />
           <div>
             <h2 className="text-xl font-semibold">Рабочая единица для разработки</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Держите задачу достаточно узкой для промпта, QA и экспорта.
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              Держите задачу достаточно узкой для реализации, проверки и экспорта.
             </p>
           </div>
           <label className="grid gap-2 text-sm font-semibold">
@@ -181,13 +177,13 @@ export default async function TaskDetailPage({
           <div className="grid gap-5 lg:grid-cols-2">
             <TextArea
               defaultValue={task.context ?? ""}
-              help="Контекст продукта, спецификации, репозитория или реализации, который нужен coding agent."
+              help="Контекст продукта, спецификации, репозитория или реализации."
               label="Контекст"
               name="context"
             />
             <TextArea
               defaultValue={task.implementationNotes ?? ""}
-              help="Подсказки по реализации, ограничения и edge notes для задачи."
+              help="Подсказки по реализации и ограничения задачи."
               label="Заметки по реализации"
               name="implementationNotes"
             />
@@ -221,14 +217,14 @@ export default async function TaskDetailPage({
             />
             <TextArea
               defaultValue={linesToTextarea(task.promptBlocks)}
-              help="Черновые блоки промпта. Полный Codex Prompt генерируется кнопкой ниже."
-              label="Блоки промпта"
+              help="Черновые блоки инструкции. Полная инструкция генерируется кнопкой ниже."
+              label="Блоки инструкции"
               name="promptBlocks"
             />
             <TextArea
               defaultValue={linesToTextarea(task.linearMetadata)}
-              help="Метаданные для будущего экспорта в Linear."
-              label="Метаданные Linear"
+              help="Данные для будущего экспорта в Linear."
+              label="Данные Linear"
               name="linearMetadata"
             />
           </div>
@@ -262,36 +258,36 @@ export default async function TaskDetailPage({
               />
               <DetailList
                 items={task.promptBlocks}
-                title="Блоки промпта"
+                title="Блоки инструкции"
               />
               <DetailList
                 items={task.linearMetadata}
-                title="Метаданные Linear"
+                title="Данные Linear"
               />
             </div>
           </DetailsDisclosure>
         </section>
 
-        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+        <section className="mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Codex Prompt
+                Инструкция
               </p>
               <h2 className="mt-2 text-xl font-semibold">
-                Scoped-промпт для задачи
+                Инструкция для реализации
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Промпт остаётся scoped для этой задачи. Текст промпта может быть
-                на английском для совместимости с coding tools.
+                Сформируйте рабочую инструкцию по этой задаче. Текст может быть
+                на английском, если это нужно для инструментов разработки.
               </p>
             </div>
             <form action={generatePromptAction}>
               <button
-                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                 type="submit"
               >
-                {task.codexPrompt ? "Перегенерировать промпт" : "Сгенерировать промпт"}
+                {task.codexPrompt ? "Обновить инструкцию" : "Сгенерировать инструкцию"}
               </button>
             </form>
           </div>
@@ -312,10 +308,10 @@ export default async function TaskDetailPage({
             </div>
           ) : (
             <div className="mt-5 rounded-md border border-dashed border-[var(--panel-border)] bg-[var(--section-surface)] p-5">
-              <h3 className="font-semibold">Prompt ещё не сгенерирован</h3>
+              <h3 className="font-semibold">Инструкция ещё не сгенерирована</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                 Сначала уточните детали задачи, затем нажмите “Сгенерировать
-                промпт”. QA-проверки и экспорт в Linear запускаются отдельно.
+                инструкцию”. Проверки и экспорт в Linear запускаются отдельно.
               </p>
             </div>
           )}

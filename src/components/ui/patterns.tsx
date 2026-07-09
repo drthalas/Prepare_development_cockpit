@@ -28,7 +28,7 @@ export function ActionLink({
   return (
     <Link
       className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold transition",
+        "inline-flex min-h-11 items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
         actionVariants[variant],
         className,
       )}
@@ -69,7 +69,7 @@ export function PageHeader({
     >
       {backHref ? (
         <Link
-          className="mb-5 inline-flex text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+          className="mb-5 inline-flex rounded-md text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
           href={backHref}
         >
           ← {backLabel}
@@ -153,7 +153,7 @@ export function InfoNotice({
         : "border-[var(--panel-border)] bg-[var(--section-surface)] text-[var(--muted)]";
 
   return (
-    <div className={cn("rounded-md border p-4 text-sm leading-6", toneClass)}>
+    <div className={cn("rounded-lg border p-4 text-sm leading-6", toneClass)}>
       {children}
     </div>
   );
@@ -167,8 +167,8 @@ export function DetailsDisclosure({
   title: string;
 }) {
   return (
-    <details className="rounded-md border border-[var(--panel-border)] bg-[var(--section-surface)] p-4">
-      <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">
+    <details className="rounded-lg border border-[var(--panel-border)] bg-[var(--section-surface)] p-4 transition open:bg-[var(--panel)]">
+      <summary className="cursor-pointer rounded-md text-sm font-semibold text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
         {title}
       </summary>
       <div className="mt-3 text-sm leading-6 text-[var(--foreground)]">

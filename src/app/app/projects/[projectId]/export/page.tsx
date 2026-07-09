@@ -59,45 +59,40 @@ export default async function ExportPage({ params }: ExportPageProps) {
   return (
     <ProjectSectionShell
       active="export"
-      contentClassName="max-w-7xl"
+      contentClassName="max-w-6xl pb-12"
       projectId={bundle.project.id}
       projectTitle={bundle.project.title}
     >
         <BackLink projectId={bundle.project.id} />
 
-        <header className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-6 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <header className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                Linear-ready экспорт
+              <p className="text-sm font-semibold text-[var(--muted)]">
+                Проект: {bundle.project.title}
               </p>
-              <h1 className="mt-2 text-3xl font-semibold">
-                {bundle.project.title}
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+                Экспорт
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Скачайте ZIP или откройте нужный формат экспорта.
+                Скачайте пакет проекта или проверьте данные перед переносом в Linear.
               </p>
             </div>
             <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--panel-border)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)]"
+              className="inline-flex min-h-10 w-fit items-center justify-center rounded-md border border-[var(--panel-border)] bg-[var(--panel)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               href={`/app/projects/${bundle.project.id}/linear-preview`}
             >
-              Открыть Linear preview
+              Предпросмотр Linear
             </Link>
-          </div>
         </header>
 
-        <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+        <section className="mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Сводка экспорта</h2>
+              <h2 className="text-xl font-semibold">Готовность экспорта</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                Экспорт работает без Linear API.
+                Проверьте, какие данные уже готовы к передаче и какие задачи требуют подготовки.
               </p>
             </div>
-            <span className="w-fit rounded-full bg-[var(--soft-accent)] px-3 py-1 text-sm font-semibold text-[var(--accent-strong)]">
-              Без вызова API
-            </span>
           </div>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <Meta label="Фазы" value={String(bundle.exportSummary.phaseCount)} />
@@ -107,7 +102,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               value={String(bundle.exportSummary.qaCheckpointCount)}
             />
             <Meta
-              label="Нет промптов"
+              label="Инструкции не готовы"
               value={String(bundle.exportSummary.missingPromptCount)}
             />
             <Meta
@@ -128,7 +123,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
             <Warning
               href={`/app/projects/${bundle.project.id}/roadmap`}
               linkLabel="Открыть дорожную карту"
-              text="У части задач нет Codex Prompt. Экспорт не блокируется, но в описаниях Linear будет отметка, что промпт отсутствует. Откройте задачу и нажмите “Сгенерировать промпт”."
+              text="У части задач нет инструкции для реализации. Экспорт не блокируется, но лучше подготовить инструкции на страницах задач."
             />
           ) : null}
 
@@ -138,26 +133,25 @@ export default async function ExportPage({ params }: ExportPageProps) {
         </section>
 
         {missingPromptTasks.length > 0 ? (
-          <section className="mt-6 rounded-lg border border-amber-200 bg-[var(--soft-warning)] p-5 text-amber-950 shadow-sm">
+          <section className="mt-6 rounded-xl border border-amber-200 bg-[var(--soft-warning)] p-5 text-amber-950 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase">
-                  Покрытие промптами
+                  Готовность задач
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
-                  {missingPromptTasks.length} задач без Codex Prompt
+                  {missingPromptTasks.length} задач требуют инструкции
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900">
-                  Экспорт доступен, но лучше сгенерировать промпты на страницах
-                  задач, чтобы Linear issues получили scoped инструкции для
-                  реализации.
+                  Экспорт доступен, но лучше подготовить инструкции на страницах
+                  задач, чтобы дальнейшая реализация была точнее.
                 </p>
               </div>
               <Link
-                className="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 transition hover:border-amber-500"
+                className="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-300 px-4 py-2 text-sm font-semibold text-amber-950 transition hover:border-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
                 href={missingPromptTasks[0].href}
               >
-                Открыть первую задачу без промпта
+                Открыть первую задачу
               </Link>
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-2">
@@ -184,22 +178,22 @@ export default async function ExportPage({ params }: ExportPageProps) {
         ) : null}
 
         {artifactBundle ? (
-          <section className="mt-6 rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm">
+          <section className="mt-6 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase text-[var(--accent-strong)]">
-                  ZIP-пакет проекта
+                  Пакет проекта
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
                   Скачать файлы проекта
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-                  ZIP и отдельные файлы генерируются из structured model.
-                  Секреты и локальные env-файлы не включаются.
+                  ZIP и отдельные файлы собираются из текущих данных проекта.
+                  Локальные настройки и секреты не включаются.
                 </p>
               </div>
               <a
-                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                 href={`/api/projects/${bundle.project.id}/export/bundle`}
               >
                 Скачать ZIP-пакет
@@ -243,37 +237,37 @@ export default async function ExportPage({ params }: ExportPageProps) {
             actions={
               <>
                 <CopyButton
-                  label="Скопировать промпт импорта Linear"
+                  label="Скопировать инструкцию импорта"
                   text={bundle.linearImportPrompt}
                 />
               </>
             }
             content={bundle.linearImportPrompt}
-            title="Промпт импорта Linear"
+            title="Инструкция импорта Linear"
           />
           <ExportPanel
             actions={
               <DownloadButton
                 content={bundle.markdownRoadmap}
                 filename={`${slug}-linear-roadmap.md`}
-                label="Скачать Markdown"
+                label="Скачать файл"
                 mimeType="text/markdown;charset=utf-8"
               />
             }
             content={bundle.markdownRoadmap}
-            title="Markdown-экспорт дорожной карты"
+            title="Дорожная карта"
           />
           <ExportPanel
             actions={
               <DownloadButton
                 content={bundle.jsonTasksBundle}
                 filename={`${slug}-tasks.json`}
-                label="Скачать JSON"
+                label="Скачать файл"
                 mimeType="application/json;charset=utf-8"
               />
             }
             content={bundle.jsonTasksBundle}
-            title="Пакет задач JSON"
+            title="Пакет задач"
           />
           <ExportPanel
             actions={
@@ -285,7 +279,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
               />
             }
             content={bundle.csvIssues}
-            title="Экспорт issues в CSV"
+            title="Issues для Linear"
           />
           <ExportPanel
             actions={
@@ -324,21 +318,21 @@ function ExportPanel({
 }) {
   return (
     <details
-      className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-sm ${
+      className={`rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition open:bg-[var(--panel)] ${
         wide ? "lg:col-span-2" : ""
       }`}
     >
-      <summary className="cursor-pointer list-none">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <span className="w-fit rounded-md border border-[var(--panel-border)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
-          Открыть
-        </span>
-      </div>
+      <summary className="cursor-pointer list-none rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          <span className="w-fit rounded-md border border-[var(--panel-border)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
+            Показать
+          </span>
+        </div>
       </summary>
       <div className="mt-4 flex flex-wrap gap-2">{actions}</div>
       <textarea
-        className="mt-4 min-h-56 w-full rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none"
+        className="mt-4 min-h-56 w-full rounded-md border border-[var(--panel-border)] bg-[var(--background)] p-4 font-mono text-xs leading-6 text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
         readOnly
         value={content}
       />
@@ -372,7 +366,10 @@ function Warning({
     <div className="mt-4 flex flex-col gap-3 rounded-md border border-amber-200 bg-[var(--soft-warning)] p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
       <p>{text}</p>
       {href ? (
-        <Link className="font-semibold underline" href={href}>
+        <Link
+          className="rounded-sm font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+          href={href}
+        >
           {linkLabel}
         </Link>
       ) : null}
